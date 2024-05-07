@@ -7,6 +7,7 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   MenuItem,
   Select,
@@ -16,8 +17,17 @@ import { Box, Stack } from "@mui/system";
 import React, { useState } from "react";
 import Iconify from "../Iconify/Iconify";
 import { getRoles } from "@/api/functions/cms.api";
-import { useQuery } from "@tanstack/react-query";
-import { ISettings } from "@/interface/staff.interfaces";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
+import { ISettings, IUpdateSettings } from "@/interface/staff.interfaces";
+import { getAllTeams } from "@/api/functions/teams.api";
+import * as yup from "yup";
+import validationText from "@/json/messages/validationText";
+import { Controller, useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { updateSettings } from "@/api/functions/staff.api";
+import { LoadingButton } from "@mui/lab";
+import { queryClient } from "pages/_app";
+import { useParams } from "next/navigation";
 
 const StyledBox = styled(Box)`
   padding-top: 15px;
@@ -26,13 +36,71 @@ const StyledBox = styled(Box)`
   }
 `;
 
+const schema = yup.object().shape({
+  roleId: yup.string().required(validationText.error.role),
+  teamIds: yup.array().of(yup.string()),
+  isNotifyTimesheetApproval: yup.boolean(),
+  isSubscribeToNotifications: yup.boolean(),
+  subscribedEmailCategories: yup.array().of(yup.string()),
+  isAvailableForRostering: yup.boolean(),
+  isReadAndWriteClientPrivateNotes: yup.boolean(),
+  isReadAndWriteStaffPrivateNotes: yup.boolean(),
+  isAccess: yup.boolean(),
+  isAccountOwner: yup.boolean()
+});
+
 export default function Settings({ settings }: { settings: ISettings }) {
   const [edit, setEdit] = useState(false);
+  const { id } = useParams();
 
-  const { data: roles, isLoading } = useQuery({
-    queryKey: ["roles"],
-    queryFn: getRoles
+  const data = useQueries({
+    queries: [
+      {
+        queryKey: ["roles"],
+        queryFn: getRoles
+      },
+      {
+        queryKey: ["teams"],
+        queryFn: getAllTeams
+      }
+    ],
+    combine: (result) => {
+      return {
+        roles: result[0].data,
+        teams: result[1].data,
+        loading: result[0].isLoading || result[1].isLoading
+      };
+    }
   });
+
+  const { control, handleSubmit } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      roleId: settings.roleId,
+      teamIds: settings.teamIds,
+      isNotifyTimesheetApproval: settings.isNotifyTimesheetApproval,
+      isSubscribeToNotifications: settings.isSubscribeToNotifications || false,
+      subscribedEmailCategories: settings.subscribedEmailCategories,
+      isAvailableForRostering: settings.isAvailableForRostering,
+      isReadAndWriteClientPrivateNotes:
+        settings.isReadAndWriteClientPrivateNotes,
+      isReadAndWriteStaffPrivateNotes: settings.isReadAndWriteStaffPrivateNotes,
+      isAccess: settings.isAccess,
+      isAccountOwner: settings.isAccountOwner
+    }
+  });
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: updateSettings,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["staff-settings", id] });
+      setEdit(false);
+    }
+  });
+
+  const onSubmit = (data: IUpdateSettings) => {
+    mutate({ id: id as string, data });
+  };
 
   return (
     <StyledPaper>
@@ -61,29 +129,48 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <Select fullWidth size="small">
-                {roles.map((role: { id: number; name: string }) => (
-                  <MenuItem
-                    value={role.id}
-                    key={role.id}
-                    sx={{ textTransform: "capitalize" }}
-                  >
-                    {role.name
-                      .replace("ROLE_", "")
-                      .replaceAll("_", " ")
-                      .toLowerCase()}
-                  </MenuItem>
-                ))}
-              </Select>
+              <Controller
+                name="roleId"
+                control={control}
+                render={({ field, fieldState: { invalid, error } }) => (
+                  <Box>
+                    <Select
+                      fullWidth
+                      size="small"
+                      {...field}
+                      sx={{ textTransform: "capitalize" }}
+                    >
+                      {data.roles.map((role: { id: number; name: string }) => (
+                        <MenuItem
+                          value={role.id}
+                          key={role.id}
+                          sx={{ textTransform: "capitalize" }}
+                        >
+                          {role.name
+                            ?.replace("ROLE_", "")
+                            .replaceAll("_", " ")
+                            .toLowerCase()}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                    {invalid && (
+                      <FormHelperText sx={{ color: "#FF5630" }}>
+                        {error?.message}
+                      </FormHelperText>
+                    )}
+                  </Box>
+                )}
+              />
             ) : (
               <Chip
                 variant="outlined"
-                label={settings.roleId
-                  .replace("ROLE_", "")
+                label={settings.roleName
+                  ?.replace("ROLE_", "")
                   .replaceAll("_", " ")
                   .toLowerCase()}
                 color="primary"
                 size="small"
+                sx={{ textTransform: "capitalize" }}
               />
             )}
           </Grid>
@@ -93,11 +180,11 @@ export default function Settings({ settings }: { settings: ISettings }) {
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
               <Select fullWidth size="small">
-                <MenuItem value="Team 1">Team 1</MenuItem>
-                <MenuItem value="Team 1">Team 1</MenuItem>
-                <MenuItem value="Team 1">Team 1</MenuItem>
-                <MenuItem value="Team 1">Team 1</MenuItem>
-                <MenuItem value="Team 1">Team 1</MenuItem>
+                {data.teams.map((_team: { id: number; name: string }) => (
+                  <MenuItem value={_team.id} key={_team.id}>
+                    {_team.name}
+                  </MenuItem>
+                ))}
               </Select>
             ) : (
               <Chip
@@ -113,7 +200,18 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <FormControlLabel control={<Checkbox />} label="" />
+              <Controller
+                name="isNotifyTimesheetApproval"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox />}
+                    label=""
+                    {...field}
+                    checked={field.value}
+                  />
+                )}
+              />
             ) : (
               <Iconify
                 icon={`eva:${
@@ -127,7 +225,18 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <FormControlLabel control={<Checkbox />} label="" />
+              <Controller
+                name="isAvailableForRostering"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox />}
+                    label=""
+                    {...field}
+                    checked={field.value}
+                  />
+                )}
+              />
             ) : (
               <Iconify
                 icon={`eva:${
@@ -144,8 +253,30 @@ export default function Settings({ settings }: { settings: ISettings }) {
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
               <>
-                <FormControlLabel control={<Checkbox />} label="Client Notes" />
-                <FormControlLabel control={<Checkbox />} label="Staff Notes" />
+                <Controller
+                  name="isReadAndWriteClientPrivateNotes"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox />}
+                      label="Client Notes"
+                      {...field}
+                      checked={field.value}
+                    />
+                  )}
+                />
+                <Controller
+                  name="isReadAndWriteStaffPrivateNotes"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox />}
+                      label="Staff Notes"
+                      {...field}
+                      checked={field.value}
+                    />
+                  )}
+                />
               </>
             ) : (
               <>
@@ -185,7 +316,18 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <FormControlLabel control={<Checkbox />} label="" />
+              <Controller
+                name="isAccess"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox />}
+                    label=""
+                    {...field}
+                    checked={field.value}
+                  />
+                )}
+              />
             ) : (
               <Iconify
                 icon={`eva:${settings.isAccess ? "checkmark" : "close"}-fill`}
@@ -197,7 +339,18 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <FormControlLabel control={<Checkbox />} label="" />
+              <Controller
+                name="isAccountOwner"
+                control={control}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox />}
+                    label=""
+                    {...field}
+                    checked={field.value}
+                  />
+                )}
+              />
             ) : (
               <Iconify
                 icon={`eva:${
@@ -225,9 +378,14 @@ export default function Settings({ settings }: { settings: ISettings }) {
             >
               Cancel
             </Button>
-            <Button variant="contained" size="small">
+            <LoadingButton
+              loading={isPending}
+              variant="contained"
+              size="small"
+              onClick={handleSubmit(onSubmit)}
+            >
               Update
-            </Button>
+            </LoadingButton>
           </Stack>
         </>
       )}

@@ -13,6 +13,10 @@ import IconButton from "@mui/material/IconButton";
 import Label from "@/ui/label/label";
 import Iconify from "@/components/Iconify/Iconify";
 import { useRouter } from "next/router";
+import DeleteModal from "@/components/deleteModal/deleteModal";
+import { useMutation } from "@tanstack/react-query";
+import { deleteStaff } from "@/api/functions/staff.api";
+import { queryClient } from "pages/_app";
 
 // ----------------------------------------------------------------------
 
@@ -26,7 +30,8 @@ export default function StaffTableRow({
   address,
   employmentType,
   selected,
-  handleClick
+  handleClick,
+  index
 }: {
   id: number;
   name: string;
@@ -38,8 +43,10 @@ export default function StaffTableRow({
   employmentType: string;
   selected: boolean;
   handleClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  index: number;
 }) {
   const [open, setOpen] = useState<HTMLElement | null>(null);
+  const [deleteModal, setDeleteModal] = useState(false);
   const router = useRouter();
 
   const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -50,11 +57,19 @@ export default function StaffTableRow({
     event: React.MouseEvent<HTMLElement>,
     path?: string
   ) => {
-    if (path) {
+    if (path && path !== "backdropClick") {
       router.push(path);
     }
     setOpen(null);
   };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: deleteStaff,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user_list"] });
+      setDeleteModal(false);
+    }
+  });
 
   return (
     <>
@@ -109,16 +124,35 @@ export default function StaffTableRow({
           <Iconify icon="eva:file-text-outline" sx={{ mr: 2 }} />
           View
         </MenuItem>
-        <MenuItem onClick={handleCloseMenu}>
+        {/* <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
           Edit
-        </MenuItem>
+        </MenuItem> */}
 
-        <MenuItem onClick={handleCloseMenu} sx={{ color: "error.main" }}>
+        <MenuItem
+          onClick={(e) => {
+            setDeleteModal(true);
+            handleCloseMenu(e);
+          }}
+          sx={{ color: "error.main" }}
+          disabled={index === 0}
+        >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete
         </MenuItem>
       </Popover>
+      <DeleteModal
+        title="Delete Staff"
+        description="Are you sure, you want to delete this staff?"
+        open={deleteModal}
+        onClose={() => setDeleteModal(false)}
+        agreeBtnText="Yes, Delete"
+        declineBtnText="Not sure"
+        onAgreeBtnType="error"
+        isActionLoading={isPending}
+        onAgree={() => mutate(id)}
+        onDecline={() => setDeleteModal(false)}
+      />
     </>
   );
 }

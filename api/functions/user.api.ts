@@ -69,6 +69,11 @@ export const forgotPasswordMutatuion = async (body: forgotPasswordPayload) => {
   return res.data;
 };
 
+export const resendInvite = async (body: { email: string }) => {
+  const res = await axiosInstance.post(endpoints.auth.resend_invite, body);
+  return res.data;
+};
+
 export const resetPasswordMutation = async (body: setPasswordPayload) => {
   const res = await axiosInstance.post(endpoints.auth.reset_password, body);
   return res.data;

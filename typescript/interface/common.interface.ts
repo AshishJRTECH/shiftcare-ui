@@ -100,4 +100,19 @@ export type UserData = {
   typeOfUser: string;
 } | null;
 
+export interface complianceData {
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  lastUpdated: number;
+  downloadURL: string;
+  expiryDate: number;
+  expiry: boolean;
+  status: boolean;
+  employee: number;
+  documentSubCategory: string;
+  client: number;
+  clientDocumentCategory: string;
+}
+
 export {};

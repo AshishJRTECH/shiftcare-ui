@@ -89,12 +89,13 @@ export default function Index() {
         <DataTable
           columns={columns}
           RowComponent={UserTableRow}
-          data={data?.map((_data: IStaff) => ({
+          data={data?.map((_data: IStaff, index: number) => ({
             ..._data,
             role: _data.rolesName?.[0]
               .replace("ROLE_", "")
               .replaceAll("_", " ")
-              .toLowerCase()
+              .toLowerCase(),
+            index
           }))}
         />
         {/* </SimpleBar> */}

@@ -10,6 +10,8 @@ const validationText = {
     enter_password: "Enter password",
     passwordTooShort: "Password too short",
     company_name: "Please enter your company name",
+    notes: "Please enter a note",
+    file: "Please upload a file",
     isValidPass:
       "Password must include a number or symbol and be at least 8 characters long",
     phone: "Please enter phone number",

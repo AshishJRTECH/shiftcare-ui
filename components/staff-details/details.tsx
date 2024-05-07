@@ -20,7 +20,7 @@ import React, { SyntheticEvent, useState } from "react";
 import CameraAltIcon from "@mui/icons-material/CameraAlt";
 import Iconify from "../Iconify/Iconify";
 import { useMutation } from "@tanstack/react-query";
-import { updateProfilePhoto } from "@/api/functions/staff.api";
+import { updateProfilePhoto, updateStaff } from "@/api/functions/staff.api";
 import VisuallyHiddenInput from "@/ui/VisuallyHiddenInput/VisuallyHiddenInput";
 import { useParams } from "next/navigation";
 import { queryClient } from "pages/_app";
@@ -29,13 +29,15 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
 import validationText from "@/json/messages/validationText";
 import { yupResolver } from "@hookform/resolvers/yup";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
 import EmailIcon from "@mui/icons-material/Email";
 import InfoIcon from "@mui/icons-material/Info";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import { LoadingButton } from "@mui/lab";
+import languages from "language-list";
 
 const StyledDetailsBox = styled(Paper)`
   box-shadow: rgba(145, 158, 171, 0.2) 0px 5px 5px -3px,
@@ -57,7 +59,7 @@ const StyledDetailsBox = styled(Paper)`
 
   .MuiBadge-badge {
     height: auto;
-    padding: 7px 6px 6px 7px;
+    padding: 7px 7px 6px 7px;
     border-radius: 50%;
     cursor: pointer;
     @media (max-width: 900px) {
@@ -109,12 +111,28 @@ const schema = yup.object().shape({
     .string()
     .trim()
     .required(validationText.error.employment_type),
-  address: yup.string().trim().required(validationText.error.address)
+  address: yup.string().trim().required(validationText.error.address),
+  languagesSpoken: yup.array().of(yup.string())
 });
+
+interface editStaffProfile {
+  salutation: string;
+  name: string;
+  email: string;
+  mobileNo: string;
+  phoneNo: string;
+  gender: string;
+  dateOfBirth: Dayjs;
+  employmentType: string;
+  address: string;
+  languagesSpoken: string[];
+}
 
 export default function Details({ staff }: { staff: IStaff }) {
   const [edit, setEdit] = useState(false);
   const [salutation, setSalutation] = useState(Boolean(staff?.salutation));
+
+  const language_list = languages();
 
   const { id } = useParams();
 
@@ -129,19 +147,35 @@ export default function Details({ staff }: { staff: IStaff }) {
       gender: staff?.gender,
       dateOfBirth: dayjs(staff?.dateOfBirth),
       employmentType: staff?.employmentType,
-      address: staff?.address
+      address: staff?.address,
+      languagesSpoken: staff.languagesSpoken || []
     }
   });
 
-  const { mutate, isPending } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: updateProfilePhoto,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["staff", id] })
+  });
+
+  const { mutate: updateProfile, isPending } = useMutation({
+    mutationFn: updateStaff,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["staff", id] });
+      setEdit(false);
+    }
   });
 
   const onPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formData = new FormData();
     formData.append("file", e.target.files![0]);
     mutate({ file: formData, user: id.toString() });
+  };
+
+  const onSubmit = (data: editStaffProfile) => {
+    updateProfile({
+      id: id as string,
+      data
+    });
   };
 
   return (
@@ -441,6 +475,61 @@ export default function Details({ staff }: { staff: IStaff }) {
                   }}
                 />
               </Grid>
+              <Grid item lg={3} md={12} sm={12} xs={12}>
+                <Typography variant="body1">Languages Spoken:</Typography>
+              </Grid>
+              <Grid item lg={9} md={12} sm={12} xs={12}>
+                <Controller
+                  control={methods.control}
+                  name="languagesSpoken"
+                  render={({
+                    field: { value, onChange },
+                    fieldState: { error, invalid }
+                  }) => (
+                    <Box>
+                      <Select
+                        fullWidth
+                        displayEmpty
+                        renderValue={
+                          value?.length !== 0
+                            ? undefined
+                            : () => "Select Languages"
+                        }
+                        multiple
+                        value={value}
+                        onChange={(e) => {
+                          const _value = e.target.value;
+                          onChange(
+                            typeof _value === "string"
+                              ? _value.split(",")
+                              : _value
+                          );
+                        }}
+                        size="small"
+                      >
+                        {language_list
+                          .getData()
+                          .map(
+                            (_language: { language: string; code: string }) => (
+                              <MenuItem
+                                value={_language.language}
+                                key={_language.code}
+                                sx={{ fontSize: "14px" }}
+                              >
+                                {_language.language}
+                              </MenuItem>
+                            )
+                          )}
+                      </Select>
+                      {invalid && (
+                        <FormHelperText sx={{ color: "#FF5630" }}>
+                          {error?.message}
+                        </FormHelperText>
+                      )}
+                    </Box>
+                  )}
+                />
+              </Grid>
             </Grid>
           </FormProvider>
         </Box>
@@ -579,9 +668,14 @@ export default function Details({ staff }: { staff: IStaff }) {
             >
               Cancel
             </Button>
-            <Button variant="contained" size="small">
+            <LoadingButton
+              variant="contained"
+              size="small"
+              loading={isPending}
+              onClick={methods.handleSubmit(onSubmit)}
+            >
               Update
-            </Button>
+            </LoadingButton>
           </Stack>
         </>
       )}

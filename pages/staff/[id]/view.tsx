@@ -1,14 +1,16 @@
 import {
+  getNotes,
   getStaff,
   getStaffCompliance,
   getStaffSettings
 } from "@/api/functions/staff.api";
-import { getLastSignin } from "@/api/functions/user.api";
+import { getLastSignin, resendInvite } from "@/api/functions/user.api";
 import Iconify from "@/components/Iconify/Iconify";
 import Compliance from "@/components/staff-compliance/compliance";
 import Details from "@/components/staff-details/details";
 import Notes from "@/components/staff-notes/notes";
 import Settings from "@/components/staff-settings/settings";
+import { complianceData } from "@/interface/common.interface";
 import { ISettings, IStaff } from "@/interface/staff.interfaces";
 import assets from "@/json/assets";
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
@@ -24,7 +26,12 @@ import {
   Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { useIsFetching, useQueries, useQuery } from "@tanstack/react-query";
+import {
+  useIsFetching,
+  useMutation,
+  useQueries,
+  useQuery
+} from "@tanstack/react-query";
 import moment from "moment";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -40,8 +47,11 @@ const StyledViewPage = styled(Grid)`
 interface QueryResult {
   staff: IStaff;
   settings: ISettings;
-  compliance: any;
-  last_login: number;
+  compliance: complianceData[];
+  last_login: { "Last Login": number };
+  notes: {
+    notes: string;
+  };
   isLoading: boolean;
 }
 
@@ -66,6 +76,10 @@ export default function Index() {
       {
         queryKey: ["last-login", id],
         queryFn: () => getLastSignin(id as string)
+      },
+      {
+        queryKey: ["notes", id],
+        queryFn: () => getNotes(id as string)
       }
     ],
     combine: (results) => {
@@ -74,11 +88,13 @@ export default function Index() {
         settings: results[1].data,
         compliance: results[2].data,
         last_login: results[3].data,
+        notes: results[4].data,
         isLoading:
           results[0].isLoading ||
           results[1].isLoading ||
           results[2].isLoading ||
-          results[3].isLoading
+          results[3].isLoading ||
+          results[4].isLoading
       };
     }
   });
@@ -90,6 +106,10 @@ export default function Index() {
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: resendInvite
+  });
 
   const open = Boolean(anchorEl);
 
@@ -226,7 +246,7 @@ export default function Index() {
               <Details staff={data.staff} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Compliance />
+              <Compliance compliance_data={data.compliance} />
             </Grid>
           </Grid>
         </Grid>
@@ -242,9 +262,12 @@ export default function Index() {
                 >
                   <Typography variant="h5">Login</Typography>
                   <Typography variant="body2">
-                    {moment().diff(data.last_login, "hours") < 23
-                      ? moment(data.last_login).fromNow()
-                      : moment(data.last_login).calendar(null, {
+                    {data.last_login["Last Login"] ? (
+                      moment().diff(data.last_login["Last Login"], "hours") <
+                      23 ? (
+                        moment(data.last_login["Last Login"]).fromNow()
+                      ) : (
+                        moment(data.last_login["Last Login"]).calendar(null, {
                           sameDay: (now) =>
                             `[Today], ${moment(now?.toString()).fromNow()}`,
                           nextDay: "[Tomorrow]",
@@ -252,7 +275,18 @@ export default function Index() {
                           lastDay: "[Yesterday], hh:mm a",
                           lastWeek: "[Last] dddd, hh:mm a",
                           sameElse: "DD/MM/YYYY hh:mm:a"
-                        })}
+                        })
+                      )
+                    ) : (
+                      <Button
+                        size="small"
+                        variant="outlined"
+                        color="error"
+                        onClick={() => mutate({ email: data.staff.email })}
+                      >
+                        Resend Invitation
+                      </Button>
+                    )}
                   </Typography>
                 </Stack>
               </StyledPaper>
@@ -261,7 +295,7 @@ export default function Index() {
               <Settings settings={data.settings} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Notes />
+              <Notes note={data.notes.notes} />
             </Grid>
           </Grid>
         </Grid>

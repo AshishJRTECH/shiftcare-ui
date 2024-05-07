@@ -32,11 +32,13 @@ import {
 export default function DataTable({
   data,
   columns,
-  RowComponent
+  RowComponent,
+  noCheckbox
 }: {
   data: any[];
   columns: HeadLabelType[];
   RowComponent: React.ElementType;
+  noCheckbox?: boolean;
 }) {
   const ref = useRef(null);
   const [page, setPage] = useState(0);
@@ -136,6 +138,7 @@ export default function DataTable({
               onRequestSort={handleSort}
               onSelectAllClick={handleSelectAllClick}
               headLabel={columns}
+              noCheckbox={noCheckbox}
             />
             <TableBody>
               {dataFiltered

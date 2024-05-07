@@ -1,3 +1,4 @@
+import { complianceData } from "@/interface/common.interface";
 import StyledPaper from "@/ui/Paper/Paper";
 import Scrollbar from "@/ui/scrollbar";
 import styled from "@emotion/styled";
@@ -14,6 +15,7 @@ import {
   Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
+import moment from "moment";
 import React, { useRef } from "react";
 
 const StyledBox = styled(Box)`
@@ -24,20 +26,74 @@ const StyledBox = styled(Box)`
   }
 `;
 
-function ComplianceTableRow() {
+function ComplianceTableRow({
+  fileName,
+  fileType,
+  fileSize,
+  lastUpdated,
+  downloadURL,
+  expiryDate,
+  expiry,
+  status,
+  employee,
+  documentSubCategory,
+  client,
+  clientDocumentCategory
+}: complianceData) {
+  const getStatus = (): {
+    status: string;
+    color:
+      | "error"
+      | "success"
+      | "warning"
+      | "default"
+      | "primary"
+      | "secondary"
+      | "info";
+  } => {
+    if (expiry) {
+      return {
+        status: "Expired",
+        color: "error"
+      };
+    }
+    if (status && !expiry) {
+      return {
+        status: "Active",
+        color: "success"
+      };
+    }
+    return {
+      status: "Not Specified",
+      color: "warning"
+    };
+  };
+
   return (
     <TableRow>
-      <TableCell>COVID-19 Compliance</TableCell>
-      <TableCell>-</TableCell>
-      <TableCell>-</TableCell>
+      <TableCell>{documentSubCategory}</TableCell>
       <TableCell>
-        <Chip label="Not Specified" color="warning" variant="outlined" />
+        {expiryDate ? moment(expiryDate).format("LL") : "-"}
+      </TableCell>
+      <TableCell>
+        {lastUpdated ? moment(lastUpdated).format("LL") : "-"}
+      </TableCell>
+      <TableCell>
+        <Chip
+          label={getStatus().status}
+          color={getStatus().color}
+          variant="outlined"
+        />
       </TableCell>
     </TableRow>
   );
 }
 
-export default function Compliance() {
+export default function Compliance({
+  compliance_data
+}: {
+  compliance_data: complianceData[];
+}) {
   const ref = useRef(null);
 
   return (
@@ -65,11 +121,14 @@ export default function Compliance() {
                 </TableRow>
               </TableHead>
               <TableBody>
+                {compliance_data.map((_data, index) => {
+                  return <ComplianceTableRow {..._data} key={index} />;
+                })}
+                {/* <ComplianceTableRow />
                 <ComplianceTableRow />
                 <ComplianceTableRow />
                 <ComplianceTableRow />
-                <ComplianceTableRow />
-                <ComplianceTableRow />
+                <ComplianceTableRow /> */}
               </TableBody>
             </Table>
           </TableContainer>

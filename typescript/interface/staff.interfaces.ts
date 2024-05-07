@@ -37,7 +37,8 @@ export interface IStaff {
 
 export interface ISettings {
   id: number;
-  roleId: string;
+  roleId: number;
+  roleName: string;
   teamIds: number[];
   isNotifyTimesheetApproval: boolean;
   isSubscribeToNotifications: boolean;
@@ -48,4 +49,29 @@ export interface ISettings {
   isAccess: boolean;
   isAccountOwner: boolean;
   employeeId: number;
+}
+
+export interface IUpdateSettings {
+  roleId: number;
+  teamIds: number[];
+  isNotifyTimesheetApproval: boolean;
+  isSubscribeToNotifications: boolean;
+  subscribedEmailCategories: number[];
+  isAvailableForRostering: boolean;
+  isReadAndWriteClientPrivateNotes: boolean;
+  isReadAndWriteStaffPrivateNotes: boolean;
+  isAccess: boolean;
+  isAccountOwner: boolean;
+}
+
+export interface documentInterface {
+  id: number;
+  fileName: string;
+  fileType: string;
+  data: string;
+  downloadURL: string;
+  lastUpdated: number;
+  expiryDate: number;
+  expiry: boolean;
+  status: boolean;
 }

@@ -16,7 +16,8 @@ export const endpoints = {
     forgot_password: "/auth/forgot-password",
     reset_password: "/auth/reset-password",
     change_password: "/auth/change-password",
-    last_signin: (id: string) => `/auth/${id}/last-signin`
+    last_signin: (id: string) => `/auth/${id}/last-signin`,
+    resend_invite: "/auth/verification-link"
   },
   cms: {
     about: "/aboutpolicy/details",
@@ -28,7 +29,20 @@ export const endpoints = {
     getStaff: "/user",
     update_profile_photo: "/user/photo",
     get_staff_settings: "/employeeSettings/employees",
-    staff_compliance: "/document-subcategories/by-category"
+    staff_compliance: (id: string) =>
+      `/document/employees/${id}/documents/by-category/3`,
+    delete_staff: "/user/soft",
+    get_note: "/user/get-notes",
+    update_notes: (id: string) => `/user/${id}/notes`,
+    update_staff: "/user/editEmployee",
+    update_settings: "/employeeSettings/employees",
+    get_archieved_staffs: "/user/employees/by-company/soft-deleted",
+    unarchive_staff: "/user/unarchived",
+    get_all_documents: "/document/all",
+    upload_documents: "/document/upload"
+  },
+  teams: {
+    get_all: "/teams/allTeams"
   },
   user: {
     profile: "/user/profile",
@@ -50,5 +64,8 @@ export const sucessNotificationEndPoints = [
   endpoints.user.profile_photo,
   endpoints.user.update,
   endpoints.staff.new,
-  endpoints.staff.update_profile_photo
+  endpoints.staff.update_profile_photo,
+  endpoints.staff.update_staff,
+  endpoints.auth.resend_invite,
+  endpoints.staff.upload_documents
 ];

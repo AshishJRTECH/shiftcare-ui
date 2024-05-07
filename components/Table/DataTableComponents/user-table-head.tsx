@@ -26,7 +26,8 @@ export default function UserTableHead({
   headLabel,
   numSelected,
   onRequestSort,
-  onSelectAllClick
+  onSelectAllClick,
+  noCheckbox
 }: {
   order: TableSortLabelOwnProps["direction"];
   orderBy: string;
@@ -35,6 +36,7 @@ export default function UserTableHead({
   numSelected: number;
   onRequestSort: (event: React.MouseEvent<HTMLElement>, p: string) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  noCheckbox?: boolean;
 }) {
   const onSort =
     (property: string) => (event: React.MouseEvent<HTMLElement>) => {
@@ -44,13 +46,15 @@ export default function UserTableHead({
   return (
     <TableHead>
       <TableRow>
-        <TableCell padding="checkbox">
-          <Checkbox
-            indeterminate={numSelected > 0 && numSelected < rowCount}
-            checked={rowCount > 0 && numSelected === rowCount}
-            onChange={onSelectAllClick}
-          />
-        </TableCell>
+        {!noCheckbox && (
+          <TableCell padding="checkbox">
+            <Checkbox
+              indeterminate={numSelected > 0 && numSelected < rowCount}
+              checked={rowCount > 0 && numSelected === rowCount}
+              onChange={onSelectAllClick}
+            />
+          </TableCell>
+        )}
 
         {headLabel.map((headCell) => (
           <TableCell

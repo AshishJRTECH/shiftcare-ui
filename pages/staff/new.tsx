@@ -181,7 +181,7 @@ export default function Index() {
                   <Typography variant="caption">No Access</Typography>
                   <Tooltip
                     placement="top-start"
-                    title="User will not be able to access ShiftCare. This user will not be counted towards subscription limit either."
+                    title="User will not be able to access. This user will not be counted towards subscription limit either."
                   >
                     <InfoIcon fontSize="small" />
                   </Tooltip>
