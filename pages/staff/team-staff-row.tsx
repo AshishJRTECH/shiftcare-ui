@@ -15,36 +15,19 @@ import Iconify from "@/components/Iconify/Iconify";
 import { useRouter } from "next/router";
 import DeleteModal from "@/components/deleteModal/deleteModal";
 import { useMutation } from "@tanstack/react-query";
-import { deleteStaff } from "@/api/functions/staff.api";
+import { deleteStaff, deleteTeam } from "@/api/functions/staff.api";
 import { queryClient } from "pages/_app";
+import { StaffTeam } from "@/interface/staff.interfaces";
+import { Chip } from "@mui/material";
 
 // ----------------------------------------------------------------------
 
-export default function StaffTableRow({
+export default function TeamStaffRow({
   id,
-  name,
-  gender,
-  role,
-  email,
-  mobileNo,
-  address,
-  employmentType,
-  selected,
-  handleClick,
-  index
-}: {
-  id: number;
-  name: string;
-  gender: string;
-  role: string;
-  email: string;
-  mobileNo: string;
-  address: string;
-  employmentType: string;
-  selected: boolean;
-  handleClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  index: number;
-}) {
+  teamName,
+  employees,
+  employeeCount
+}: StaffTeam) {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [deleteModal, setDeleteModal] = useState(false);
   const router = useRouter();
@@ -64,44 +47,34 @@ export default function StaffTableRow({
   };
 
   const { mutate, isPending } = useMutation({
-    mutationFn: deleteStaff,
+    mutationFn: deleteTeam,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["user_list"] });
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
       setDeleteModal(false);
     }
   });
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
-          <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
-
+      <TableRow hover tabIndex={-1}>
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             {/* <Avatar alt={name} src={avatarUrl} /> */}
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {teamName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{gender}</TableCell>
+        <TableCell>{employeeCount}</TableCell>
 
-        <TableCell>{role}</TableCell>
-        <TableCell>{email}</TableCell>
-        <TableCell>{mobileNo}</TableCell>
-        <TableCell>{address}</TableCell>
-        <TableCell>{employmentType}</TableCell>
-
-        {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
-
-        <TableCell>
-          <Label color={(status === "banned" && "error") || "success"}>
-            {status}
-          </Label>
-        </TableCell> */}
+        <TableCell sx={{ maxWidth: "250px" }}>
+          <Stack direction="row" alignItems="center" gap={1} flexWrap="wrap">
+            {employees.map((_employee: { id: number; name: string }) => (
+              <Chip label={_employee.name} color="default" key={_employee.id} />
+            ))}
+          </Stack>
+        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenMenu}>
@@ -122,9 +95,9 @@ export default function StaffTableRow({
           }
         }}
       >
-        <MenuItem onClick={(e) => handleCloseMenu(e, `/staff/${id}/view`)}>
-          <Iconify icon="eva:file-text-outline" sx={{ mr: 2 }} />
-          View
+        <MenuItem onClick={(e) => handleCloseMenu(e, `/staff/team/${id}`)}>
+          <Iconify icon="mingcute:edit-line" sx={{ mr: 2 }} />
+          Edit
         </MenuItem>
         {/* <MenuItem onClick={handleCloseMenu}>
           <Iconify icon="eva:edit-fill" sx={{ mr: 2 }} />
@@ -137,7 +110,6 @@ export default function StaffTableRow({
             handleCloseMenu(e);
           }}
           sx={{ color: "error.main" }}
-          disabled={index === 0}
         >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete

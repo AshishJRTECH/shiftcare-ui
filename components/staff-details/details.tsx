@@ -187,9 +187,11 @@ export default function Details({ staff }: { staff: IStaff }) {
         sx={{ paddingBottom: "15px" }}
       >
         <Typography variant="h5">Demographic Detail</Typography>
-        <Button size="small" onClick={() => setEdit(true)}>
-          Edit
-        </Button>
+        {!edit && (
+          <Button size="small" onClick={() => setEdit(true)}>
+            Edit
+          </Button>
+        )}
       </Stack>
       <Divider />
       {edit ? (

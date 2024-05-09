@@ -143,16 +143,18 @@ export default function DataTable({
             <TableBody>
               {dataFiltered
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
-                  <RowComponent
-                    key={row.id}
-                    {...row}
-                    selected={selected.indexOf(row.id) !== -1}
-                    handleClick={(event: React.ChangeEvent<HTMLInputElement>) =>
-                      handleClick(event, row.id)
-                    }
-                  />
-                ))}
+                .map((row) => {
+                  return (
+                    <RowComponent
+                      key={row.id}
+                      {...row}
+                      selected={selected.indexOf(row.id) !== -1}
+                      handleClick={(
+                        event: React.ChangeEvent<HTMLInputElement>
+                      ) => handleClick(event, row.id)}
+                    />
+                  );
+                })}
 
               <TableEmptyRows
                 height={77}

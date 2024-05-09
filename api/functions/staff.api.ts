@@ -1,6 +1,7 @@
 import {
   ISettings,
-  IUpdateSettings
+  IUpdateSettings,
+  StaffTeamBody
 } from "./../../typescript/interface/staff.interfaces";
 import { IStaffPost } from "@/interface/staff.interfaces";
 import axiosInstance from "../axiosInstance";
@@ -106,5 +107,48 @@ export const getAllDocuments = async () => {
 
 export const uploadDocument = async (body: FormData) => {
   const res = await axiosInstance.post(endpoints.staff.upload_documents, body);
+  return res.data;
+};
+
+export const editDocument = async (body: {
+  id: number;
+  fileData: FormData;
+}) => {
+  const res = await axiosInstance.put(
+    `${endpoints.staff.edit_document}/${body.id}`,
+    body.fileData
+  );
+  return res.data;
+};
+
+export const deleteDocument = async (id: number) => {
+  const res = await axiosInstance.delete(
+    `${endpoints.staff.delete_document}/${id}`
+  );
+  return res.data;
+};
+
+export const getTeam = async (id: string) => {
+  const res = await axiosInstance.get(`${endpoints.teams.get_team}/${id}`);
+  return res.data;
+};
+
+export const createTeam = async (body: StaffTeamBody) => {
+  const res = await axiosInstance.post(endpoints.teams.create_team, body);
+  return res.data;
+};
+
+export const editTeam = async (body: { id: string; data: StaffTeamBody }) => {
+  const res = await axiosInstance.put(
+    `${endpoints.teams.edit_team}/${body.id}`,
+    body.data
+  );
+  return res.data;
+};
+
+export const deleteTeam = async (id: number) => {
+  const res = await axiosInstance.delete(
+    `${endpoints.teams.delete_team}/${id}`
+  );
   return res.data;
 };

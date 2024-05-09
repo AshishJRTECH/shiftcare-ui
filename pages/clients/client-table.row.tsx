@@ -20,30 +20,38 @@ import { queryClient } from "pages/_app";
 
 // ----------------------------------------------------------------------
 
-export default function StaffTableRow({
+export default function ClientTableRow({
   id,
-  name,
+  displayName,
   gender,
-  role,
-  email,
+  age,
+  ndis,
+  recipient_id,
   mobileNo,
+  phoneNo,
+  email,
   address,
-  employmentType,
+  type,
+  pricebook,
+  review,
   selected,
-  handleClick,
-  index
+  handleClick
 }: {
   id: number;
-  name: string;
+  displayName: string;
   gender: string;
-  role: string;
-  email: string;
+  age: string;
+  ndis: string;
+  recipient_id: string;
   mobileNo: string;
+  phoneNo: string;
+  email: string;
   address: string;
-  employmentType: string;
+  type: string;
+  pricebook: any;
+  review: number;
   selected: boolean;
   handleClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  index: number;
 }) {
   const [open, setOpen] = useState<HTMLElement | null>(null);
   const [deleteModal, setDeleteModal] = useState(false);
@@ -73,27 +81,32 @@ export default function StaffTableRow({
 
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
-        <TableCell padding="checkbox">
+      <TableRow hover tabIndex={-1}>
+        {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
-        </TableCell>
+        </TableCell> */}
 
         <TableCell component="th" scope="row">
           <Stack direction="row" alignItems="center" spacing={2}>
             {/* <Avatar alt={name} src={avatarUrl} /> */}
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {displayName}
             </Typography>
           </Stack>
         </TableCell>
 
         <TableCell>{gender}</TableCell>
 
-        <TableCell>{role}</TableCell>
-        <TableCell>{email}</TableCell>
+        <TableCell>{age}</TableCell>
+        <TableCell>{ndis}</TableCell>
+        <TableCell>{recipient_id}</TableCell>
         <TableCell>{mobileNo}</TableCell>
+        <TableCell>{phoneNo}</TableCell>
+        <TableCell>{email}</TableCell>
         <TableCell>{address}</TableCell>
-        <TableCell>{employmentType}</TableCell>
+        <TableCell>{type}</TableCell>
+        <TableCell>{pricebook}</TableCell>
+        <TableCell>{review}</TableCell>
 
         {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 
@@ -137,7 +150,6 @@ export default function StaffTableRow({
             handleCloseMenu(e);
           }}
           sx={{ color: "error.main" }}
-          disabled={index === 0}
         >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete

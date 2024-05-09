@@ -38,6 +38,7 @@ import {
 } from "@/api/functions/user.api";
 import moment from "moment";
 import dayjs, { Dayjs } from "dayjs";
+import { queryClient } from "pages/_app";
 
 const StyledPaper = styled(Paper)`
   border-radius: 16px;
@@ -218,7 +219,7 @@ export default function Index() {
     useMutation({
       mutationFn: updateProfilePhoto,
       onSuccess: () => {
-        user.refetch();
+        queryClient.invalidateQueries({ queryKey: ["userdetails"] });
       }
     });
 

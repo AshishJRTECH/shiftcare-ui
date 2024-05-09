@@ -49,7 +49,7 @@ export default function Sidebar({ openNav, onCloseNav }: SidebarProps) {
         bgcolor: (theme) => alpha(theme.palette.grey[500], 0.12)
       }}
     >
-      <Avatar src="" alt="photoURL">
+      <Avatar src={user?.data?.data?.photoDownloadURL} alt="photoURL">
         {user?.data?.data?.name?.charAt(0)}
       </Avatar>
 

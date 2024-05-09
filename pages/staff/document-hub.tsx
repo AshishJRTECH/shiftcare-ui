@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import StaffDocumentRow from "./staff-document-row";
+import { queryClient } from "pages/_app";
 
 const StyledPage = styled(Box)`
   padding: 20px 10px;
@@ -23,10 +24,10 @@ const schema = yup.object().shape({
   file: yup
     .mixed()
     .required(validationText.error.file)
-    // .test("fileType", "Invalid Format", (value: File) => {
-    //   console.log(value.type, value.name);
-    //   return value && value.type?.includes("application/");
-    // })
+    .test("fileType", "Invalid Format", (value: File) => {
+      console.log(value.type, value.name);
+      return value && value.type?.includes("application/");
+    })
     .test("fileSize", "File size must not exceed 15 MB", (value: File) => {
       console.log(value, value.size, 15 * 1024 * 1024);
       return value && value.size <= 15 * 1024 * 1024;
@@ -34,17 +35,12 @@ const schema = yup.object().shape({
 });
 
 export default function Archived() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, refetch } = useQuery({
     queryKey: ["all_documents_list"],
     queryFn: getAllDocuments
   });
 
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors }
-  } = useForm({
+  const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
       file: null
@@ -52,7 +48,8 @@ export default function Archived() {
   });
 
   const { mutate, isPending } = useMutation({
-    mutationFn: uploadDocument
+    mutationFn: uploadDocument,
+    onSuccess: refetch
   });
 
   const columns = [
@@ -75,12 +72,6 @@ export default function Archived() {
     formData.append("file", data.file);
     mutate(formData);
   };
-
-  useEffect(() => {
-    if (watch("file")) {
-      handleSubmit(onSubmit)();
-    }
-  }, [watch("file")]);
 
   return (
     <DashboardLayout isLoading={isLoading}>
@@ -111,7 +102,10 @@ export default function Archived() {
                 render={({ field: { onChange } }) => (
                   <VisuallyHiddenInput
                     type="file"
-                    onChange={onChange}
+                    onChange={(e) => {
+                      onChange(e.target.files![0]);
+                      handleSubmit(onSubmit)();
+                    }}
                     accept="application/*"
                   />
                 )}

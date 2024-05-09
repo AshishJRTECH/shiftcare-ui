@@ -26,8 +26,8 @@ function CustomInput(props: CustomInputProps) {
             </InputLabel>
           )}
           <TextField
-            {...props}
             {...field}
+            {...props}
             label=""
             fullWidth
             error={invalid}

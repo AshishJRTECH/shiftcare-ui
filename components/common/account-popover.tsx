@@ -66,7 +66,7 @@ const AccountPopover: React.FC = () => {
         }}
       >
         <Avatar
-          src=""
+          src={user?.data?.data?.photoDownloadURL}
           alt="test"
           sx={{
             width: 36,

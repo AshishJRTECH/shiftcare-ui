@@ -35,10 +35,23 @@ export interface IStaff {
   deleted: boolean;
 }
 
+export interface StaffTeam {
+  id: number;
+  teamName: string;
+  employees: { id: number; name: string }[];
+  employeeCount: number;
+}
+
+export interface StaffTeamBody {
+  teamName: string;
+  employeeIds: number[];
+}
+
 export interface ISettings {
   id: number;
   roleId: number;
   roleName: string;
+  teams: StaffTeam[];
   teamIds: number[];
   isNotifyTimesheetApproval: boolean;
   isSubscribeToNotifications: boolean;

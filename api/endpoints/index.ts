@@ -39,10 +39,19 @@ export const endpoints = {
     get_archieved_staffs: "/user/employees/by-company/soft-deleted",
     unarchive_staff: "/user/unarchived",
     get_all_documents: "/document/all",
-    upload_documents: "/document/upload"
+    upload_documents: "/document/upload",
+    edit_document: "/document/updateDocument",
+    delete_document: "/document"
+  },
+  client: {
+    get_all: "/client/getAll/by-company"
   },
   teams: {
-    get_all: "/teams/allTeams"
+    get_all: "/teams/allTeams",
+    create_team: "/teams/create",
+    get_team: "/teams",
+    edit_team: "/teams",
+    delete_team: "/teams"
   },
   user: {
     profile: "/user/profile",
@@ -67,5 +76,10 @@ export const sucessNotificationEndPoints = [
   endpoints.staff.update_profile_photo,
   endpoints.staff.update_staff,
   endpoints.auth.resend_invite,
-  endpoints.staff.upload_documents
+  endpoints.staff.upload_documents,
+  endpoints.staff.delete_document,
+  endpoints.staff.edit_document,
+  endpoints.teams.create_team,
+  endpoints.teams.delete_team,
+  endpoints.teams.edit_team
 ];

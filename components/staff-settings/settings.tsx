@@ -179,20 +179,65 @@ export default function Settings({ settings }: { settings: ISettings }) {
           </Grid>
           <Grid item lg={7} md={6} sm={12} xs={12}>
             {edit ? (
-              <Select fullWidth size="small">
-                {data.teams.map((_team: { id: number; name: string }) => (
-                  <MenuItem value={_team.id} key={_team.id}>
-                    {_team.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            ) : (
-              <Chip
-                variant="outlined"
-                label="Team 1"
-                color="primary"
-                size="small"
+              <Controller
+                name="teamIds"
+                control={control}
+                render={({
+                  field: { value, onChange },
+                  fieldState: { invalid, error }
+                }) => (
+                  <Box>
+                    <Select
+                      fullWidth
+                      size="small"
+                      displayEmpty
+                      renderValue={
+                        value?.length !== 0 ? undefined : () => "Select Teams"
+                      }
+                      multiple
+                      value={value}
+                      onChange={(e) => {
+                        const _value = e.target.value;
+                        onChange(
+                          typeof _value === "string"
+                            ? _value.split(",")
+                            : _value
+                        );
+                      }}
+                    >
+                      {data.teams.map(
+                        (_team: { id: number; teamName: string }) => (
+                          <MenuItem value={_team.id} key={_team.id}>
+                            {_team.teamName}
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                    {invalid && (
+                      <FormHelperText sx={{ color: "#FF5630" }}>
+                        {error?.message}
+                      </FormHelperText>
+                    )}
+                  </Box>
+                )}
               />
+            ) : (
+              <Stack
+                direction="row"
+                alignItems="center"
+                gap={1}
+                flexWrap="wrap"
+              >
+                {settings.teams.map((_team) => (
+                  <Chip
+                    variant="outlined"
+                    label={_team.teamName}
+                    color="primary"
+                    size="small"
+                    key={_team.id}
+                  />
+                ))}
+              </Stack>
             )}
           </Grid>
           <Grid item lg={5} md={6} sm={12} xs={12}>
