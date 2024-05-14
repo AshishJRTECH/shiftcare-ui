@@ -28,7 +28,7 @@ import styled from "@emotion/styled";
 import * as yup from "yup";
 import validationText from "@/json/messages/validationText";
 import { yupResolver } from "@hookform/resolvers/yup";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import languages from "language-list";
 import { useMutation } from "@tanstack/react-query";
 import { addClient } from "@/api/functions/client.api";
@@ -156,7 +156,9 @@ export default function Index() {
 
   console.log(methods.formState.errors);
 
-  const onSubmit = (data: ClientBody) => {
+  const onSubmit = (
+    data: Omit<ClientBody, "dateOfBirth"> & { dateOfBirth: Dayjs | null }
+  ) => {
     mutate({ ...data, dateOfBirth: dayjs(data.dateOfBirth).toISOString() });
   };
 

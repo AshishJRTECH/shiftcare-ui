@@ -5,7 +5,7 @@ export interface ClientBody {
   firstName: string;
   middleName: string;
   lastName: string;
-  displayName: string;
+  displayName?: string;
   gender: string;
   dateOfBirth: string;
   apartmentNumber: string;
@@ -16,6 +16,6 @@ export interface ClientBody {
   religion: string;
   maritalStatus: string;
   nationality: string;
-  language: string;
+  language: string[];
   prospect: boolean;
 }
