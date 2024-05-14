@@ -44,7 +44,8 @@ export const endpoints = {
     delete_document: "/document"
   },
   client: {
-    get_all: "/client/getAll/by-company"
+    get_all: "/client/getAll/by-company",
+    add_client: "/client/add"
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -81,5 +82,6 @@ export const sucessNotificationEndPoints = [
   endpoints.staff.edit_document,
   endpoints.teams.create_team,
   endpoints.teams.delete_team,
-  endpoints.teams.edit_team
+  endpoints.teams.edit_team,
+  endpoints.client.add_client
 ];

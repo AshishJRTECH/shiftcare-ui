@@ -42,7 +42,12 @@ const validationText = {
     dob: "Please enter date of birth.",
     employment_type: "Please select employment type.",
     address: "Please enter address.",
-    role: "Please select a role."
+    role: "Please select a role.",
+    apartment: "Please Enter Unit/Apartment Number",
+    religion: "Please Enter you religion",
+    maritalStatus: "Please Select a Marital status",
+    nationality: "Please enter you nationality",
+    language: "Please Select a language"
   },
   warn: {},
   info: {}

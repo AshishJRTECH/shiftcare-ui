@@ -102,6 +102,7 @@ export default function List() {
           columns={columns}
           RowComponent={ClientTableRow}
           data={data}
+          noCheckbox
         />
         {/* </SimpleBar> */}
       </StyledClientPage>
