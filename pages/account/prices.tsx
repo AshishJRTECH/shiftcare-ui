@@ -29,7 +29,7 @@ export default function Prices() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["price-books", router.query.page],
-    queryFn: () => getPriceBooks(router.query.page as string)
+    queryFn: () => getPriceBooks((router.query.page as string) || "1")
   });
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Prices() {
       router.push({ query: { page: data?.currentPage } }, undefined, {
         shallow: true
       });
-    } else if (router.query.page && data.priceBooks.length == 0) {
+    } else if (router.query.page && data?.priceBooks.length == 0) {
       router.push(
         {
           query: {
