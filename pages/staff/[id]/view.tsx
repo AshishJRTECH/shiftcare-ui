@@ -143,6 +143,7 @@ export default function Index() {
           justifyContent="space-between"
           alignItems="center"
           sx={{ marginTop: "20px" }}
+          gap={3}
         >
           <Stack direction="row" alignItems="center" gap={2}>
             <Avatar

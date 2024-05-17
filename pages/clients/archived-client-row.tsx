@@ -18,28 +18,25 @@ import { useMutation } from "@tanstack/react-query";
 import { deleteStaff, unarchiveStaff } from "@/api/functions/staff.api";
 import { queryClient } from "pages/_app";
 import { Button } from "@mui/material";
+import { unarchiveClient } from "@/api/functions/client.api";
+import { IClient } from "@/interface/client.interface";
 
 // ----------------------------------------------------------------------
 
-export default function ArchivedStaffRow({
+export default function ArchivedClientRow({
   id,
-  name,
-  role,
+  displayName,
+  ndisNumber,
+  agedCareRecipientID,
+  contactNumber,
   email,
-  mobileNo,
-  address
-}: {
-  id: number;
-  name: string;
-  role: string;
-  email: string;
-  mobileNo: string;
-  address: string;
-}) {
+  address,
+  priceBookName
+}: IClient) {
   const { mutate, isPending } = useMutation({
-    mutationFn: unarchiveStaff,
+    mutationFn: unarchiveClient,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["archived_list"] });
+      queryClient.invalidateQueries({ queryKey: ["archived_list_client"] });
     }
   });
 
@@ -54,15 +51,17 @@ export default function ArchivedStaffRow({
           <Stack direction="row" alignItems="center" spacing={2}>
             {/* <Avatar alt={name} src={avatarUrl} /> */}
             <Typography variant="subtitle2" noWrap>
-              {name}
+              {displayName}
             </Typography>
           </Stack>
         </TableCell>
 
-        <TableCell>{role}</TableCell>
+        <TableCell>{ndisNumber}</TableCell>
+        <TableCell>{agedCareRecipientID}</TableCell>
+        <TableCell>{contactNumber}</TableCell>
         <TableCell>{email}</TableCell>
-        <TableCell>{mobileNo}</TableCell>
         <TableCell>{address}</TableCell>
+        <TableCell>{priceBookName}</TableCell>
 
         {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 

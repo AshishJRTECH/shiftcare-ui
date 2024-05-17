@@ -47,7 +47,8 @@ const validationText = {
     religion: "Please Enter you religion",
     maritalStatus: "Please Select a Marital status",
     nationality: "Please enter you nationality",
-    language: "Please Select a language"
+    language: "Please Select a language",
+    pricebook_name: "Please Enter Price Book Name"
   },
   warn: {},
   info: {}

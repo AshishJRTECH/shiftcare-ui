@@ -44,8 +44,11 @@ export const endpoints = {
     delete_document: "/document"
   },
   client: {
-    get_all: "/client/getAll/by-company",
-    add_client: "/client/add"
+    get_all: "/client/by-company/active",
+    get_archieved_clients: "/client/by-company/inactive",
+    add_client: "/client/add",
+    delete_client: "/client/softDelete",
+    unarchive_client: "/client/unarchived"
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -61,6 +64,18 @@ export const endpoints = {
   },
   roles: {
     all: "/roles/all"
+  },
+  settings: {
+    pricebook: {
+      get_pricebooks: "/priceBook/getAll/priceBook",
+      add_pricebook: "/priceBook/add",
+      edit_pricebook: (id: number) => `/priceBook/${id}`,
+      delte_pricebook: (id: number) => `/priceBook/softDelete/${id}`,
+      copy_pricebook: (id: number) => `/priceBook/copy/${id}`
+    },
+    prices: {
+      update_prices: (id: number) => `/prices/update/${id}`
+    }
   }
 };
 
@@ -83,5 +98,6 @@ export const sucessNotificationEndPoints = [
   endpoints.teams.create_team,
   endpoints.teams.delete_team,
   endpoints.teams.edit_team,
-  endpoints.client.add_client
+  endpoints.client.add_client,
+  endpoints.settings.pricebook.add_pricebook
 ];
