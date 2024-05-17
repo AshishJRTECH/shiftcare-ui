@@ -38,9 +38,17 @@ export default function Prices() {
         shallow: true
       });
     } else if (router.query.page && data.priceBooks.length == 0) {
-      router.push({ query: { page: data?.currentPage - 1 } }, undefined, {
-        shallow: true
-      });
+      router.push(
+        {
+          query: {
+            page: data?.currentPage - 1 === 0 ? 1 : data?.currentPage - 1
+          }
+        },
+        undefined,
+        {
+          shallow: true
+        }
+      );
     }
   }, [data, router.query.page]);
 
