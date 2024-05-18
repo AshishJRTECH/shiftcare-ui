@@ -1,4 +1,17 @@
-import { IStaff } from "@/interface/client.interfaces";
+import {
+  updateClientProfile,
+  updateClientProfilePhoto
+} from "@/api/functions/client.api";
+import { ClientBody, IClient } from "@/interface/client.interface";
+import validationText from "@/json/messages/validationText";
+import CustomInput from "@/ui/Inputs/CustomInput";
+import VisuallyHiddenInput from "@/ui/VisuallyHiddenInput/VisuallyHiddenInput";
+import { yupResolver } from "@hookform/resolvers/yup";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import EmailIcon from "@mui/icons-material/Email";
+import PhoneIcon from "@mui/icons-material/Phone";
+import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
+import { LoadingButton } from "@mui/lab";
 import {
   Avatar,
   Badge,
@@ -15,35 +28,17 @@ import {
   Typography
 } from "@mui/material";
 import { Box, Stack, styled } from "@mui/system";
-import moment from "moment";
-import React, { SyntheticEvent, useState } from "react";
-import CameraAltIcon from "@mui/icons-material/CameraAlt";
-import Iconify from "../Iconify/Iconify";
+import { DatePicker } from "@mui/x-date-pickers";
 import { useMutation } from "@tanstack/react-query";
-import {
-  updateClientProfile,
-  updateClientProfilePhoto,
-  updateProfilePhoto,
-  updateStaff
-} from "@/api/functions/client.api";
-import VisuallyHiddenInput from "@/ui/VisuallyHiddenInput/VisuallyHiddenInput";
+import dayjs, { Dayjs } from "dayjs";
+import languages from "language-list";
+import moment from "moment";
 import { useParams } from "next/navigation";
 import { queryClient } from "pages/_app";
-import CustomInput from "@/ui/Inputs/CustomInput";
+import React, { SyntheticEvent, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
-import validationText from "@/json/messages/validationText";
-import { yupResolver } from "@hookform/resolvers/yup";
-import dayjs, { Dayjs } from "dayjs";
-import { DatePicker } from "@mui/x-date-pickers";
-import EmailIcon from "@mui/icons-material/Email";
-import InfoIcon from "@mui/icons-material/Info";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PhoneIcon from "@mui/icons-material/Phone";
-import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
-import { LoadingButton } from "@mui/lab";
-import languages from "language-list";
-import { ClientBody, IClient } from "@/interface/client.interface";
+import Iconify from "../Iconify/Iconify";
 
 const StyledDetailsBox = styled(Paper)`
   box-shadow: rgba(145, 158, 171, 0.2) 0px 5px 5px -3px,
