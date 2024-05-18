@@ -48,7 +48,16 @@ export const endpoints = {
     get_archieved_clients: "/client/by-company/inactive",
     add_client: "/client/add",
     delete_client: "/client/softDelete",
-    unarchive_client: "/client/unarchived"
+    unarchive_client: "/client/unarchived",
+    get_client: (id: string) => `/client/${id}`,
+    get_client_settngs: (id: string) => `/clientSettings/client/${id}`,
+    get_client_funds: (id: string) => `/funds/client/${id}`,
+    get_client_documents: (id: string) => `/document/client/${id}/documents`,
+    get_client_additional_information: (id: string) =>
+      `/client/${id}/additionalInformation`,
+    update_profile_pic: (id: string) => `/client/photo/${id}`,
+    update_profile: (id: string) => `/client/editClient/${id}`,
+    update_settings: (id: string) => `/clientSettings/update/${id}`
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -68,6 +77,7 @@ export const endpoints = {
   settings: {
     pricebook: {
       get_pricebooks: "/priceBook/getAll/priceBook",
+      get_all_pricebooks: "/priceBook/listAll/priceBook",
       add_pricebook: "/priceBook/add",
       edit_pricebook: (id: number) => `/priceBook/${id}`,
       delte_pricebook: (id: number) => `/priceBook/softDelete/${id}`,

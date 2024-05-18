@@ -1,4 +1,11 @@
 import {
+  getClient,
+  getClientAdditionalInformation,
+  getClientDocuments,
+  getClientFunds,
+  getClientSettings
+} from "@/api/functions/client.api";
+import {
   getNotes,
   getStaff,
   getStaffCompliance,
@@ -7,9 +14,8 @@ import {
 import { getLastSignin, resendInvite } from "@/api/functions/user.api";
 import Iconify from "@/components/Iconify/Iconify";
 import Compliance from "@/components/staff-compliance/compliance";
-import Details from "@/components/staff-details/details";
+import Details from "@/components/client-details/details";
 import Notes from "@/components/staff-notes/notes";
-import Settings from "@/components/staff-settings/settings";
 import { complianceData } from "@/interface/common.interface";
 import { ISettings, IStaff } from "@/interface/staff.interfaces";
 import assets from "@/json/assets";
@@ -36,6 +42,7 @@ import moment from "moment";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
+import Settings from "@/components/client-settings/settings";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -59,36 +66,36 @@ export default function Index() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id } = useParams();
 
-  const data: QueryResult = useQueries({
+  const data = useQueries({
     queries: [
       {
-        queryKey: ["staff", id],
-        queryFn: () => getStaff(id as string)
+        queryKey: ["client", id],
+        queryFn: () => getClient(id as string)
       },
       {
-        queryKey: ["staff-settings", id],
-        queryFn: () => getStaffSettings(id as string)
+        queryKey: ["client-settings", id],
+        queryFn: () => getClientSettings(id as string)
       },
       {
-        queryKey: ["staff-compliance", id],
-        queryFn: () => getStaffCompliance(id as string)
+        queryKey: ["client-documents", id],
+        queryFn: () => getClientDocuments(id as string)
       },
       {
-        queryKey: ["last-login", id],
-        queryFn: () => getLastSignin(id as string)
+        queryKey: ["client-funds", id],
+        queryFn: () => getClientFunds(id as string)
       },
       {
-        queryKey: ["notes", id],
-        queryFn: () => getNotes(id as string)
+        queryKey: ["client-additional-information", id],
+        queryFn: () => getClientAdditionalInformation(id as string)
       }
     ],
     combine: (results) => {
       return {
-        staff: results[0].data,
+        client: results[0].data,
         settings: results[1].data,
-        compliance: results[2].data,
-        last_login: results[3].data,
-        notes: results[4].data,
+        documents: results[2].data,
+        funds: results[3].data,
+        additionalInformation: results[4].data,
         isLoading:
           results[0].isLoading ||
           results[1].isLoading ||
@@ -106,10 +113,6 @@ export default function Index() {
   const handlePopoverClose = () => {
     setAnchorEl(null);
   };
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: resendInvite
-  });
 
   const open = Boolean(anchorEl);
 
@@ -136,7 +139,7 @@ export default function Index() {
               marginBottom: "2px"
             }}
           />{" "}
-          Back to Staff List
+          Back to Client List
         </Link>
         <Stack
           direction="row"
@@ -147,10 +150,10 @@ export default function Index() {
         >
           <Stack direction="row" alignItems="center" gap={2}>
             <Avatar
-              src={data?.staff?.photoDownloadURL || assets.nurse_placeholder}
+              src={data?.client?.photoDownloadURL || assets.nurse_placeholder}
             ></Avatar>
             <Typography variant="h4">
-              {data?.staff?.name}
+              {data?.client?.displayName}
               <Typography variant="body1" display="inline-block" ml={1}>
                 Details
               </Typography>
@@ -212,13 +215,19 @@ export default function Index() {
               // key={option.label}
               onClick={handlePopoverClose}
             >
+              Add Expense
+            </MenuItem>
+            <MenuItem
+              // key={option.label}
+              onClick={handlePopoverClose}
+            >
               Communications
             </MenuItem>
             <MenuItem
               // key={option.label}
               onClick={handlePopoverClose}
             >
-              Timesheet
+              Billing Report
             </MenuItem>
             <MenuItem
               // key={option.label}
@@ -236,7 +245,7 @@ export default function Index() {
               // key={option.label}
               onClick={handlePopoverClose}
             >
-              Reset Password
+              Print Roaster
             </MenuItem>
           </Popover>
         </Stack>
@@ -245,10 +254,10 @@ export default function Index() {
         <Grid item md={8} sm={12} xs={12}>
           <Grid container spacing={4}>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Details staff={data.staff} />
+              <Details client={data.client} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Compliance compliance_data={data.compliance} />
+              {/* <Compliance compliance_data={data.documents} /> */}
             </Grid>
           </Grid>
         </Grid>
@@ -262,33 +271,11 @@ export default function Index() {
                   justifyContent="space-between"
                   gap={1}
                 >
-                  <Typography variant="h5">Login</Typography>
+                  <Typography variant="h5">Additional Contacts</Typography>
                   <Typography variant="body2">
-                    {data.last_login["Last Login"] ? (
-                      moment().diff(data.last_login["Last Login"], "hours") <
-                      23 ? (
-                        moment(data.last_login["Last Login"]).fromNow()
-                      ) : (
-                        moment(data.last_login["Last Login"]).calendar(null, {
-                          sameDay: (now) =>
-                            `[Today], ${moment(now?.toString()).fromNow()}`,
-                          nextDay: "[Tomorrow]",
-                          nextWeek: "dddd",
-                          lastDay: "[Yesterday], hh:mm a",
-                          lastWeek: "[Last] dddd, hh:mm a",
-                          sameElse: "DD/MM/YYYY hh:mm:a"
-                        })
-                      )
-                    ) : (
-                      <Button
-                        size="small"
-                        variant="outlined"
-                        color="error"
-                        onClick={() => mutate({ email: data.staff.email })}
-                      >
-                        Resend Invitation
-                      </Button>
-                    )}
+                    <Button size="small" variant="contained">
+                      Add
+                    </Button>
                   </Typography>
                 </Stack>
               </StyledPaper>
@@ -297,7 +284,7 @@ export default function Index() {
               <Settings settings={data.settings} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <Notes note={data.notes.notes} />
+              {/* <Notes note={data.additionalInformation} /> */}
             </Grid>
           </Grid>
         </Grid>

@@ -31,6 +31,7 @@ export interface IClient {
   isInvoiceTravel: boolean;
   prospect: boolean;
   deleted: boolean;
+  photoDownloadURL: string | null;
 }
 
 export interface ClientBody {
@@ -51,4 +52,20 @@ export interface ClientBody {
   nationality: string;
   language: string[];
   prospect: boolean;
+}
+
+export interface ClientSettings {
+  ndisNumber: string;
+  agedCareRecipientID: string;
+  referenceNumber: boolean;
+  customField: string;
+  purchaseOrderNumber: string;
+  clientType: string;
+  priceBookId: number;
+  priceBookName?: string;
+  teamIds: number[];
+  teams?: { teamName: string; id: number }[];
+  isShareProgressNotes: boolean;
+  isSMSRemindersEnabled?: boolean;
+  isInvoiceTravel: boolean;
 }

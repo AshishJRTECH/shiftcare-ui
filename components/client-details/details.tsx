@@ -1,6 +1,7 @@
-import DashboardLayout from "@/layout/dashboard/DashboardLayout";
-import CustomInput from "@/ui/Inputs/CustomInput";
+import { IStaff } from "@/interface/client.interfaces";
 import {
+  Avatar,
+  Badge,
   Button,
   Checkbox,
   Divider,
@@ -9,62 +10,70 @@ import {
   Grid,
   InputAdornment,
   MenuItem,
+  Paper,
   Select,
-  ToggleButtonGroup,
-  Tooltip,
   Typography
 } from "@mui/material";
-import { Box, Stack } from "@mui/system";
+import { Box, Stack, styled } from "@mui/system";
+import moment from "moment";
 import React, { SyntheticEvent, useState } from "react";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import Iconify from "../Iconify/Iconify";
+import { useMutation } from "@tanstack/react-query";
+import {
+  updateClientProfile,
+  updateClientProfilePhoto,
+  updateProfilePhoto,
+  updateStaff
+} from "@/api/functions/client.api";
+import VisuallyHiddenInput from "@/ui/VisuallyHiddenInput/VisuallyHiddenInput";
+import { useParams } from "next/navigation";
+import { queryClient } from "pages/_app";
+import CustomInput from "@/ui/Inputs/CustomInput";
 import { Controller, FormProvider, useForm } from "react-hook-form";
+import * as yup from "yup";
+import validationText from "@/json/messages/validationText";
+import { yupResolver } from "@hookform/resolvers/yup";
+import dayjs, { Dayjs } from "dayjs";
+import { DatePicker } from "@mui/x-date-pickers";
 import EmailIcon from "@mui/icons-material/Email";
 import InfoIcon from "@mui/icons-material/Info";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import PhoneIphoneIcon from "@mui/icons-material/PhoneIphone";
 import { LoadingButton } from "@mui/lab";
-import { DatePicker } from "@mui/x-date-pickers";
-import styled from "@emotion/styled";
-import * as yup from "yup";
-import validationText from "@/json/messages/validationText";
-import { yupResolver } from "@hookform/resolvers/yup";
-import dayjs, { Dayjs } from "dayjs";
 import languages from "language-list";
-import { useMutation } from "@tanstack/react-query";
-import { addClient } from "@/api/functions/client.api";
-import { ClientBody } from "@/interface/client.interface";
-import { useRouter } from "next/router";
+import { ClientBody, IClient } from "@/interface/client.interface";
 
-const StyledBox = styled(Box)`
-  padding: 20px 10px;
-  h4 {
-    margin-bottom: 40px;
+const StyledDetailsBox = styled(Paper)`
+  box-shadow: rgba(145, 158, 171, 0.2) 0px 5px 5px -3px,
+    rgba(145, 158, 171, 0.14) 0px 8px 10px 1px,
+    rgba(145, 158, 171, 0.12) 0px 3px 14px 2px;
+  padding: 15px 20px;
+  margin-top: 4px;
+  margin-left: 3px;
+  outline: 0;
+  margin-top: 4px;
+  margin-left: 6px;
+  min-width: 4px;
+  min-height: 4px;
+  border-radius: 8px;
+
+  .MuiInputBase-root {
+    font-size: 14px;
   }
-  .inner-container {
-    padding: 10px 20px;
-    background-color: #fff;
-    border-radius: 5px;
-    .header {
-      padding-bottom: 10px;
-    }
-    .footer {
-      padding-block: 15px;
-    }
-    hr:first-of-type {
-      margin-bottom: 20px;
-    }
-    hr:last-of-type {
-      margin-top: 20px;
-    }
-    .date-picker {
-      .MuiInputBase-root {
-        flex-direction: row-reverse;
-      }
-    }
 
-    .MuiInputBase-root {
+  .MuiBadge-badge {
+    height: auto;
+    padding: 7px 7px 6px 7px;
+    border-radius: 50%;
+    cursor: pointer;
+    @media (max-width: 900px) {
+      /* right: 46.5%; */
+      /* padding: 5px 4px 4px 5px; */
       svg {
-        color: #ccc;
+        /* width: 0.8em; */
+        /* height: 0.8em; */
       }
     }
   }
@@ -117,63 +126,86 @@ const schema = yup.object().shape({
     .trim()
     .required(validationText.error.maritalStatus),
   nationality: yup.string().trim().required(validationText.error.nationality),
-  language: yup.array().of(yup.string()),
-  prospect: yup.boolean()
+  language: yup.array().of(yup.string())
 });
 
-export default function Index() {
-  const [salutation, setSalutation] = useState(true);
-  const router = useRouter();
+export default function Details({ client }: { client: IClient }) {
+  const [edit, setEdit] = useState(false);
+  const [salutation, setSalutation] = useState(Boolean(client?.salutation));
 
   const language_list = languages();
+
+  const { id } = useParams();
 
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      salutation: "",
-      firstName: "",
-      middleName: "",
-      lastName: "",
-      gender: "",
-      dateOfBirth: null,
-      apartmentNumber: "",
-      address: "",
-      contactNumber: "",
-      mobileNumber: "",
-      email: "",
-      religion: "",
-      maritalStatus: "",
-      nationality: "",
-      language: [],
-      prospect: false
+      salutation: client.salutation,
+      firstName: client.firstName,
+      middleName: client.middleName,
+      lastName: client.lastName,
+      gender: client.gender,
+      dateOfBirth: dayjs(client.dateOfBirth) || null,
+      apartmentNumber: client.apartmentNumber,
+      address: client.address,
+      contactNumber: client.contactNumber,
+      mobileNumber: client.mobileNumber,
+      email: client.email,
+      religion: client.religion,
+      maritalStatus: client.maritalStatus,
+      nationality: client.nationality,
+      language: client.language || []
     }
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: addClient,
-    onSuccess: router.back
+  const { mutate } = useMutation({
+    mutationFn: updateClientProfilePhoto,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["client", id] })
   });
 
+  const { mutate: updateProfile, isPending } = useMutation({
+    mutationFn: updateClientProfile,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["client", id] });
+      setEdit(false);
+    }
+  });
+
+  const onPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formData = new FormData();
+    formData.append("file", e.target.files![0]);
+    mutate({ file: formData, id: id.toString() });
+  };
+
   const onSubmit = (
-    data: Omit<ClientBody, "dateOfBirth"> & { dateOfBirth: Dayjs | null }
+    data: Omit<ClientBody, "dateOfBirth" | "prospect"> & {
+      dateOfBirth: Dayjs | null;
+    }
   ) => {
-    mutate({ ...data, dateOfBirth: dayjs(data.dateOfBirth).toISOString() });
+    updateProfile({
+      id: id as string,
+      data: { ...data, dateOfBirth: dayjs(data.dateOfBirth).toISOString() }
+    });
   };
 
   return (
-    <DashboardLayout>
-      <StyledBox>
-        <Typography variant="h4">Add New Client</Typography>
-        <Box className="inner-container">
-          <Stack
-            direction="row"
-            alignItems="center"
-            justifyContent="space-between"
-            className="header"
-          >
-            <Typography variant="h5">Client detail</Typography>
-          </Stack>
-          <Divider />
+    <StyledDetailsBox>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ paddingBottom: "15px" }}
+      >
+        <Typography variant="h5">Demographic Detail</Typography>
+        {!edit && (
+          <Button size="small" onClick={() => setEdit(true)}>
+            Edit
+          </Button>
+        )}
+      </Stack>
+      <Divider />
+      {edit ? (
+        <Box sx={{ paddingBlock: "15px" }}>
           <FormProvider {...methods}>
             <Grid container spacing={2}>
               <Grid item lg={3} md={12} sm={12} xs={12}>
@@ -532,46 +564,171 @@ export default function Index() {
                   )}
                 />
               </Grid>
-              <Grid item lg={3} md={12} sm={12} xs={12}>
-                Client Status:
-              </Grid>
-              <Grid item lg={9} md={12} sm={12} xs={12}>
-                <Controller
-                  name="prospect"
-                  control={methods.control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      control={<Checkbox size="small" />}
-                      label="Client is a prospect"
-                      checked={field.value}
-                      onChange={field.onChange}
-                    />
-                  )}
-                />
-              </Grid>
             </Grid>
           </FormProvider>
+        </Box>
+      ) : (
+        <Grid container sx={{ paddingTop: 2 }}>
+          <Grid item lg={8} md={12} sm={12} xs={12}>
+            <Grid container rowSpacing={3}>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Name</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.displayName}</Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Contact</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
+                    gap: 1
+                  }}
+                >
+                  {client.contactNumber ? (
+                    <>
+                      <Iconify icon="eva:smartphone-outline"></Iconify>
+                      {client.contactNumber}
+                    </>
+                  ) : null}{" "}
+                  {client.mobileNumber ? (
+                    <>
+                      <Iconify icon="eva:phone-fill"></Iconify>
+                      {client.mobileNumber}
+                    </>
+                  ) : null}{" "}
+                  {client.email ? (
+                    <>
+                      <Iconify icon="eva:email-fill"></Iconify>
+                      {client.email}
+                    </>
+                  ) : null}
+                </Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Address</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.address}</Typography>
+                <Typography variant="body1">
+                  <Iconify icon="solar:buildings-bold"></Iconify>
+                  Unit/Appartment Number: {client.apartmentNumber}
+                </Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Gender</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.gender}</Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">DOB</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">
+                  {moment(client.dateOfBirth).format("DD-MM-YYYY")}
+                </Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Marital Status</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.maritalStatus}</Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Religion</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.religion}</Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Nationality</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">{client.nationality}</Typography>
+              </Grid>
+              <Grid item lg={4} md={12} sm={12} xs={12}>
+                <Typography variant="h6">Language Spoken</Typography>
+              </Grid>
+              <Grid item lg={8} md={12} sm={12} xs={12}>
+                <Typography variant="body1">
+                  {client.language?.join(", ")}
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid
+            item
+            lg={4}
+            md={12}
+            sm={12}
+            xs={12}
+            sx={{
+              // lg: {
+              padding: "20px"
+              // }
+            }}
+          >
+            <Badge
+              sx={{ width: "100%" }}
+              overlap="circular"
+              anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+              badgeContent={<CameraAltIcon fontSize="small" />}
+              component="label"
+            >
+              <Avatar
+                src={client.photoDownloadURL || ""}
+                sx={{
+                  width: "100%",
+                  aspectRatio: 1,
+                  height: "auto",
+                  fontSize: "4rem"
+                }}
+              >
+                {client.displayName.charAt(0)}
+              </Avatar>
+              <VisuallyHiddenInput
+                type="file"
+                onChange={onPhotoChange}
+                accept="image/*"
+              />
+            </Badge>
+          </Grid>
+        </Grid>
+      )}
+      {edit && (
+        <>
           <Divider />
           <Stack
             direction="row"
             alignItems="center"
             justifyContent="flex-end"
-            className="footer"
-            spacing={2}
+            gap={1}
+            sx={{ paddingTop: "16px" }}
           >
-            <Button variant="outlined" disabled={isPending}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => setEdit(false)}
+            >
               Cancel
             </Button>
             <LoadingButton
               variant="contained"
-              onClick={methods.handleSubmit(onSubmit)}
+              size="small"
               loading={isPending}
+              onClick={methods.handleSubmit(onSubmit)}
             >
-              Create
+              Update
             </LoadingButton>
           </Stack>
-        </Box>
-      </StyledBox>
-    </DashboardLayout>
+        </>
+      )}
+    </StyledDetailsBox>
   );
 }

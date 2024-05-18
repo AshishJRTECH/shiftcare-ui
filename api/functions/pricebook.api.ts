@@ -2,6 +2,13 @@ import { IPriceBook, Price } from "@/interface/settings.interfaces";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 
+export const getAllPriceBooks = async () => {
+  const res = await axiosInstance.get(
+    endpoints.settings.pricebook.get_all_pricebooks
+  );
+  return res.data;
+};
+
 export const getPriceBooks = async (page: string) => {
   const res = await axiosInstance.get(
     endpoints.settings.pricebook.get_pricebooks,
