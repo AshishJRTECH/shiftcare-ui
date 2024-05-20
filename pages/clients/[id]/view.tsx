@@ -1,6 +1,7 @@
 import {
   getClient,
   getClientAdditionalInformation,
+  getClientContacts,
   getClientDocuments,
   getClientFunds,
   getClientSettings
@@ -15,7 +16,7 @@ import { getLastSignin, resendInvite } from "@/api/functions/user.api";
 import Iconify from "@/components/Iconify/Iconify";
 import Compliance from "@/components/staff-compliance/compliance";
 import Details from "@/components/client-details/details";
-import Notes from "@/components/staff-notes/notes";
+import Notes from "@/components/client-notes/notes";
 import { complianceData } from "@/interface/common.interface";
 import { ISettings, IStaff } from "@/interface/staff.interfaces";
 import assets from "@/json/assets";
@@ -43,6 +44,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import Settings from "@/components/client-settings/settings";
+import ClientDocuments from "@/components/client-docuements/documents";
+import ClientFunds from "@/components/client-funds/funds";
+import ClientContacts from "@/components/client-contacts/client-contacts";
+import ClientAdditionalContacts from "@/components/client-additional-contacts/client-additional-contacts";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -73,6 +78,10 @@ export default function Index() {
         queryFn: () => getClient(id as string)
       },
       {
+        queryKey: ["client-contacts", id],
+        queryFn: () => getClientContacts(id as string)
+      },
+      {
         queryKey: ["client-settings", id],
         queryFn: () => getClientSettings(id as string)
       },
@@ -92,16 +101,18 @@ export default function Index() {
     combine: (results) => {
       return {
         client: results[0].data,
-        settings: results[1].data,
-        documents: results[2].data,
-        funds: results[3].data,
-        additionalInformation: results[4].data,
+        contacts: results[1].data,
+        settings: results[2].data,
+        documents: results[3].data,
+        funds: results[4].data,
+        additionalInformation: results[5].data,
         isLoading:
           results[0].isLoading ||
           results[1].isLoading ||
           results[2].isLoading ||
           results[3].isLoading ||
-          results[4].isLoading
+          results[4].isLoading ||
+          results[5].isLoading
       };
     }
   });
@@ -122,7 +133,7 @@ export default function Index() {
     <DashboardLayout>
       <Box sx={{ padding: "0px 10px 20px 10px" }}>
         <Link
-          href="/staff/list"
+          href="/clients/list"
           style={{
             display: "flex",
             alignItems: "center",
@@ -257,34 +268,30 @@ export default function Index() {
               <Details client={data.client} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              {/* <Compliance compliance_data={data.documents} /> */}
+              <ClientDocuments document_data={data.documents} />
+            </Grid>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              <ClientFunds funds_data={data.funds} />
             </Grid>
           </Grid>
         </Grid>
         <Grid item md={4} sm={12} xs={12}>
           <Grid container spacing={4}>
+            {data?.contacts.primaryContacts.length ? (
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <ClientContacts contact={data?.contacts.primaryContacts[0]} />
+              </Grid>
+            ) : null}
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <StyledPaper>
-                <Stack
-                  direction="row"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  gap={1}
-                >
-                  <Typography variant="h5">Additional Contacts</Typography>
-                  <Typography variant="body2">
-                    <Button size="small" variant="contained">
-                      Add
-                    </Button>
-                  </Typography>
-                </Stack>
-              </StyledPaper>
+              <ClientAdditionalContacts
+                contacts={data?.contacts.otherContacts}
+              />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <Settings settings={data.settings} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              {/* <Notes note={data.additionalInformation} /> */}
+              <Notes {...data.additionalInformation} />
             </Grid>
           </Grid>
         </Grid>

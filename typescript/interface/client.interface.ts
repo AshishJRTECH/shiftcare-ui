@@ -69,3 +69,76 @@ export interface ClientSettings {
   isSMSRemindersEnabled?: boolean;
   isInvoiceTravel: boolean;
 }
+
+export interface ClientDocument {
+  id: number;
+  fileName: string;
+  clientDocumentCategory: string;
+  isStaffVisible: boolean;
+  fileType: string;
+  downloadURL: string;
+  lastUpdated: number;
+  expiryDate: number;
+  isExpiry: boolean;
+  isStatus: boolean;
+}
+
+export interface ClientFund {
+  id?: number;
+  name: string;
+  startDate: number[];
+  expiryDate: number[];
+  amount: number;
+  balance: number;
+  isDefault: boolean;
+  clientId?: number;
+}
+
+export interface ClientFundBody {
+  name: string;
+  startDate: string | null;
+  expiryDate: string | null;
+  amount: number | null;
+  balance: number;
+  isDefault: boolean;
+}
+
+export interface ClientContact {
+  id: number;
+  salutation: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  address: string;
+  apartmentNumber: string;
+  phoneNumber: string;
+  mobileNumber: string;
+  relationship: string;
+  companyName: string;
+  companyNumber: string;
+  purchaseOrder: string;
+  referenceNumber: string;
+  customField: string;
+  primaryContact: boolean;
+  billingContact: boolean;
+}
+
+export interface ClientContactBody {
+  contactId?: number | null;
+  salutation: string | null;
+  firstName: string;
+  lastName: string | null;
+  email: string;
+  address: string | null;
+  apartmentNumber: string | null;
+  phoneNumber: string | null;
+  mobileNumber: string | null;
+  relationship: string | null;
+  companyName: string | null;
+  companyNumber: string | null;
+  purchaseOrder: string | null;
+  referenceNumber: string | null;
+  customField: string | null;
+  primaryContact: boolean;
+  billingContact: boolean;
+}

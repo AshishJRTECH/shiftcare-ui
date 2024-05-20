@@ -52,12 +52,20 @@ export const endpoints = {
     get_client: (id: string) => `/client/${id}`,
     get_client_settngs: (id: string) => `/clientSettings/client/${id}`,
     get_client_funds: (id: string) => `/funds/client/${id}`,
-    get_client_documents: (id: string) => `/document/client/${id}/documents`,
+    get_client_documents: (id: string) => `/document/client/${id}`,
     get_client_additional_information: (id: string) =>
       `/client/${id}/additionalInformation`,
+    get_client_contacts: (id: string) =>
+      `/client/${id}/getAll/additional-contacts`,
+    add_client_contacts: (id: string) => `/client/${id}/additional-contacts`,
     update_profile_pic: (id: string) => `/client/photo/${id}`,
     update_profile: (id: string) => `/client/editClient/${id}`,
-    update_settings: (id: string) => `/clientSettings/update/${id}`
+    update_settings: (id: string) => `/clientSettings/update/${id}`,
+    update_additional_information: (id: string) =>
+      `/client/${id}/additionalInformation`,
+    update_client_contact: (id: string) => `/client/${id}/additional-contacts`,
+    delete_client_contact: (id: string, contact_id: number) =>
+      `/client/${id}/additional-contacts/${contact_id}`
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -73,6 +81,9 @@ export const endpoints = {
   },
   roles: {
     all: "/roles/all"
+  },
+  funds: {
+    add_fund: (id: string) => `/funds/add/${id}`
   },
   settings: {
     pricebook: {

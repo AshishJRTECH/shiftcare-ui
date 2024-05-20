@@ -14,7 +14,7 @@ import { ReactNode } from "react";
 interface MuiModalWrapperProps extends DialogProps {
   title: string;
   onClose: () => void;
-  DialogActions: JSX.Element;
+  DialogActions?: JSX.Element;
 }
 
 export default function MuiModalWrapper(props: MuiModalWrapperProps) {
@@ -37,8 +37,8 @@ export default function MuiModalWrapper(props: MuiModalWrapperProps) {
           paddingBottom: "15px"
         }
       }}
-      {...props}
       fullScreen={fullScreen}
+      {...props}
     >
       <DialogTitle>
         <Stack

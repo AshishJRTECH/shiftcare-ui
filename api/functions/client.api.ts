@@ -1,6 +1,13 @@
-import { ClientBody, ClientSettings } from "@/interface/client.interface";
+import { ClientContactBody } from "./../../typescript/interface/client.interface";
+import {
+  ClientBody,
+  ClientFund,
+  ClientFundBody,
+  ClientSettings
+} from "@/interface/client.interface";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
+import ClientFunds from "@/components/client-funds/funds";
 
 export const getAllClients = async () => {
   const res = await axiosInstance.get(endpoints.client.get_all);
@@ -60,6 +67,11 @@ export const getClientAdditionalInformation = async (id: string) => {
   return res.data;
 };
 
+export const getClientContacts = async (id: string) => {
+  const res = await axiosInstance.get(endpoints.client.get_client_contacts(id));
+  return res.data;
+};
+
 export const updateClientProfilePhoto = async (body: {
   id: string;
   file: FormData;
@@ -89,6 +101,72 @@ export const updateClientSettings = async (body: {
   const res = await axiosInstance.put(
     endpoints.client.update_settings(body.id),
     body.data
+  );
+  return res.data;
+};
+
+export const updateAdditionalInformation = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: { privateInfo: string; reviewDate?: string | null };
+}) => {
+  const res = await axiosInstance.put(
+    endpoints.client.update_additional_information(id),
+    data
+  );
+  return res.data;
+};
+
+export const addClientFunds = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: ClientFundBody;
+}) => {
+  const res = await axiosInstance.post(endpoints.funds.add_fund(id), data);
+  return res.data;
+};
+
+export const addClientContact = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: ClientContactBody;
+}) => {
+  const res = await axiosInstance.post(
+    endpoints.client.add_client_contacts(id),
+    data
+  );
+  return res.data;
+};
+
+export const updateClientContact = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: ClientContactBody;
+}) => {
+  const res = await axiosInstance.put(
+    endpoints.client.update_client_contact(id),
+    data
+  );
+  return res.data;
+};
+
+export const deleteClientContact = async ({
+  id,
+  contact_id
+}: {
+  id: string;
+  contact_id: number;
+}) => {
+  const res = await axiosInstance.delete(
+    endpoints.client.delete_client_contact(id, contact_id)
   );
   return res.data;
 };
