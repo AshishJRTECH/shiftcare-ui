@@ -96,6 +96,21 @@ export const endpoints = {
     },
     prices: {
       update_prices: (id: number) => `/prices/update/${id}`
+    },
+    pay_groups: {
+      add_paygroup: "/payGroup/add",
+      update_paygroup: (id: number) => `/payGroup/update/${id}`,
+      delete_paygroup: (id: number) => `/payGroup/softDelete/${id}`,
+      get_all_paygroup: "/payGroup/getAll/payGroup"
+    },
+    allowances: {
+      get_all_allowances: "/allowances/all",
+      add_allowance: "/allowances/add",
+      update_allowance: (id: number) => `/allowances/${id}`,
+      delete_allowance: (id: number) => `/allowances/${id}`
+    },
+    price_items: {
+      update_price_items: (id: number) => `/payItems/update/${id}`
     }
   }
 };

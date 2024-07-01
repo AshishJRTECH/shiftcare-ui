@@ -52,7 +52,10 @@ const validationText = {
     fund_name: "Please enter a Fund name",
     fund_amount: "Please enter a Fund Amount",
     starts: "Please select a Start Date",
-    expires: "Pelase select an Expiry Date"
+    expires: "Pelase select an Expiry Date",
+    allowanceName: "Please enter Allowance Name",
+    allowanceType: "Please enter Allowance Type",
+    allowanceValue: "Please enter Allowance Value"
   },
   warn: {},
   info: {}

@@ -24,3 +24,38 @@ export interface IPriceBook {
   isFixedPriceOnly: boolean;
   price: Price[];
 }
+
+export interface PriceItem {
+  id: number;
+  daysOfWeek: string[];
+  days: string;
+  startTime?: number[];
+  endTime?: number[];
+  date: number[] | null;
+  externalId: string;
+  startTimeHours: number;
+  endTimeHours: number;
+  isDelete?: boolean;
+}
+
+export interface PayGroup {
+  id: number;
+  payGroupName: string;
+  company: string | null;
+  payItems: PriceItem[];
+}
+
+export interface Allowance {
+  id: number;
+  allowancesName: string;
+  allowancesType: string;
+  value: number;
+  externalId: string;
+}
+
+export type AllowanceBody = {
+  allowancesName: string;
+  allowancesType: string;
+  value: number;
+  externalId: string;
+};

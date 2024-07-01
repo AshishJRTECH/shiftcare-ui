@@ -37,11 +37,9 @@ const schema = yup.object().shape({
     .mixed()
     .required(validationText.error.file)
     .test("fileType", "Invalid Format", (value: File) => {
-      console.log(value.type, value.name);
       return value && value.type?.includes("application/");
     })
     .test("fileSize", "File size must not exceed 15 MB", (value: File) => {
-      console.log(value, value.size, 15 * 1024 * 1024);
       return value && value.size <= 15 * 1024 * 1024;
     })
 });

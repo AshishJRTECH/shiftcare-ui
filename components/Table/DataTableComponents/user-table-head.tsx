@@ -2,7 +2,10 @@ import Box from "@mui/material/Box";
 import TableRow from "@mui/material/TableRow";
 import Checkbox from "@mui/material/Checkbox";
 import TableHead from "@mui/material/TableHead";
-import TableCell, { SortDirection } from "@mui/material/TableCell";
+import TableCell, {
+  SortDirection,
+  TableCellProps
+} from "@mui/material/TableCell";
 import TableSortLabel, {
   TableSortLabelOwnProps
 } from "@mui/material/TableSortLabel";
@@ -14,7 +17,7 @@ import { visuallyHidden } from "../utils";
 export interface HeadLabelType {
   id: string;
   label: string;
-  align?: "left" | "right" | "center" | "justify" | "inherit";
+  align?: "left" | "right" | "center" | "justify" | "inherit" | string;
   width?: number | string;
   minWidth?: number | string;
 }
@@ -59,7 +62,7 @@ export default function UserTableHead({
         {headLabel.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.align || "left"}
+            align={(headCell.align as TableCellProps["align"]) || "left"}
             sortDirection={orderBy === headCell.id ? order : false}
             sx={{
               width: headCell.width,

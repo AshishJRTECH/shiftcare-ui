@@ -66,15 +66,8 @@ export default function Index() {
     }
   ];
 
-  const rows =
-    data?.map((_item: IStaff) => ({
-      ..._item
-    })) || [];
-
-  if (isLoading) return <Loader />;
-
   return (
-    <DashboardLayout>
+    <DashboardLayout isLoading={isLoading}>
       <StyledUserPage>
         <Typography variant="h4">Staff List</Typography>
         {/* <SimpleBar scrollableNodeProps={{ ref: ref }}> */}

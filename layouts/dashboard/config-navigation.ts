@@ -261,9 +261,16 @@ const navConfig: NavItem[] = [
         hasChild: false
       },
       {
-        title: "Pay Items",
-        path: "/account/pay-items",
-        icon: RequestQuoteIcon,
+        title: "Pay Groups",
+        path: "/account/pay-groups",
+        icon: PersonAddIcon,
+        children: [],
+        hasChild: false
+      },
+      {
+        title: "Allowances",
+        path: "/account/allowances",
+        icon: PersonAddIcon,
         children: [],
         hasChild: false
       },
