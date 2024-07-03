@@ -1,26 +1,20 @@
-import AppWidgetSummaryCard from "@/components/cards/AppWidgetSummaryCard";
-import { customSeriesFill } from "@/components/chart/chart";
-
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
-import { Container, Grid, Typography } from "@mui/material";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Container } from "@mui/material";
 
-import dynamic from "next/dynamic";
-import moment from "moment";
-import { Box } from "@mui/system";
+import { getAllClients } from "@/api/functions/client.api";
 import { getAllShifts } from "@/api/functions/shift.api";
-import { GetServerSidePropsContext } from "next";
-import { Shift } from "@/interface/shift.interface";
+import { getStaffList } from "@/api/functions/staff.api";
 import Timesheet from "@/components/Timesheet/Timesheet";
+import { Shift } from "@/interface/shift.interface";
+import { Box } from "@mui/system";
 import {
   DehydratedState,
   HydrationBoundary,
   QueryClient,
-  dehydrate,
-  useQuery
+  dehydrate
 } from "@tanstack/react-query";
-import { getAllClients } from "@/api/functions/client.api";
-import { getStaffList } from "@/api/functions/staff.api";
+import moment from "moment";
+import { GetServerSidePropsContext } from "next";
 
 export const getServerSideProps = async ({
   req

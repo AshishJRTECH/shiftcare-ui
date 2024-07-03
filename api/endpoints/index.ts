@@ -24,6 +24,7 @@ export const endpoints = {
     faq: "/faq/all"
   },
   staff: {
+    get_all_shifts: "/shift/getAllActiveShift/ForACarer",
     new: "/user/add",
     list: "/user/employees/by-company/active",
     getStaff: "/user",

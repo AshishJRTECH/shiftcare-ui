@@ -152,3 +152,19 @@ export const deleteTeam = async (id: number) => {
   );
   return res.data;
 };
+
+export const getAllActiveShifts = async ({
+  startDate = "",
+  endDate = ""
+}: {
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const res = await axiosInstance.get(endpoints.staff.get_all_shifts, {
+    params: {
+      startDate,
+      endDate
+    }
+  });
+  return res.data;
+};

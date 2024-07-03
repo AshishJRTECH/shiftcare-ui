@@ -170,3 +170,21 @@ export const deleteClientContact = async ({
   );
   return res.data;
 };
+
+export const getAllShiftNotes = async ({
+  id,
+  startDate,
+  endDate
+}: {
+  id?: string;
+  startDate?: number | null;
+  endDate?: number | null;
+}) => {
+  const res = await axiosInstance.get(endpoints.shift.notes.get_all_notes(id), {
+    params: {
+      startDate,
+      endDate
+    }
+  });
+  return res.data;
+};
