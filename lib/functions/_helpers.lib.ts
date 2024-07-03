@@ -1,6 +1,7 @@
 import { BaseApiResponse } from "@/interface/common.interface";
 import events from "@/json/events/events";
 import { AxiosError, AxiosResponse } from "axios";
+import { parseCookies } from "nookies";
 import eventEmitter from "services/event.emitter";
 /**
  * Check if the window object exists.
@@ -12,6 +13,11 @@ export function checkWindow() {
 
 export function isInServer() {
   return typeof document === "undefined";
+}
+
+export function getRole() {
+  const cookies = parseCookies();
+  return JSON.parse(cookies.user || "{}").role?.[0]?.name;
 }
 
 export function isApple() {

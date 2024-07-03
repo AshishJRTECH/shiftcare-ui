@@ -85,6 +85,22 @@ export const endpoints = {
   funds: {
     add_fund: (id: string) => `/funds/add/${id}`
   },
+  shift: {
+    create_shift: "/shift/createMultiple/with-available-employee",
+    get_all_shifts: "/shift/getAllActiveShiftNew",
+    get_shifts_for_client: (id: string) =>
+      `/shift/getAllActiveShift/ForAClient/${id}`,
+    get_shifts_for_staff: (id: string) =>
+      `/shift/getAllActiveShift/ForAEmployee/${id}`,
+    edit_shift: (id?: number) => `/shift/update/${id}`,
+    cancel_shift: (id?: number) => `/shift/cancelShift/${id}`,
+    notes: {
+      get_all_shift_notes: `/shiftNote/getAllShiftNotes`,
+      get_all_notes: (id?: string) => `/shiftNote/getAllForClient/${id}`,
+      add_note: `/shiftNote/add`,
+      export: (id: string) => `/shiftNote/exportShiftNotesToPdf/email/${id}`
+    }
+  },
   settings: {
     pricebook: {
       get_pricebooks: "/priceBook/getAll/priceBook",

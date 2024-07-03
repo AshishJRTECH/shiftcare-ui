@@ -3,5 +3,21 @@ export default {
   logo: "/vercel.svg",
   logo_img: "/assets/images/logo_img.png",
   story_img: "/assets/images/story_img.png",
-  nurse_placeholder: "/assets/images/nurse.png"
+  nurse_placeholder: "/assets/images/nurse.png",
+  nurse: "/assets/images/nurse2.png",
+  client_img: "/assets/images/team.png",
+  calendar: "/assets/images/calendar.png",
+  task: "/assets/images/task.png",
+  delete: "/assets/images/delete.png",
+  notes: "/assets/images/notes.png",
+  bold_icon: "/assets/images/bold.svg",
+  h1_icon: "/assets/images/h-1.svg",
+  h2_icon: "/assets/images/h-2.svg",
+  h3_icon: "/assets/images/h-3.svg",
+  italic_icon: "/assets/images/italic.svg",
+  list_unordered_icon: "/assets/images/list-unordered.svg",
+  underline_icon: "/assets/images/underline.svg",
+  undo_icon: "/assets/images/arrow-go-back-line.svg",
+  file_icon: "/assets/images/file.png",
+  download: "/assets/images/download.png"
 };
