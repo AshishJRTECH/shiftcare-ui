@@ -12,7 +12,7 @@ const StyledPaper = styled(Paper)`
   margin-top: 4px;
   margin-left: 6px;
   min-width: 4px;
-  min-height: 4px;
+  /* min-height: 4px; */
   border-radius: 8px;
 `;
 

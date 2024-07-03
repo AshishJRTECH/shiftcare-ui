@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { ReactNode } from "react";
 
-interface MuiModalWrapperProps extends DialogProps {
+export interface MuiModalWrapperProps extends DialogProps {
   title: string;
   onClose: () => void;
   DialogActions?: JSX.Element;
