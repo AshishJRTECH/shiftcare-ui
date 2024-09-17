@@ -168,3 +168,33 @@ export const getAllActiveShifts = async ({
   });
   return res.data;
 };
+
+// export const getTimesheet = async (id: string) => {
+//   const res = await axiosInstance.get(endpoints.staff.time_sheet(id));
+//   return res.data;
+// };
+
+// export const getTimesheet = async (id: number) => {
+//   const res = await axiosInstance.get(`${endpoints.staff.time_sheet}/${id}`);
+//   return res.data;
+// };
+
+// export const getTimesheet = async (id: string) => {
+//   const res = await axiosInstance.get(`${endpoints.staff.timesheet}/${id}`);
+//   return res.data;
+// };
+
+// export const getTimesheet = async (id: number) => {
+//   const res = await axiosInstance.get(`${endpoints.staff.time_sheet}/${id}`);
+//   return res.data;
+// };
+
+export const getTimesheet = async (id: string) => {
+  const res = await axiosInstance.get(`${endpoints.staff.timesheet}/${id}`);
+  return res.data;
+};
+
+// export const getTimesheet = async (id: string) => {
+//   const res = await axiosInstance.get(endpoints.staff.time_sheet(id));
+//   return res.data;
+// };

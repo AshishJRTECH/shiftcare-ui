@@ -17,6 +17,8 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import RequestQuoteIcon from "@mui/icons-material/RequestQuote";
 import UpdateIcon from "@mui/icons-material/Update";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import EventNoteIcon from "@mui/icons-material/EventNote";
 
 export interface NavItem {
   title: string;

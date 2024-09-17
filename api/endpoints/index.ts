@@ -42,7 +42,12 @@ export const endpoints = {
     get_all_documents: "/document/all",
     upload_documents: "/document/upload",
     edit_document: "/document/updateDocument",
-    delete_document: "/document"
+    delete_document: "/document",
+    timesheet: "/timesheets/employee"
+    // time_sheet: (id: number) => `/timesheets/${id}`
+    // timesheets: "/timesheets/employee"
+    // gettimesheet: "/timesheets/employee",
+    // time_sheet: (id: string) => `/timesheets/${id}`
   },
   client: {
     get_all: "/client/by-company/active",
@@ -88,6 +93,8 @@ export const endpoints = {
   },
   shift: {
     create_shift: "/shift/createMultiple/with-available-employee",
+    cancel_shift_in_bulk: "/shift/cancelMultipleShift",
+    get_all_shift_id: "/shift/getAllActiveShiftIds",
     get_all_shifts: "/shift/getAllActiveShiftNew",
     get_shifts_for_client: (id: string) =>
       `/shift/getAllActiveShift/ForAClient/${id}`,
@@ -148,6 +155,7 @@ export const sucessNotificationEndPoints = [
   endpoints.staff.upload_documents,
   endpoints.staff.delete_document,
   endpoints.staff.edit_document,
+  // endpoints.staff.timesheet,
   endpoints.teams.create_team,
   endpoints.teams.delete_team,
   endpoints.teams.edit_team,

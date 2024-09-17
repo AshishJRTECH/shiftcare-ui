@@ -16,7 +16,7 @@ import { Box, Stack } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 export default function ClientSection({
@@ -37,6 +37,10 @@ export default function ClientSection({
     enabled: role === "ROLE_ADMINS"
   });
 
+  useEffect(() => {
+    console.log("============== Dropdown Data Check =================", data);
+  }, data);
+
   return (
     <StyledPaper>
       <Stack direction="row" alignItems="center" gap={2}>
@@ -47,7 +51,7 @@ export default function ClientSection({
           height={512}
           className="icon"
         />
-        <Typography variant="h6">Paritcipant</Typography>
+        <Typography variant="h6">Participant</Typography>
       </Stack>
       <Divider sx={{ marginBlock: "10px" }} />
       {view ? (
@@ -74,7 +78,7 @@ export default function ClientSection({
           <Grid item lg={8} md={6} sm={12} xs={12}>
             <Controller
               control={control}
-              name="clientId"
+              name="clientIds"
               render={({ field, fieldState: { error, invalid } }) => {
                 return (
                   <Box>
@@ -82,20 +86,22 @@ export default function ClientSection({
                       fullWidth
                       size="small"
                       {...field}
+                      value={Array.isArray(field.value) ? field.value : []} // Ensure value is always an array
                       onChange={(e) => {
-                        const _client: IClient = data.find(
-                          (_data: IClient) => _data.id === e.target.value
+                        const _value = e.target.value;
+                        field.onChange(
+                          typeof _value === "string"
+                            ? _value.split(",")
+                            : _value
                         );
-                        field.onChange(e);
-                        setValue("address", _client.address);
-                        setValue("apartmentNumber", _client.apartmentNumber);
                       }}
                       displayEmpty
                       renderValue={
-                        field.value === "" || !field.value
+                        field.value?.length !== 0
                           ? () => "Select Participant"
-                          : undefined
+                          : () => "Select Participant"
                       }
+                      multiple
                     >
                       {isLoading ? (
                         <MenuItem disabled>Loading...</MenuItem>

@@ -29,8 +29,9 @@ export interface ShiftBody {
   dropOffApartmentNumber: string;
   tasks: Task[];
   instruction: string;
-  clientId: number | string | null;
+  clientIds: number[];
   employeeIds: number[];
+  isOpenShift: boolean;
 }
 
 export interface ShiftType {
@@ -57,8 +58,9 @@ export interface ShiftType {
   dropOffApartmentNumber: string;
   tasks: Task[];
   instruction: string;
-  clientId: number;
+  clientIds: number[];
   employeeIds: number[];
+  isOpenShift: boolean;
 }
 
 export interface ShiftUser {
@@ -98,6 +100,7 @@ export interface Shift {
   clientStartTime: number[];
   clientEndTime: number[];
   occurrenceCounter?: boolean;
+  isOpenShift: boolean;
 }
 
 export interface Document {
@@ -142,4 +145,11 @@ export interface ShiftNoteBody {
   notes: string;
   subject: string;
   documents: string[];
+}
+
+export interface ClientList {
+  id: number;
+  displayName: string;
+  clientMobileNumber: string;
+  clientEmail: string;
 }

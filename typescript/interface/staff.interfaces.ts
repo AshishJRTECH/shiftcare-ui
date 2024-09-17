@@ -88,3 +88,32 @@ export interface documentInterface {
   expiry: boolean;
   status: boolean;
 }
+
+export interface Client {
+  clientId: number;
+  clientName: string;
+}
+
+export interface Shift {
+  shiftId: number;
+  shiftType: string;
+}
+export interface Allowance {
+  allowanceId: number;
+  allowanceName: string;
+}
+
+export interface ITimesheet {
+  id: number;
+  date: number[];
+  startTime: number[];
+  finishTime: number[];
+  breakTime: number;
+  hours: number;
+  distance: number;
+  expense: number;
+  isTimesheetApproved: null;
+  shift: Shift[];
+  client: Client[];
+  allowances: Allowance[];
+}

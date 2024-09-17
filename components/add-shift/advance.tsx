@@ -64,7 +64,6 @@ import { queryClient } from "pages/_app";
 import ShiftRelatedNotes from "./shift-related-notes";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import AddNoteModal from "./addNoteModal";
-import Advance from "../add-shift/advance";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -73,7 +72,7 @@ interface DrawerInterface extends DrawerProps {
 export const StyledDrawer = styled(Drawer)<DrawerInterface>`
   z-index: 3000;
   > .drawer {
-    width: 700px;
+    width: 80%;
     background-color: #f0f0f0;
     z-index: 3000;
     @media (width<=699px) {
@@ -246,6 +245,7 @@ export const shiftTypeArray = [
   },
   {
     id: "NightShift",
+
     name: "Night Shift"
   },
   {
@@ -335,15 +335,11 @@ const schema = yup.object().shape({
     })
   ),
   instruction: yup.string(),
-  clientIds: yup
-    .array()
-    .of(yup.number())
-    .required("Please Select a Paricipant"),
-  employeeIds: yup.array().of(yup.number()).required("Please Select a Carer"),
-  isOpenShift: yup.boolean()
+  clientId: yup.number().nullable().required("Please Select a Paricipant"),
+  employeeIds: yup.array().of(yup.number()).required("Please Select a Carer")
 });
 
-export default function AddShift({
+export default function Advance({
   view,
   edit,
   setViewModal,
@@ -393,23 +389,22 @@ export default function AddShift({
         }
       ],
       instruction: "",
-      clientIds: router.pathname.includes("participants")
-        ? [parseInt(id as string)]
+      clientId: router.pathname.includes("participants")
+        ? (id as string)
         : client
-        ? [parseInt(client as string)]
-        : [],
+        ? (client as string)
+        : null,
       employeeIds: router.pathname.includes("staff")
         ? [parseInt(id as string)]
         : staff
         ? [parseInt(staff as string)]
-        : [],
-      isOpenShift: false
+        : []
     }
   });
 
   useEffect(() => {
     if (client) {
-      methods.setValue("clientIds", [parseInt(client as string)]);
+      methods.setValue("clientId", client as string);
       const _client: IClient = clients.find(
         (_data: IClient) => _data.id === parseInt(client as string)
       );
@@ -452,9 +447,8 @@ export default function AddShift({
         dropOffApartmentNumber: shift?.dropOffApartmentNumber,
         tasks: shift?.tasks,
         instruction: shift?.instruction,
-        clientIds: [shift?.client.id],
-        employeeIds: [shift?.employee.id],
-        isOpenShift: shift?.isOpenShift
+        clientId: shift?.client.id.toString(),
+        employeeIds: [shift?.employee.id]
       });
     }
   }, [edit]);
@@ -497,15 +491,13 @@ export default function AddShift({
       breakTimeInMins: data.breakTimeInMins || 0,
       startTime: dayjs(data.startTime).format("HH:mm"),
       endTime: dayjs(data.endTime).format("HH:mm"),
-      clientIds: data.clientIds,
+      clientId: parseInt(data.clientId as string),
       id: shift?.id
       // instruction: JSON.stringify(editor?.getJSON(), null, 2)
     };
     if (edit) editMutate(newData);
     else mutate(newData);
   };
-
-  const [advanceModal, setAdvanceModal] = useState(false);
 
   return (
     <StyledDrawer
@@ -558,32 +550,6 @@ export default function AddShift({
           </Button>
         ) : !view ? (
           <Stack direction="row" alignItems="center" gap={1}>
-            {/* <Button
-              variant="contained"
-              startIcon={<Iconify icon="basil:home-outline" fontSize={14} />}
-              onClick={() => {
-                if (setViewModal) {
-                  // setEditModal(false);
-                  setViewModal(false);
-                }
-              }}
-            >
-              Advance
-            </Button> */}
-
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="basil:home-outline" fontSize={14} />}
-              onClick={() => setAdvanceModal(true)}
-            >
-              Advance
-            </Button>
-
-            <Advance
-              open={advanceModal}
-              onClose={() => setAdvanceModal(false)}
-            />
-
             <LoadingButton
               variant="contained"
               startIcon={<Iconify icon="ic:baseline-save" />}
@@ -642,6 +608,7 @@ export default function AddShift({
           {view && <ShiftRelatedNotes shift={shift} />}
         </FormProvider>
       </Stack>
+
       <AddNoteModal
         open={noteModal}
         onClose={() => setNoteModal(false)}

@@ -30,6 +30,7 @@ export const getServerSideProps = async ({
     queryKey: ["user_list"],
     queryFn: getStaffList
   });
+
   await queryClient.prefetchQuery({
     queryKey: ["client_list"],
     queryFn: () => getAllClients()

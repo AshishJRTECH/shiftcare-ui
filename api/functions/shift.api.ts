@@ -113,3 +113,24 @@ export const exportShiftNotes = async (id: string) => {
   const res = await axiosInstance.get(endpoints.shift.notes.export(id));
   return res.data;
 };
+
+// -------------------- To Cancel Shift in Bulk --------------------
+export const cancelShiftInBulk = async (shiftIds: number[]) => {
+  const body = { shiftIds };
+  const res = await axiosInstance.put(
+    endpoints.shift.cancel_shift_in_bulk,
+    body
+  );
+  return res.data;
+};
+
+export const getAllShiftsIdList = async ({ token }: { token?: string }) => {
+  const res = await axiosInstance.get(endpoints.shift.get_all_shift_id, {
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`
+        }
+      : {}
+  });
+  return res.data;
+};

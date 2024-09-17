@@ -4,6 +4,7 @@ import {
   getStaffCompliance,
   getStaffSettings
 } from "@/api/functions/staff.api";
+import { useRouter } from "next/router";
 import { getLastSignin, resendInvite } from "@/api/functions/user.api";
 import Iconify from "@/components/Iconify/Iconify";
 import Compliance from "@/components/staff-compliance/compliance";
@@ -58,6 +59,8 @@ interface QueryResult {
 export default function Index() {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id } = useParams();
+
+  const router = useRouter();
 
   const data: QueryResult = useQueries({
     queries: [
@@ -216,7 +219,17 @@ export default function Index() {
             </MenuItem>
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              // onClick={handlePopoverClose}
+
+              // onClick={() => {
+              //   router.push(`/staff/timesheet`);
+              //   handlePopoverClose();
+              // }}
+
+              onClick={() => {
+                router.push(`/staff/${id}/timesheet`);
+                handlePopoverClose();
+              }}
             >
               Timesheet
             </MenuItem>

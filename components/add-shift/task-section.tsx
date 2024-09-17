@@ -79,9 +79,23 @@ export default function TaskSection({
           justifyContent="space-between"
           marginBottom={2}
         >
-          <Controller
+          {/* <Controller
             name="task"
             control={shortControl}
+            render={({ field, fieldState: { invalid, error } }) => (
+              <TextField
+                size="small"
+                fullWidth
+                placeholder="Task Description"
+                {...field}
+                error={invalid}
+                helperText={error?.message}
+              />
+            )}
+          /> */}
+          <Controller
+            name="task"
+            control={control} // Ensure control object is correctly passed
             render={({ field, fieldState: { invalid, error } }) => (
               <TextField
                 size="small"
