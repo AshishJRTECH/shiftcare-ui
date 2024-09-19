@@ -1,12 +1,27 @@
+# version: "3.8"
+
+# services:
+#   app:
+#     image: aannaassalam/shiftcare-jr:latest
+#     platform: linux/amd64
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     ports:
+#       - "14001:14001"
+#     restart: always
+
 version: "3.8"
 
 services:
-  app:
-    image: aannaassalam/shiftcare-jr:latest
+  web:
+    image: mdsalimjrtechnologies/shift-care-jr:latest
     platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "14001:14001"
+    environment:
+      - NODE_ENV=production
     restart: always

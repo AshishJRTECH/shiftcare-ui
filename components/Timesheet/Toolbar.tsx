@@ -17,6 +17,11 @@ import { DateCalendar, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterMoment } from "@mui/x-date-pickers/AdapterMoment";
 import AddIcon from "@mui/icons-material/Add";
 import AddShift from "../add-shift/add-shift";
+import IconButton from "@mui/material/IconButton";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
+import DeleteIcon from "@mui/icons-material/Delete"; // Import DeleteIcon
+import SelectAllIcon from "@mui/icons-material/SelectAll"; // Import SelectAllIcon
 
 const StyledButton = styled(Button)`
   background-color: #fff;
@@ -27,7 +32,42 @@ const StyledButton = styled(Button)`
     background-color: #ececec;
     box-shadow: none;
   }
+
+  .mui-style-13n8tc6-MuiStack-root {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -webkit-align-items: center;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    gap: 16px;
+    -webkit-box-flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    padding-bottom: 30px;
+  }
 `;
+
+interface ToolbarProps {
+  week: Moment[];
+  date: Moment;
+  setDate: React.Dispatch<SetStateAction<Moment>>;
+  type: string;
+  setType: React.Dispatch<SetStateAction<string>>;
+  view: string;
+  setView: React.Dispatch<SetStateAction<string>>;
+  onZoomIn: () => void;
+  onZoomOut: () => void;
+}
 
 export default function Toolbar({
   week,
@@ -36,20 +76,12 @@ export default function Toolbar({
   type,
   setType,
   view,
-  setView
-}: {
-  week: Moment[];
-  date: Moment;
-  setDate: React.Dispatch<SetStateAction<Moment>>;
-  type: string;
-  setType: React.Dispatch<SetStateAction<string>>;
-  view: string;
-  setView: React.Dispatch<SetStateAction<string>>;
-}) {
+  setView,
+  onZoomIn,
+  onZoomOut
+}: ToolbarProps) {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-
   const [shiftModal, setShiftModal] = useState(false);
-
   const open = Boolean(anchorEl);
 
   return (
@@ -155,6 +187,16 @@ export default function Toolbar({
       >
         Shift
       </Button>
+      <IconButton color="primary" onClick={onZoomIn} sx={{ marginLeft: "8px" }}>
+        <ZoomInIcon />
+      </IconButton>
+      <IconButton
+        color="secondary"
+        onClick={onZoomOut}
+        sx={{ marginLeft: "8px" }}
+      >
+        <ZoomOutIcon />
+      </IconButton>
       <AddShift open={shiftModal} onClose={() => setShiftModal(false)} />
     </Stack>
   );

@@ -32,6 +32,8 @@ export const endpoints = {
     get_staff_settings: "/employeeSettings/employees",
     staff_compliance: (id: string) =>
       `/document/employees/${id}/documents/by-category/3`,
+    staff_all_documents: (id: string) =>
+      `/document/employees/${id}/documents/by-category/new`,
     delete_staff: "/user/soft",
     get_note: "/user/get-notes",
     update_notes: (id: string) => `/user/${id}/notes`,
@@ -43,7 +45,17 @@ export const endpoints = {
     upload_documents: "/document/upload",
     edit_document: "/document/updateDocument",
     delete_document: "/document",
-    timesheet: "/timesheets/employee"
+    timesheet: "/timesheets/employee",
+    get_category: "/document-categories/all",
+    get_sub_category: "/document-subcategories/all",
+    create_compliance: (employeeId: string, subcategoryId: string) =>
+      `/document/uploaded-documents/${employeeId}/${subcategoryId}`,
+    update_compliance: (
+      employeeId: string,
+      subcategoryId: string,
+      documentId: string
+    ) =>
+      `/document/uploaded-documents/${employeeId}/${subcategoryId}/${documentId}`
     // time_sheet: (id: number) => `/timesheets/${id}`
     // timesheets: "/timesheets/employee"
     // gettimesheet: "/timesheets/employee",

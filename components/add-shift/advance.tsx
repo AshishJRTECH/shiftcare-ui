@@ -335,7 +335,10 @@ const schema = yup.object().shape({
     })
   ),
   instruction: yup.string(),
-  clientId: yup.number().nullable().required("Please Select a Paricipant"),
+  clientIds: yup
+    .array()
+    .of(yup.number())
+    .required("Please Select a Paricipant"),
   employeeIds: yup.array().of(yup.number()).required("Please Select a Carer")
 });
 
@@ -389,7 +392,7 @@ export default function Advance({
         }
       ],
       instruction: "",
-      clientId: router.pathname.includes("participants")
+      clientIds: router.pathname.includes("participants")
         ? (id as string)
         : client
         ? (client as string)
@@ -404,7 +407,7 @@ export default function Advance({
 
   useEffect(() => {
     if (client) {
-      methods.setValue("clientId", client as string);
+      methods.setValue("clientIds", client as string);
       const _client: IClient = clients.find(
         (_data: IClient) => _data.id === parseInt(client as string)
       );
@@ -447,7 +450,7 @@ export default function Advance({
         dropOffApartmentNumber: shift?.dropOffApartmentNumber,
         tasks: shift?.tasks,
         instruction: shift?.instruction,
-        clientId: shift?.client.id.toString(),
+        clientIds: [shift?.client.id],
         employeeIds: [shift?.employee.id]
       });
     }
@@ -491,7 +494,7 @@ export default function Advance({
       breakTimeInMins: data.breakTimeInMins || 0,
       startTime: dayjs(data.startTime).format("HH:mm"),
       endTime: dayjs(data.endTime).format("HH:mm"),
-      clientId: parseInt(data.clientId as string),
+      clientIds: data.clientIds,
       id: shift?.id
       // instruction: JSON.stringify(editor?.getJSON(), null, 2)
     };

@@ -67,6 +67,11 @@ export const getStaffCompliance = async (id: string) => {
   return res.data;
 };
 
+export const getStaffAllDocuments = async (id: string) => {
+  const res = await axiosInstance.get(endpoints.staff.staff_all_documents(id));
+  return res.data;
+};
+
 export const deleteStaff = async (id: number) => {
   const res = await axiosInstance.put(`${endpoints.staff.delete_staff}/${id}`);
   return res.data;
@@ -198,3 +203,56 @@ export const getTimesheet = async (id: string) => {
 //   const res = await axiosInstance.get(endpoints.staff.time_sheet(id));
 //   return res.data;
 // };
+
+export const getCategory = async () => {
+  const res = await axiosInstance.get(endpoints.staff.get_category);
+  return res.data;
+};
+export const getSub_Category = async () => {
+  const res = await axiosInstance.get(endpoints.staff.get_sub_category);
+  return res.data;
+};
+
+export const addCompliance = async ({
+  employeeId,
+  subcategoryId,
+  data
+}: {
+  employeeId: string;
+  subcategoryId: string;
+  data: FormData;
+}) => {
+  try {
+    const res = await axiosInstance.post(
+      endpoints.staff.create_compliance(employeeId, subcategoryId),
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const updateCompliance = async ({
+  employeeId,
+  subcategoryId,
+  documentId,
+  data
+}: {
+  employeeId: string;
+  subcategoryId: string;
+  documentId: string;
+  data: FormData;
+}) => {
+  try {
+    const res = await axiosInstance.post(
+      endpoints.staff.update_compliance(employeeId, subcategoryId, documentId),
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};

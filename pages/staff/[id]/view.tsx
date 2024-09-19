@@ -1,6 +1,7 @@
 import {
   getNotes,
   getStaff,
+  getStaffAllDocuments,
   getStaffCompliance,
   getStaffSettings
 } from "@/api/functions/staff.api";
@@ -11,7 +12,10 @@ import Compliance from "@/components/staff-compliance/compliance";
 import Details from "@/components/staff-details/details";
 import Notes from "@/components/staff-notes/notes";
 import Settings from "@/components/staff-settings/settings";
-import { complianceData } from "@/interface/common.interface";
+import {
+  complianceData,
+  staffAllDocuments
+} from "@/interface/common.interface";
 import { ISettings, IStaff } from "@/interface/staff.interfaces";
 import assets from "@/json/assets";
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
@@ -49,6 +53,7 @@ interface QueryResult {
   staff: IStaff;
   settings: ISettings;
   compliance: complianceData[];
+  staffalldocuments: staffAllDocuments[];
   last_login: { "Last Login": number };
   notes: {
     notes: string;
@@ -83,6 +88,10 @@ export default function Index() {
       {
         queryKey: ["notes", id],
         queryFn: () => getNotes(id as string)
+      },
+      {
+        queryKey: ["staffalldocuments", id],
+        queryFn: () => getStaffAllDocuments(id as string)
       }
     ],
     combine: (results) => {
@@ -92,12 +101,14 @@ export default function Index() {
         compliance: results[2].data,
         last_login: results[3].data,
         notes: results[4].data,
+        staffalldocuments: results[5].data,
         isLoading:
           results[0].isLoading ||
           results[1].isLoading ||
           results[2].isLoading ||
           results[3].isLoading ||
-          results[4].isLoading
+          results[4].isLoading ||
+          results[5].isLoading
       };
     }
   });
@@ -260,9 +271,15 @@ export default function Index() {
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <Details staff={data.staff} />
             </Grid>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
+            {/* <Grid item lg={12} md={12} sm={12} xs={12}>
               <Compliance compliance_data={data.compliance} />
-            </Grid>
+            </Grid> */}
+            {data?.staffalldocuments &&
+              Object.keys(data.staffalldocuments).length > 0 && (
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                  <Compliance staffalldocuments={data.staffalldocuments} />
+                </Grid>
+              )}
           </Grid>
         </Grid>
         <Grid item md={4} sm={12} xs={12}>

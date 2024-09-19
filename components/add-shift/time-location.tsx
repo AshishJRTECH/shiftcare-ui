@@ -19,7 +19,7 @@ import {
   CustomStepperInput,
   daysOfWeek,
   repeatPeriods,
-  shiftTypeArray
+  shiftTypeArrays
 } from "./add-shift";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -38,7 +38,10 @@ export default function TimeLocation({
   shift?: Shift;
 }) {
   const { control, watch, setValue } = useFormContext();
-
+  console.log(
+    "==================== SHIFT INFORMATION ====================",
+    shiftTypeArrays
+  );
   return (
     <StyledPaper>
       <Stack direction="row" alignItems="center" gap={2}>
@@ -103,6 +106,41 @@ export default function TimeLocation({
               {shift?.address}
             </Typography>
           </Grid>
+
+          {shift?.isDropOffAddress && (
+            <>
+              <Grid item lg={5} md={6} sm={12} xs={12}>
+                Drop Off Address
+              </Grid>
+              <Grid item lg={7} md={6} sm={12} xs={12}>
+                <Typography variant="body1" textAlign="right">
+                  {shift?.dropOffAddress}
+                </Typography>
+              </Grid>
+              <Grid item lg={5} md={6} sm={12} xs={12}>
+                Drop Off Apartment Number
+              </Grid>
+              <Grid item lg={7} md={6} sm={12} xs={12}>
+                <Typography variant="body1" textAlign="right">
+                  {shift?.dropOffApartmentNumber}
+                </Typography>
+              </Grid>
+            </>
+          )}
+
+          {/* <Grid item lg={7} md={6} sm={12} xs={12}>
+            <Typography variant="body1" textAlign="right">
+              {shift?.dropOffAddress}
+            </Typography>
+          </Grid>
+          <Grid item lg={5} md={6} sm={12} xs={12}>
+            Drop Off Apartment Number
+          </Grid>
+          <Grid item lg={7} md={6} sm={12} xs={12}>
+            <Typography variant="body1" textAlign="right">
+              {shift?.dropOffApartmentNumber} 
+            </Typography>
+          </Grid> */}
         </Grid>
       ) : (
         <Grid container rowSpacing={2} columnSpacing={1} alignItems="center">
@@ -115,7 +153,7 @@ export default function TimeLocation({
               control={control}
               render={({ field }) => (
                 <Select fullWidth size="small" {...field}>
-                  {shiftTypeArray.map((_shift) => (
+                  {shiftTypeArrays.map((_shift) => (
                     <MenuItem value={_shift.id} key={_shift.id}>
                       {_shift.name}
                     </MenuItem>
@@ -150,7 +188,7 @@ export default function TimeLocation({
               )}
             />
           </Grid>
-          {!edit && (
+          {/* {!edit && (
             <Grid
               item
               lg={12}
@@ -173,7 +211,31 @@ export default function TimeLocation({
                 )}
               />
             </Grid>
-          )}
+          )} */}
+          {/* {!edit && ( */}
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            xs={12}
+            display="flex"
+            justifyContent="flex-end"
+          >
+            <Controller
+              control={control}
+              name="isShiftEndsNextDay"
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox size="small" />}
+                  label="Shift finishes the next day"
+                  checked={field.value}
+                  {...field}
+                />
+              )}
+            />
+          </Grid>
+
           <Grid item lg={4} md={6} sm={12} xs={12}>
             Time
           </Grid>
@@ -266,6 +328,7 @@ export default function TimeLocation({
                   <Grid item lg={4} md={6} sm={12} xs={12}>
                     <Typography>Recurrance</Typography>
                   </Grid>
+
                   <Grid item lg={8} md={6} sm={12} xs={12}>
                     <Controller
                       control={control}
@@ -279,12 +342,70 @@ export default function TimeLocation({
                         >
                           <MenuItem value="Daily">Daily</MenuItem>
                           <MenuItem value="Weekly">Weekly</MenuItem>
+                          <MenuItem value="Fortnight">Fortnight</MenuItem>
                           <MenuItem value="Monthly">Monthly</MenuItem>
                         </Select>
                       )}
                     />
                   </Grid>
-                  <Grid item lg={4} md={6} sm={12} xs={12}>
+
+                  {watch("recurrance") !== "Fortnight" && (
+                    // <Grid item lg={4} md={6} sm={12} xs={12}>
+                    //   <Typography>TEST</Typography>
+                    // </Grid>
+
+                    <>
+                      <Grid item lg={4} md={6} sm={12} xs={12}>
+                        <Typography>Repeat Every</Typography>
+                      </Grid>
+                      <Grid
+                        item
+                        lg={8}
+                        md={6}
+                        sm={12}
+                        xs={12}
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Controller
+                          control={control}
+                          name={
+                            watch("recurrance") === "Daily"
+                              ? "repeatNoOfDays"
+                              : watch("recurrance") === "Weekly"
+                              ? "repeatNoOfWeeks"
+                              : "repeatNoOfMonths"
+                          }
+                          render={({ field }) => (
+                            <Select
+                              fullWidth
+                              size="small"
+                              defaultValue="Weekly"
+                              {...field}
+                            >
+                              {repeatPeriods[
+                                watch(
+                                  "recurrance"
+                                ) as keyof typeof repeatPeriods
+                              ].repeats.map((_value: number) => (
+                                <MenuItem value={_value} key={_value}>
+                                  {_value}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          )}
+                        />
+                        <Typography paddingLeft={2}>
+                          {
+                            repeatPeriods[
+                              watch("recurrance") as keyof typeof repeatPeriods
+                            ].name
+                          }
+                        </Typography>
+                      </Grid>
+                    </>
+                  )}
+                  {/* <Grid item lg={4} md={6} sm={12} xs={12}>
                     <Typography>Repeat Every</Typography>
                   </Grid>
                   <Grid
@@ -329,7 +450,8 @@ export default function TimeLocation({
                         ].name
                       }
                     </Typography>
-                  </Grid>
+                  </Grid> */}
+
                   {repeatPeriods[
                     watch("recurrance") as keyof typeof repeatPeriods
                   ].display !== "" && (
@@ -428,6 +550,7 @@ export default function TimeLocation({
                       </Grid>
                     </>
                   )}
+
                   <Grid item lg={4} md={6} sm={12} xs={12}>
                     End Date
                   </Grid>
@@ -476,61 +599,61 @@ export default function TimeLocation({
               }}
             />
           </Grid>
-          {!edit && (
+          {/* {!edit && (
+            <> */}
+          <Grid
+            item
+            lg={12}
+            md={12}
+            sm={12}
+            xs={12}
+            display="flex"
+            justifyContent="flex-end"
+          >
+            <Controller
+              name="isDropOffAddress"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox size="small" />}
+                  checked={field.value}
+                  {...field}
+                  label="Drop off address"
+                />
+              )}
+            />
+          </Grid>
+          {watch("isDropOffAddress") && (
             <>
-              <Grid
-                item
-                lg={12}
-                md={12}
-                sm={12}
-                xs={12}
-                display="flex"
-                justifyContent="flex-end"
-              >
-                <Controller
-                  name="isDropOffAddress"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControlLabel
-                      control={<Checkbox size="small" />}
-                      checked={field.value}
-                      {...field}
-                      label="Drop off address"
-                    />
-                  )}
+              <Grid item lg={4} md={6} sm={12} xs={12}>
+                Drop off address
+              </Grid>
+              <Grid item lg={8} md={6} sm={12} xs={12}>
+                <CustomInput
+                  name="dropOffAddress"
+                  placeholder="Enter Address here"
                 />
               </Grid>
-              {watch("isDropOffAddress") && (
-                <>
-                  <Grid item lg={4} md={6} sm={12} xs={12}>
-                    Drop off address
-                  </Grid>
-                  <Grid item lg={8} md={6} sm={12} xs={12}>
-                    <CustomInput
-                      name="dropOffAddress"
-                      placeholder="Enter Address here"
-                    />
-                  </Grid>
-                  <Grid item lg={4} md={6} sm={12} xs={12}>
-                    Drop off Unit/Aparment number
-                  </Grid>
-                  <Grid item lg={8} md={6} sm={12} xs={12}>
-                    <CustomInput
-                      name="dropOffApartmentNumber"
-                      placeholder="Enter Unit/Apartment Number"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Iconify icon="bxs:building" color="#c0c4cc" />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  </Grid>
-                </>
-              )}
+              <Grid item lg={4} md={6} sm={12} xs={12}>
+                Drop off Unit/Aparment number
+              </Grid>
+              <Grid item lg={8} md={6} sm={12} xs={12}>
+                <CustomInput
+                  name="dropOffApartmentNumber"
+                  placeholder="Enter Unit/Apartment Number"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Iconify icon="bxs:building" color="#c0c4cc" />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
             </>
           )}
+          {/* </>
+          )} */}
         </Grid>
       )}
     </StyledPaper>

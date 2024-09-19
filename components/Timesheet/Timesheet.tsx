@@ -8,6 +8,13 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllShifts } from "@/api/functions/shift.api";
 
 export default function Timesheet({ shifts }: { shifts: Shift[] }) {
+  // Set locale to start the week on Monday
+  moment.updateLocale("en", {
+    week: {
+      dow: 1 // Monday is the first day of the week
+    }
+  });
+
   const [date, setDate] = useState(moment());
   const week = useMemo(
     () => [moment(date).startOf("week"), moment(date).endOf("week")],
@@ -15,6 +22,7 @@ export default function Timesheet({ shifts }: { shifts: Shift[] }) {
   );
   const [type, setType] = useState("weekly");
   const [view, setView] = useState("staff");
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const { data } = useQuery({
     queryKey: ["all_shifts", week[0], week[1], type, date],
@@ -33,18 +41,22 @@ export default function Timesheet({ shifts }: { shifts: Shift[] }) {
     initialData: shifts
   });
 
-  // const shiftsByCarer = useMemo(() => {
-  //   const _shifts: {
-  //     [key: number]: Shift[];
-  //   } = {};
-  //   shifts.forEach((_shift) => {
-  //     _shifts[_shift.employee.id] = [
-  //       ...(_shifts[_shift.employee.id] || []),
-  //       _shift
-  //     ];
-  //   });
-  //   return _shifts;
-  // }, shifts);
+  const zoomIn = () => {
+    setZoomLevel((prev) => {
+      const newZoomLevel = Math.min(prev + 0.1, 2.5); // Max zoom level 2
+      document.body.style.transform = `scale(${newZoomLevel})`;
+      document.body.style.transformOrigin = "0 0"; // Set origin to top-left
+      return newZoomLevel;
+    });
+  };
+
+  const zoomOut = () => {
+    setZoomLevel((prev) => {
+      const newZoomLevel = Math.max(prev - 0.1, 0.5); // Min zoom level 0.5
+      (document.body.style as any).zoom = `${newZoomLevel}`; // Use type assertion to avoid TypeScript error
+      return newZoomLevel;
+    });
+  };
 
   return (
     <Box>
@@ -56,6 +68,8 @@ export default function Timesheet({ shifts }: { shifts: Shift[] }) {
         setType={setType}
         view={view}
         setView={setView}
+        onZoomIn={zoomIn}
+        onZoomOut={zoomOut}
       />
       <TimeSheetTable
         day={type === "daily" ? date : week[0]}

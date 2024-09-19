@@ -35,3 +35,16 @@ body {
   color: #ff5630;
   margin-left: 5px !important;
 }
+
+.css-1anqmj6-MuiPopper-root-MuiPickersPopper-root {
+  z-index: 5000;
+}
+
+.css-10nakn3-MuiModal-root-MuiPopover-root-MuiMenu-root {
+  position: fixed;
+  z-index: 5000;
+  right: 0;
+  bottom: 0;
+  top: 0;
+  left: 0;
+}

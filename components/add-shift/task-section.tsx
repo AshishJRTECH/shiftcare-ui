@@ -6,13 +6,18 @@ import {
   Button,
   Checkbox,
   Divider,
+  FormControl,
   FormControlLabel,
+  FormHelperText,
+  IconButton,
+  MenuItem,
+  Select,
   TextField,
   Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 import {
   Controller,
   useFieldArray,
@@ -21,6 +26,7 @@ import {
 } from "react-hook-form";
 import * as yup from "yup";
 import AddIcon from "@mui/icons-material/Add";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 export default function TaskSection({
   view,
@@ -30,7 +36,6 @@ export default function TaskSection({
   edit?: boolean;
 }) {
   const { control, watch } = useFormContext();
-
   const { append, remove } = useFieldArray({
     name: "tasks",
     control: control
@@ -58,6 +63,12 @@ export default function TaskSection({
     reset();
   };
 
+  const [inputMode, setInputMode] = useState<"select" | "input">("select");
+
+  const toggleInputMode = () => {
+    setInputMode((prevMode) => (prevMode === "select" ? "input" : "select"));
+  };
+
   return (
     <StyledPaper>
       <Stack direction="row" alignItems="center" gap={2}>
@@ -79,34 +90,40 @@ export default function TaskSection({
           justifyContent="space-between"
           marginBottom={2}
         >
-          {/* <Controller
+          <Controller
             name="task"
             control={shortControl}
             render={({ field, fieldState: { invalid, error } }) => (
-              <TextField
-                size="small"
-                fullWidth
-                placeholder="Task Description"
-                {...field}
-                error={invalid}
-                helperText={error?.message}
-              />
-            )}
-          /> */}
-          <Controller
-            name="task"
-            control={control} // Ensure control object is correctly passed
-            render={({ field, fieldState: { invalid, error } }) => (
-              <TextField
-                size="small"
-                fullWidth
-                placeholder="Task Description"
-                {...field}
-                error={invalid}
-                helperText={error?.message}
-              />
+              <FormControl size="small" error={invalid}>
+                {inputMode === "select" ? (
+                  <Select {...field} displayEmpty>
+                    <MenuItem value="" disabled>
+                      Select Task
+                    </MenuItem>
+                    <MenuItem value="dummy1">Dummy 1</MenuItem>
+                    <MenuItem value="dummy2">Dummy 2</MenuItem>
+                    <MenuItem value="dummy3">Dummy 3</MenuItem>
+                    {/* Add more dummy values as needed */}
+                  </Select>
+                ) : (
+                  <TextField {...field} placeholder="Enter Task" size="small" />
+                )}
+                {error && <FormHelperText>{error.message}</FormHelperText>}
+              </FormControl>
             )}
           />
+          {/* <IconButton onClick={toggleInputMode} size="small">
+            <SwapHorizIcon />
+          </IconButton> */}
+          <Stack direction="row" alignItems="center" gap={1}>
+            <IconButton onClick={toggleInputMode} size="small">
+              <SwapHorizIcon />
+            </IconButton>
+            <Typography variant="body2">
+              {inputMode === "select" ? "Select Input Box" : "Select List Box"}
+            </Typography>
+          </Stack>
+
           <Controller
             name="isTaskMandatory"
             control={shortControl}
@@ -119,6 +136,7 @@ export default function TaskSection({
               />
             )}
           />
+
           <Button
             startIcon={<AddIcon fontSize="small" />}
             variant="contained"
@@ -126,7 +144,7 @@ export default function TaskSection({
             sx={{ minWidth: "auto", marginTop: "5px" }}
             onClick={handleSubmit(onSubmit)}
           >
-            Task
+            Add Task
           </Button>
         </Stack>
         {watch("tasks").map((_task: Task, index: number) => (

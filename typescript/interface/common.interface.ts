@@ -115,4 +115,26 @@ export interface complianceData {
   clientDocumentCategory: string;
 }
 
+export interface documents {
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+  lastUpdated: number;
+  downloadURL: string;
+  expiryDate: number;
+  expiry: boolean;
+  status: boolean;
+  employee: number;
+  documentSubCategory: string;
+  client: number;
+  clientDocumentCategory: string;
+}
+export interface staffAllDocuments {
+  Competencies: documents[];
+  Qualifications: documents[];
+  Compliance: documents[];
+  KPI: documents[];
+  Other: documents[];
+}
+
 export {};

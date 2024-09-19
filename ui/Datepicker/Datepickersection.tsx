@@ -58,7 +58,7 @@ const DatepickerWrapper = styled(Box)`
           right: 15px;
           padding: 15px;
           width: auto;
-          z-index: 100;
+          z-index: 5000;
           .MuiSvgIcon-root {
             display: none;
           }
@@ -80,7 +80,7 @@ const DatepickerWrapper = styled(Box)`
     width: 100%;
     height: 100%;
     background-color: ${primary.contrastText};
-    z-index: 99;
+    z-index: 5000;
 
     &.MuiFormControl-root {
       .MuiInputBase-root {

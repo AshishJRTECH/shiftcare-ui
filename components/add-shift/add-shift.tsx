@@ -30,6 +30,7 @@ import {
 } from "@mui/base/Unstable_NumberInput";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddIcon from "@mui/icons-material/Add";
+import RepeatIcon from "@mui/icons-material/Repeat";
 import useGoogle from "react-google-autocomplete/lib/usePlacesAutocompleteService";
 import CustomInput from "@/ui/Inputs/CustomInput";
 import {
@@ -64,7 +65,7 @@ import { queryClient } from "pages/_app";
 import ShiftRelatedNotes from "./shift-related-notes";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import AddNoteModal from "./addNoteModal";
-import Advance from "../add-shift/advance";
+import RepeatShift from "../add-shift/repeat-shift";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -232,10 +233,15 @@ export const repeatPeriods = {
     repeats: [1, 2, 3],
     name: "Month",
     display: "daysOfMonth"
+  },
+  Fortnight: {
+    repeats: [1, 2, 3],
+    name: "Fortnight",
+    display: "fortnight"
   }
 };
 
-export const shiftTypeArray = [
+export const shiftTypeArrays = [
   {
     id: "PersonalCare",
     name: "Personal Care"
@@ -265,6 +271,61 @@ export const shiftTypeArray = [
     name: "Transport"
   }
 ];
+
+// export const shiftTypeArrays = [
+//   {
+//     id: "CommunityNursing",
+//     name: "Community Nursing"
+//   },
+//   {
+//     id: "OccupationalTherapy",
+//     name: "Occupational Therapy"
+//   },
+//   {
+//     id: "YardMaintenance",
+//     name: "Yard Maintenance"
+//   },
+//   {
+//     id: "Gardening",
+//     name: "Gardening"
+//   },
+//   {
+//     id: "Cleaning",
+//     name: "Cleaning"
+//   },
+//   {
+//     id: "AssistanceWithSelfCare",
+//     name: "Assistance With Self-Care"
+//   },
+//   {
+//     id: "InHomeCare",
+//     name: "In Home Care"
+//   },
+//   {
+//     id: "CommunityAccess",
+//     name: "Community Access"
+//   },
+//   {
+//     id: "AccessibleTransport",
+//     name: "Accessible Transport"
+//   },
+//   {
+//     id: "SkillsDevelopment",
+//     name: "Skills Development"
+//   },
+//   {
+//     id: "GroupAndCenterBasedActivities",
+//     name: "Group And Center Based Activities"
+//   },
+//   {
+//     id: "SupportCoordination",
+//     name: "Support Coordination"
+//   },
+//   {
+//     id: "RespiteCare",
+//     name: "Respite Care"
+//   }
+// ];
 
 export const daysOfWeek = [
   {
@@ -301,11 +362,13 @@ interface AddShiftProps extends DrawerProps {
   isClient?: boolean;
   view?: boolean;
   edit?: boolean;
+  repeatshift?: boolean;
   setViewModal?: React.Dispatch<SetStateAction<boolean>>;
   setEditModal?: React.Dispatch<SetStateAction<boolean>>;
   shift?: Shift;
   onClose: () => void;
   selectedDate?: Moment | null;
+  // onSelectId: (id: number) => void;
 }
 
 const schema = yup.object().shape({
@@ -344,8 +407,10 @@ const schema = yup.object().shape({
 });
 
 export default function AddShift({
+  // onSelectId,
   view,
   edit,
+  repeatshift,
   setViewModal,
   setEditModal,
   shift,
@@ -355,7 +420,8 @@ export default function AddShift({
   const { id } = useParams();
   const role = getRole();
   const { staff, client } = router.query;
-
+  const [repeatshiftModal, setRepeatShiftModal] = useState(false);
+  // const [shiftModal, setShiftModal] = useState(false);
   const { data: clients, isLoading } = useQuery({
     queryKey: ["client_list"],
     queryFn: () => getAllClients(),
@@ -363,7 +429,7 @@ export default function AddShift({
   });
 
   const [noteModal, setNoteModal] = useState(false);
-
+  const [selectedId, setSelectedId] = useState("");
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -376,7 +442,7 @@ export default function AddShift({
       address: "",
       apartmentNumber: "",
       isDropOffAddress: false,
-      shiftType: shiftTypeArray[0].id,
+      shiftType: shiftTypeArrays[0].id,
       recurrance: "Daily",
       repeatNoOfDays: "1",
       repeatNoOfWeeks: "1",
@@ -409,6 +475,7 @@ export default function AddShift({
 
   useEffect(() => {
     if (client) {
+      // methods.setValue("clientId", client as string);
       methods.setValue("clientIds", [parseInt(client as string)]);
       const _client: IClient = clients.find(
         (_data: IClient) => _data.id === parseInt(client as string)
@@ -501,17 +568,27 @@ export default function AddShift({
       id: shift?.id
       // instruction: JSON.stringify(editor?.getJSON(), null, 2)
     };
+    console.log(
+      "-------------------- Form Data ------------------------",
+      newData
+    );
     if (edit) editMutate(newData);
     else mutate(newData);
   };
 
-  const [advanceModal, setAdvanceModal] = useState(false);
-
+  const handleRepeatShift = (id: any) => {
+    setSelectedId(id);
+    // Logic to handle repeating the shift with the given ID
+    console.log(
+      "---------------Repeating shift with ID:---------------------",
+      id
+    );
+  };
   return (
     <StyledDrawer
       anchor="right"
       {...props}
-      open={props.open || view || edit}
+      open={props.open || view || edit || repeatshift}
       PaperProps={{
         className: "drawer"
       }}
@@ -558,32 +635,6 @@ export default function AddShift({
           </Button>
         ) : !view ? (
           <Stack direction="row" alignItems="center" gap={1}>
-            {/* <Button
-              variant="contained"
-              startIcon={<Iconify icon="basil:home-outline" fontSize={14} />}
-              onClick={() => {
-                if (setViewModal) {
-                  // setEditModal(false);
-                  setViewModal(false);
-                }
-              }}
-            >
-              Advance
-            </Button> */}
-
-            <Button
-              variant="contained"
-              startIcon={<Iconify icon="basil:home-outline" fontSize={14} />}
-              onClick={() => setAdvanceModal(true)}
-            >
-              Advance
-            </Button>
-
-            <Advance
-              open={advanceModal}
-              onClose={() => setAdvanceModal(false)}
-            />
-
             <LoadingButton
               variant="contained"
               startIcon={<Iconify icon="ic:baseline-save" />}
@@ -606,6 +657,21 @@ export default function AddShift({
             >
               Cancel Shift
             </LoadingButton>
+            <Button
+              variant="contained"
+              startIcon={<RepeatIcon />}
+              onClick={() => {
+                handleRepeatShift(shift?.id as number); // Pass the ID here
+                setRepeatShiftModal(true);
+              }}
+            >
+              Repeat Shift
+            </Button>
+            <RepeatShift
+              open={repeatshiftModal}
+              onClose={() => setRepeatShiftModal(false)}
+              id={selectedId}
+            />
             <Button
               variant="contained"
               startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}

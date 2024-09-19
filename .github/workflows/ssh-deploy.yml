@@ -1,40 +1,60 @@
-name: vps-deploy
+name: CI/CD Pipeline for Sensible Health Application
 
 on:
   push:
-    branches: ["main"]
+    branches:
+      - main
 
 env:
   REGISTRY: dockerhub.io
-  IMAGE_NAME: aannaassalam/shiftcare-jr:latest
+  IMAGE_NAME: mdsalimjrtechnologies/shift-care-jr:latest
 
 jobs:
-  publish:
-    name: publish docker image
+  build-and-publish:
+    name: Publish Docker Image
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to docker
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.12.2"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js application
+        run: npm run build
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build and push Docker image
         run: |
-          echo ${{ secrets.DOCKER_HUB_TOKEN }} | docker login -u ${{secrets.DOCKER_HUB_USERNAME}} --password-stdin
-      - name: Build and Publish in docker hub
-        run: |
-          docker-compose build
-          docker-compose push
+          docker build --no-cache -t ${{ env.IMAGE_NAME }} .
+          docker push ${{ env.IMAGE_NAME }}
 
   deploy:
-    needs: publish
-    name: deploy image in remote vps
+    name: Deploy Image in Remote VPS
     runs-on: ubuntu-latest
+    needs: build-and-publish
 
     steps:
-      - name: Login to vps and deploy
-        uses: appleboy/ssh-action@v1.0.3
+      - name: SSH into WildFly server
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{secrets.SSH_HOST}}
-          username: ${{secrets.SSH_USERNAME}}
-          # key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASS }}
-          port: 22
-          script: whoami
+          command_timeout: 30m
+          script: |
+            cd /var/www/NextJS/Sensible-Health-JR
+            docker pull ${{ env.IMAGE_NAME }}
+            docker-compose down
+            docker-compose up -d

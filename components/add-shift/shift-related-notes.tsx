@@ -1,16 +1,17 @@
 import { getAllShiftNotes } from "@/api/functions/client.api";
 import { Shift, ShiftNotes } from "@/interface/shift.interface";
-import assets from "@/json/assets";
 import StyledPaper from "@/ui/Paper/Paper";
 import styled from "@emotion/styled";
 import { CircularProgress, Divider, Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import Image from "next/image";
-import Link from "next/link";
-import prettyBytes from "pretty-bytes";
+import React from "react";
 import Iconify from "../Iconify/Iconify";
+import Image from "next/image";
+import assets from "@/json/assets";
+import prettyBytes from "pretty-bytes";
+import Link from "next/link";
 
 const StyledBox = styled(Box)`
   padding: 15px 10px;

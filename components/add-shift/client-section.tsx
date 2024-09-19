@@ -1,10 +1,11 @@
 import { getAllClients } from "@/api/functions/client.api";
 import { IClient } from "@/interface/client.interface";
-import { Shift } from "@/interface/shift.interface";
+import { ClientList, Shift } from "@/interface/shift.interface";
 import assets from "@/json/assets";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import StyledPaper from "@/ui/Paper/Paper";
 import {
+  CircularProgress,
   Divider,
   FormHelperText,
   Grid,
@@ -16,7 +17,7 @@ import { Box, Stack } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
 export default function ClientSection({
@@ -37,9 +38,10 @@ export default function ClientSection({
     enabled: role === "ROLE_ADMINS"
   });
 
-  useEffect(() => {
-    console.log("============== Dropdown Data Check =================", data);
-  }, data);
+  console.log(
+    ":::::::::::::::::: Participant Data Read ::::::::::::::::::",
+    data
+  );
 
   return (
     <StyledPaper>
@@ -51,7 +53,7 @@ export default function ClientSection({
           height={512}
           className="icon"
         />
-        <Typography variant="h6">Participant</Typography>
+        <Typography variant="h6">Paritcipant</Typography>
       </Stack>
       <Divider sx={{ marginBlock: "10px" }} />
       {view ? (
@@ -64,9 +66,16 @@ export default function ClientSection({
               href={`/participants/${shift?.client?.id}/view`}
               style={{ textDecoration: "none", color: "#333" }}
             >
-              <Typography variant="body1" textAlign="right">
-                {shift?.client.displayName}
-              </Typography>
+              {
+                <Typography variant="body1" textAlign="right">
+                  {shift?.client.displayName}
+                </Typography>
+                // <Typography variant="body1" textAlign="right">
+                //   {(shift?.client as unknown as ClientList[])
+                //     ?.map((c) => c.displayName)
+                //     .join(", ")}
+                // </Typography>
+              }
             </Link>
           </Grid>
         </Grid>
@@ -76,7 +85,7 @@ export default function ClientSection({
             <Typography>Choose Participant</Typography>
           </Grid>
           <Grid item lg={8} md={6} sm={12} xs={12}>
-            <Controller
+            {/* <Controller
               control={control}
               name="clientIds"
               render={({ field, fieldState: { error, invalid } }) => {
@@ -98,7 +107,7 @@ export default function ClientSection({
                       displayEmpty
                       renderValue={
                         field.value?.length !== 0
-                          ? () => "Select Participant"
+                          ? undefined
                           : () => "Select Participant"
                       }
                       multiple
@@ -109,6 +118,52 @@ export default function ClientSection({
                         data?.map((_data: IClient) => (
                           <MenuItem value={_data.id} key={_data.id}>
                             {_data.firstName} {_data.lastName}
+                          </MenuItem>
+                        ))
+                      )}
+                    </Select>
+                    {invalid && (
+                      <FormHelperText>{error?.message}</FormHelperText>
+                    )}
+                  </Box>
+                );
+              }}
+            /> */}
+
+            <Controller
+              control={control}
+              name="clientIds"
+              render={({ field, fieldState: { error, invalid } }) => {
+                return (
+                  <Box>
+                    <Select
+                      fullWidth
+                      size="small"
+                      {...field}
+                      value={Array.isArray(field.value) ? field.value : []} // Ensure value is always an array
+                      onChange={(e) => {
+                        const _value = e.target.value;
+                        field.onChange(
+                          Array.isArray(_value) ? _value : [_value]
+                        ); // Always treat value as an array
+                      }}
+                      displayEmpty
+                      renderValue={
+                        field.value?.length !== 0
+                          ? undefined
+                          : () => "Select Participant"
+                      }
+                      multiple
+                    >
+                      {isLoading ? (
+                        <MenuItem disabled>
+                          <CircularProgress size={20} />
+                          Loading...
+                        </MenuItem>
+                      ) : (
+                        data?.map((_data: IClient) => (
+                          <MenuItem value={_data.id} key={_data.id}>
+                            {_data.displayName}
                           </MenuItem>
                         ))
                       )}

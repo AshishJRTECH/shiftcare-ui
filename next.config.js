@@ -9,7 +9,7 @@ module.exports = {
     includePaths: [path.join(__dirname, "styles")]
   },
   images: {
-    domains: ["http://192.168.99.14:8080"]
+    domains: ["192.168.99.14:8080"]
   },
   swcMinify: true,
   compress: true,

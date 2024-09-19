@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { getStaffList } from "@/api/functions/staff.api";
 import { Shift } from "@/interface/shift.interface";
 import { IStaff } from "@/interface/staff.interfaces";
@@ -5,7 +6,9 @@ import assets from "@/json/assets";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import StyledPaper from "@/ui/Paper/Paper";
 import {
+  Checkbox,
   Divider,
+  FormControlLabel,
   FormHelperText,
   Grid,
   MenuItem,
@@ -19,6 +22,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { useRouter } from "next/router";
 
 export default function StaffSection({
   view,
@@ -29,8 +33,9 @@ export default function StaffSection({
   edit?: boolean;
   shift?: Shift;
 }) {
-  const { control } = useFormContext();
+  const { control, watch, setValue } = useFormContext();
   const role = getRole();
+  const isOpenShift = watch("isOpenShift");
 
   const { data, isLoading } = useQuery({
     queryKey: ["user_list"],
@@ -38,6 +43,24 @@ export default function StaffSection({
     enabled: role === "ROLE_ADMIN"
   });
 
+  useEffect(() => {
+    if (isOpenShift) {
+      // Unselect all selected carers by resetting employeeIds
+      setValue("employeeIds", []);
+    }
+  }, [isOpenShift, setValue]);
+
+  // console.log("------------- Staff List --------------", data);
+  console.log("------------- Exact Shift in Shift --------------", shift);
+
+  // console.log("============ SHIFT EDITABLE DATA =============", shift);
+  const router = useRouter();
+  const [staffId, setStaffId] = useState<string | null>(null);
+  useEffect(() => {
+    if (router.query.staff) {
+      setStaffId(router.query.staff as string);
+    }
+  }, [router.query.staff]);
   return (
     <StyledPaper>
       <Stack direction="row" alignItems="center" gap={2}>
@@ -99,53 +122,82 @@ export default function StaffSection({
       ) : (
         <Grid container alignItems="center">
           <Grid item lg={4} md={6} sm={12} xs={12}>
-            <Typography>Choose Carer</Typography>
-          </Grid>
-          <Grid item lg={8} md={6} sm={12} xs={12}>
-            <Controller
+            {/* <Controller
+              name="isOpenShift"
               control={control}
-              name="employeeIds"
-              render={({ field, fieldState: { error, invalid } }) => {
-                return (
-                  <Box>
-                    <Select
-                      fullWidth
-                      size="small"
-                      {...field}
-                      onChange={(e) => {
-                        const _value = e.target.value;
-                        field.onChange(
-                          typeof _value === "string"
-                            ? _value.split(",")
-                            : _value
-                        );
-                      }}
-                      displayEmpty
-                      renderValue={
-                        field.value?.length !== 0
-                          ? undefined
-                          : () => "Select Carer"
-                      }
-                      multiple
-                    >
-                      {isLoading ? (
-                        <MenuItem disabled>Loading...</MenuItem>
-                      ) : (
-                        data?.map((_data: IStaff) => (
-                          <MenuItem value={_data.id} key={_data.id}>
-                            {_data.name}
-                          </MenuItem>
-                        ))
-                      )}
-                    </Select>
-                    {invalid && (
-                      <FormHelperText>{error?.message}</FormHelperText>
-                    )}
-                  </Box>
-                );
-              }}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox size="small" />}
+                  checked={field.value}
+                  {...field}
+                  label="Is Open Shift"
+                />
+              )}
+            /> */}
+            <Controller
+              name="isOpenShift"
+              control={control}
+              render={({ field }) => (
+                <FormControlLabel
+                  control={<Checkbox size="small" />}
+                  checked={staffId === "2" ? true : field.value} // Check if staffId is 2
+                  {...field}
+                  label="Is Open Shift"
+                />
+              )}
             />
           </Grid>
+          <Grid item lg={8} md={6} sm={12} xs={12}></Grid>
+          {!isOpenShift && staffId !== "2" && (
+            <Grid container alignItems="center">
+              <Grid item lg={4} md={6} sm={12} xs={12}>
+                <Typography>Choose Carer</Typography>
+              </Grid>
+              <Grid item lg={8} md={6} sm={12} xs={12}>
+                <Controller
+                  control={control}
+                  name="employeeIds"
+                  render={({ field, fieldState: { error, invalid } }) => {
+                    return (
+                      <Box>
+                        <Select
+                          fullWidth
+                          size="small"
+                          {...field}
+                          value={field.value || []} // Ensure value is an array
+                          onChange={(e) => {
+                            const _value = e.target.value;
+                            field.onChange(_value); // _value should already be an array
+                          }}
+                          displayEmpty
+                          renderValue={
+                            field.value?.length !== 0
+                              ? undefined
+                              : () => "Select Carer"
+                          }
+                          multiple
+                        >
+                          {isLoading ? (
+                            <MenuItem disabled>Loading...</MenuItem>
+                          ) : (
+                            // data?.map((_data: IStaff) => (
+                            data?.slice(1).map((_data: IStaff) => (
+                              <MenuItem value={_data.id} key={_data.id}>
+                                {_data.name}
+                              </MenuItem>
+                            ))
+                          )}
+                        </Select>
+                        {invalid && (
+                          <FormHelperText>{error?.message}</FormHelperText>
+                        )}
+                      </Box>
+                    );
+                  }}
+                />
+              </Grid>
+            </Grid>
+          )}
         </Grid>
       )}
     </StyledPaper>

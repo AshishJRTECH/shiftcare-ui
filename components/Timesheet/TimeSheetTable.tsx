@@ -1,3 +1,5 @@
+"use client"; // To make this component from server to client
+
 import {
   Paper,
   Popover,
@@ -12,23 +14,32 @@ import {
   Typography,
   tooltipClasses
 } from "@mui/material";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Shift from "./shift";
 import styled from "@emotion/styled";
 import moment, { Moment } from "moment";
 import { Shift as IShift } from "@/interface/shift.interface";
-import { Box, Stack, palette } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 import AddShift from "../add-shift/add-shift";
 import { useRouter } from "next/router";
-import { useQuery } from "@tanstack/react-query";
 import { getStaffList } from "@/api/functions/staff.api";
 import { IStaff } from "@/interface/staff.interfaces";
 import Loader from "@/ui/Loader/Loder";
 import { getAllClients } from "@/api/functions/client.api";
 import { IClient } from "@/interface/client.interface";
 import Link from "next/link";
-import { primary } from "@/themes/_muiPalette";
+import { Button } from "@mui/material";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import CancelIcon from "@mui/icons-material/Cancel";
+import CancelShiftIcon from "@mui/icons-material/CancelOutlined";
+import { ButtonGroup } from "@mui/material";
+import { cancelShiftInBulk } from "@/api/functions/shift.api";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { queryClient } from "pages/_app";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { getAllShiftsIdList } from "@/api/functions/shift.api";
+import { parseCookies } from "nookies";
 
 const StyledTable = styled(Table)`
   border: 1px solid #ddd;
@@ -43,16 +54,16 @@ const StyledTable = styled(Table)`
     td {
       background-color: #fff;
       &.named-cell {
-        min-width: 200px;
-        max-width: 200px;
+        min-width: 160px;
+        max-width: 160px;
         a {
           color: #333;
           text-decoration: none;
         }
       }
       &:not(.named-cell) {
-        min-width: 160px;
-        max-width: 160px;
+        min-width: 118px;
+        max-width: 118px;
         padding: 0;
         padding-block: 5px;
       }
@@ -80,6 +91,93 @@ const StyledTable = styled(Table)`
       }
     }
   }
+  .css-dsbshu {
+    padding: 16px;
+    padding-left: 10px;
+    width: 94%;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    border-radius: 10px;
+    margin: 5px;
+    border: 1px solid #16b0b1;
+  }
+  /* .css-z2uvy6-MuiTable-root tbody td:not(.named-cell) {
+    min-width: 112px !important;
+    max-width: 112px !important;
+    padding: 5px;
+    padding-block: 5px;
+  } */
+
+  // To make the ShiftBox display all in table Cell
+  .css-1qajr08 {
+    position: relative;
+    top: 5px;
+    left: 0;
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .css-10g438z {
+    padding: 16px;
+    padding-left: 10px;
+    width: 100%;
+    background-color: #f0f0f0cf;
+    cursor: pointer;
+    padding: 16px;
+    padding-left: 10px;
+    width: auto;
+    border: 0.5px solid #cecece;
+    border-radius: 3px;
+    margin: 3px 5px;
+    padding: 1px 10px;
+    border-bottom: 2px solid #aeaeae;
+    /* background: repeating-linear-gradient(
+      45deg,
+      #d9d9d9,
+      #ffffff 1px,
+      #ffffff 2px,
+      #ffffff 3px
+    ); */
+
+    /* background: repeating-linear-gradient(
+      136deg,
+      #b6dde3,
+      #ffffffc4 15px,
+      #ffffff 0px,
+      #ffffff 14px
+    ); */
+  }
+
+  .new-shift-title {
+    font-size: 11px;
+    color: #000000;
+  }
+
+  .new-shift-box {
+    border: 1px solid #d1d1d1;
+    margin: 5px;
+    text-align: center;
+    font-size: 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #ffffff;
+  }
+
+  .new-shift-box:hover {
+    border: 1px solid #8a8a8a;
+    margin: 5px;
+    text-align: center;
+    border-radius: 3px;
+    cursor: pointer;
+    background-color: #1877f2;
+    font-weight: bold;
+    color: #ffffff;
+
+    .new-shift-title {
+      font-size: 11px;
+      color: #ffffff;
+    }
+  }
 `;
 
 const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -99,11 +197,15 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
 export const ShiftBox = ({
   shifts = [],
   isClient,
-  isMonthly
+  isMonthly,
+  bulkaction,
+  selectall
 }: {
   shifts: IShift[];
   isClient?: boolean;
   isMonthly?: boolean;
+  bulkaction?: boolean;
+  selectall?: boolean;
 }) => {
   const otherShifts = (
     <Stack spacing={1.5} sx={{ padding: "10px 5px" }}>
@@ -113,6 +215,8 @@ export const ShiftBox = ({
           key={_shift.id}
           type={"comfortable"}
           isClient={isClient}
+          bulkaction={bulkaction}
+          selectall={selectall}
         />
       ))}
     </Stack>
@@ -127,15 +231,27 @@ export const ShiftBox = ({
         width: "100%"
       }}
     >
-      {shifts.slice(0, 1).map((_shift) => (
+      {/* {shifts.slice(0, 1).map((_shift) => (
         <Shift
           shift={_shift}
           key={_shift.id}
           type={"comfortable"}
           isClient={isClient}
+          bulkaction={bulkaction}
+          selectall={selectall}
+        />
+      ))} */}
+      {shifts.map((_shift) => (
+        <Shift
+          shift={_shift}
+          key={_shift.id}
+          type={"comfortable"}
+          isClient={isClient}
+          bulkaction={bulkaction}
+          selectall={selectall}
         />
       ))}
-      <StyledTooltip title={otherShifts}>
+      {/* <StyledTooltip title={otherShifts}>
         <Typography
           variant="body1"
           style={{
@@ -150,7 +266,7 @@ export const ShiftBox = ({
         >
           {shifts.length > 1 && `+ ${shifts.length - 1} more`}
         </Typography>
-      </StyledTooltip>
+      </StyledTooltip> */}
     </Box>
   );
 };
@@ -167,7 +283,7 @@ export default function TimeSheetTable({
   shifts: IShift[];
 }) {
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
-
+  const [allSelectedData, setAllselecteddata] = useState<number[]>([]);
   const router = useRouter();
 
   const { data: staffs, isLoading } = useQuery({
@@ -179,6 +295,38 @@ export default function TimeSheetTable({
     queryKey: ["client_list"],
     queryFn: () => getAllClients()
   });
+
+  // console.log("####################################Client Information", staffs);
+
+  const cookies = parseCookies();
+  const token: string = cookies[process.env.NEXT_APP_TOKEN_NAME!];
+
+  const { data: ShiftIdList } = useQuery({
+    queryKey: ["shift_id_list"],
+    queryFn: () => getAllShiftsIdList({ token })
+  });
+  // console.log(":::::::::::::TOKEN::::::::::::", token);
+
+  useEffect(() => {
+    if (
+      ShiftIdList &&
+      ShiftIdList.shiftIds &&
+      ShiftIdList.shiftIds.length > 0
+    ) {
+      const formattedShiftIds = ShiftIdList.shiftIds.map(
+        (id: any, index: number) => index + 1
+      );
+      setAllselecteddata(formattedShiftIds);
+      // console.log("Shift Id List is here::::::::::::", formattedShiftIds);
+      console.log("Shift Id List is here::::::::::::", allSelectedData);
+      sessionStorage.setItem(
+        "shiftIdsList",
+        JSON.stringify(ShiftIdList.shiftIds)
+      );
+    } else {
+      // console.log("ShiftIdList or shiftIds is empty or undefined");
+    }
+  }, [ShiftIdList]); // Only runs when ShiftIdList changes
 
   const times = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -193,6 +341,62 @@ export default function TimeSheetTable({
     [day]
   );
 
+  const [bulkaction, setBulkAction] = useState(false);
+  const [selectall, setSelectAll] = useState(false);
+
+  useEffect(() => {
+    // console.log("selectAll after update:", selectall); // This will log the correct updated value
+  }, [selectall]);
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: cancelShiftInBulk
+    // onSuccess: () => {}
+  });
+
+  const cancelBulkShift = () => {
+    // Read the current array from session storage
+    const savedIds = sessionStorage.getItem("shiftIds");
+
+    if (selectall === true) {
+      // if (allSelectedData) {
+      //   // const allselectedShifts = JSON.parse(allSelectedData) as number[];
+      //   mutate(allSelectedData);
+      // }
+      if (savedIds) {
+        const shiftIdsArray = JSON.parse(savedIds) as number[];
+        mutate(shiftIdsArray);
+        // console.log("Cancel the selected Shift:", shiftIdsArray);
+
+        // Uncomment the below code once the above function begin to work fine
+        // // Clear the session storage
+        sessionStorage.removeItem("shiftIds");
+
+        // // Optionally, you could save an empty array to the session storage (not strictly necessary)
+        sessionStorage.setItem("shiftIds", JSON.stringify([]));
+
+        // // Update the component state to reflect the cleared array
+        // setShiftIds([]);
+      }
+    } else {
+      if (savedIds) {
+        const shiftIdsArray = JSON.parse(savedIds) as number[];
+        mutate(shiftIdsArray);
+        // console.log("Cancel the selected Shift:", shiftIdsArray);
+
+        // Uncomment the below code once the above function begin to work fine
+        // // Clear the session storage
+        sessionStorage.removeItem("shiftIds");
+
+        // // Optionally, you could save an empty array to the session storage (not strictly necessary)
+        sessionStorage.setItem("shiftIds", JSON.stringify([]));
+
+        // // Update the component state to reflect the cleared array
+        // setShiftIds([]);
+      }
+    }
+  };
+
+  // ----------------- CODE FOR STAFFs --------------------
   const renderStaffs = staffs?.map((_carer: IStaff) => {
     let hours = 0;
     shifts.forEach((_shift) => {
@@ -218,9 +422,11 @@ export default function TimeSheetTable({
         }
       }
     });
+
     return (
+      // ------------------ FIRST COLUMN OF ROSTER START HERE -----------------
       <TableRow key={_carer.id}>
-        <TableCell className="named-cell">
+        {/* <TableCell className="named-cell">
           <Link href={`/staff/${_carer.id}/view`}>
             <Typography
               variant="body1"
@@ -234,7 +440,27 @@ export default function TimeSheetTable({
             </Typography>
           </Link>
           {hours} Hours
+        </TableCell> */}
+
+        <TableCell className="named-cell">
+          <Link href={`/staff/${_carer.id}/view`}>
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: "500",
+                fontSize: "15px",
+                marginBottom: "5px",
+                color: _carer.name === "Open Shift" ? "red" : "#000000", // Change color conditionally
+                textTransform:
+                  _carer.name === "Open Shift" ? "uppercase" : "none" // Transform text to uppercase conditionally
+              }}
+            >
+              {_carer.name}
+            </Typography>
+          </Link>
+          {hours} Hours
         </TableCell>
+
         {type === "daily"
           ? times.map((_time) => {
               const shifts_based_on_time = shifts.find(
@@ -276,12 +502,14 @@ export default function TimeSheetTable({
                   sx={{ minWidth: "150px" }}
                 >
                   {exactShift ? (
+                    // --------------- Alloted Shift start here --------------
                     <Shift
                       shift={exactShift}
                       key={exactShift?.id}
                       type={"comfortable"}
                     />
-                  ) : null}
+                  ) : // --------------- Alloted Shift end here --------------
+                  null}
                 </TableCell>
               ) : null;
             })
@@ -312,7 +540,7 @@ export default function TimeSheetTable({
                     backgroundColor:
                       moment().format("DD/MM/YYYY") ===
                       _date.format("DD/MM/YYYY")
-                        ? "rgb(24, 119, 242,0.08) !important"
+                        ? "rgba(0, 169, 169, 0.08) !important"
                         : "rgb(249, 250, 251)"
                   }}
                   colSpan={
@@ -323,7 +551,33 @@ export default function TimeSheetTable({
                   }
                 >
                   {carerShiftsByDate.length > 0 ? (
-                    <ShiftBox shifts={carerShiftsByDate} />
+                    <>
+                      <ShiftBox
+                        shifts={carerShiftsByDate}
+                        bulkaction={bulkaction}
+                        selectall={selectall}
+                      />
+                      <Box
+                        className="new-shift-box"
+                        onClick={() => {
+                          router.replace(
+                            {
+                              query: {
+                                staff: _carer.id
+                              }
+                            },
+                            undefined,
+                            { shallow: true }
+                          );
+                          setSelectedDate(_date);
+                        }}
+                      >
+                        <Typography variant="body1" className="new-shift-title">
+                          {/* <AddIcon sx={{ marginRight: "10px" }} /> Shift */}
+                          Add more shift
+                        </Typography>
+                      </Box>
+                    </>
                   ) : (
                     <Box
                       className="add-shift-box"
@@ -352,6 +606,7 @@ export default function TimeSheetTable({
     );
   });
 
+  // ----------------- CODE FOR CLIENTs --------------------
   const renderClients = clients?.map((_client: IClient) => {
     let hours = 0;
     shifts.forEach((_shift) => {
@@ -430,13 +685,15 @@ export default function TimeSheetTable({
                   sx={{ minWidth: "150px" }}
                 >
                   {exactShift ? (
+                    // ----------------- CLIENT Alloted Shift Start Here --------------
                     <Shift
                       shift={exactShift}
                       key={exactShift?.id}
                       type={"comfortable"}
                       isClient
                     />
-                  ) : null}
+                  ) : // ----------------- CLIENT Alloted Shift Start Here --------------
+                  null}
                 </TableCell>
               ) : null;
             })
@@ -467,7 +724,7 @@ export default function TimeSheetTable({
                     backgroundColor:
                       moment().format("DD/MM/YYYY") ===
                       _date.format("DD/MM/YYYY")
-                        ? "rgb(24, 119, 242,0.08) !important"
+                        ? "rgba(0, 169, 169, 0.08) !important"
                         : "rgb(249, 250, 251)"
                   }}
                   colSpan={
@@ -478,7 +735,12 @@ export default function TimeSheetTable({
                   }
                 >
                   {carerShiftsByDate.length > 0 ? (
-                    <ShiftBox shifts={carerShiftsByDate} isClient />
+                    <ShiftBox
+                      shifts={carerShiftsByDate}
+                      bulkaction={bulkaction}
+                      selectall={selectall}
+                      isClient
+                    />
                   ) : (
                     <Box
                       className="add-shift-box"
@@ -511,8 +773,101 @@ export default function TimeSheetTable({
     return <Loader />;
   }
 
+  // const handleBulkActionClick = () => {
+  //   setBulkAction(true);
+  //   console.log("Bulk Action Button Status:::::", bulkaction);
+  // };
   return (
     <>
+      {/* {bulkaction ? (
+        <Button
+          variant="contained"
+          color="error" // This makes the button red
+          startIcon={<CancelIcon />}
+          onClick={() => {
+            setBulkAction(false); // Set bulkAction to false on click
+            console.log("bulkaction after click:", bulkaction);
+          }}
+          sx={{ marginBottom: "10px" }}
+        >
+          Cancel Bulk Action
+        </Button>
+      ) : (
+        <Button
+          variant="contained"
+          startIcon={<SelectAllIcon />}
+          onClick={() => {
+            setBulkAction(true); // Set bulkAction to true on click
+            console.log("bulkaction after click:", bulkaction);
+          }}
+          sx={{ marginBottom: "10px" }}
+        >
+          Bulk Action
+        </Button>
+      )} */}
+      {bulkaction ? (
+        <ButtonGroup>
+          <Button
+            // variant="contained"
+            color="error" // This makes the button red
+            startIcon={<ArrowBackIcon />}
+            onClick={() => {
+              setBulkAction(false); // Set bulkaction to false on click
+              // console.log("bulkaction after click:", bulkaction);
+            }}
+            sx={{ marginBottom: "10px" }}
+          >
+            Close Bulk Action
+          </Button>
+          {!selectall ? (
+            <Button
+              color="info"
+              startIcon={<SelectAllIcon />}
+              onClick={() => {
+                setSelectAll(true);
+              }}
+              sx={{ marginBottom: "10px" }}
+            >
+              Select All Shift
+            </Button>
+          ) : (
+            <Button
+              color="info"
+              startIcon={<CancelIcon />} // You can replace this with an appropriate icon
+              onClick={() => {
+                setSelectAll(false);
+              }}
+              sx={{ marginBottom: "10px" }}
+            >
+              Unselect All Shift
+            </Button>
+          )}
+          <Button
+            // variant="contained"
+            color="warning" // You can choose a different color if desired
+            startIcon={<CancelShiftIcon />}
+            onClick={() => cancelBulkShift()}
+            sx={{ marginBottom: "10px" }}
+          >
+            Cancel Shift
+          </Button>
+        </ButtonGroup>
+      ) : (
+        <ButtonGroup>
+          <Button
+            // variant="contained"
+            startIcon={<SelectAllIcon />}
+            onClick={() => {
+              setBulkAction(true); // Set bulkaction to true on click
+              // console.log("bulkaction after click:", bulkaction);
+            }}
+            sx={{ marginBottom: "10px" }}
+          >
+            Bulk Action
+          </Button>
+        </ButtonGroup>
+      )}
+
       <TableContainer>
         <StyledTable sx={{ minHeight: "100vh" }}>
           <TableHead>
@@ -537,7 +892,7 @@ export default function TimeSheetTable({
                         sx={
                           moment().format("DD/MM/YYYY") ===
                           _date.format("DD/MM/YYYY")
-                            ? { backgroundColor: primary.main, color: "#fff" }
+                            ? { backgroundColor: "#1877F2", color: "#fff" }
                             : {}
                         }
                       >
@@ -582,7 +937,9 @@ export default function TimeSheetTable({
                   })}
             </TableRow>
           </TableHead>
+
           <TableBody>
+            {/* ----------------- Staff and Participant Switching --------------------- */}
             {view === "staff" ? renderStaffs : renderClients}
             <TableRow>
               <TableCell />
@@ -596,7 +953,7 @@ export default function TimeSheetTable({
                         backgroundColor:
                           moment().format("DD/MM/YYYY") ===
                           _date.format("DD/MM/YYYY")
-                            ? "rgb(24, 119, 242,0.08) !important"
+                            ? "rgba(0, 169, 169, 0.08) !important"
                             : "rgb(249, 250, 251)"
                       }}
                     />
