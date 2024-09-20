@@ -5,6 +5,7 @@ import { Theme, useTheme } from "@mui/material/styles";
 import { SxProps } from "@mui/system";
 import { ReactNode, forwardRef } from "react";
 import { StyledLabel } from "./styles";
+import { Typography } from "@mui/material";
 
 interface LabelProps {
   children: ReactNode;
@@ -35,7 +36,7 @@ const Label = forwardRef<HTMLSpanElement, LabelProps>(
       variant = "soft",
       startIcon,
       endIcon,
-      sx,
+      sx = {},
       ...other
     },
     ref
@@ -45,32 +46,38 @@ const Label = forwardRef<HTMLSpanElement, LabelProps>(
     const iconStyles = {
       width: 16,
       height: 16,
-      "& svg, img": { width: 1, height: 1, objectFit: "cover" }
+      "& svg, img": { width: "100%", height: "100%", objectFit: "cover" }
     };
 
     return (
-      <StyledLabel
-        ref={ref}
-        component="span"
-        ownerState={{ color, variant }}
-        sx={{
-          ...(startIcon && { paddingLeft: 0.75 }),
-          ...(endIcon && { paddingRight: 0.75 }),
-          ...sx
-        }}
-        theme={theme}
-        {...other}
-      >
-        {startIcon && (
-          <Box sx={{ marginRight: 0.75, ...iconStyles }}> {startIcon} </Box>
-        )}
+      // <StyledLabel
+      //   ref={ref}
+      //   component="span"
+      //   ownerState={{ color, variant }}
+      //   sx={{
+      //     ...(startIcon ? { paddingLeft: 0.75 } : {}),
+      //     ...(endIcon ? { paddingRight: 0.75 } : {}),
+      //     ...sx
+      //   }}
+      //   theme={theme}
+      //   {...other}
+      // >
+      //   {startIcon && (
+      //     <Box sx={{ marginRight: 0.75, ...iconStyles }}>
+      //       {React.isValidElement(startIcon) ? startIcon : null}
+      //     </Box>
+      //   )}
 
-        {children}
+      //   {children}
 
-        {endIcon && (
-          <Box sx={{ marginLeft: 0.75, ...iconStyles }}> {endIcon} </Box>
-        )}
-      </StyledLabel>
+      //   {endIcon && (
+      //     <Box sx={{ marginLeft: 0.75, ...iconStyles }}>
+      //       {React.isValidElement(endIcon) ? endIcon : null}
+      //     </Box>
+      //   )}
+      // </StyledLabel>
+
+      <Typography>-</Typography>
     );
   }
 );

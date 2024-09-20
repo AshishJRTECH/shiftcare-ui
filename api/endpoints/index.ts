@@ -104,6 +104,7 @@ export const endpoints = {
     add_fund: (id: string) => `/funds/add/${id}`
   },
   shift: {
+    repeat_shift: "/shift/repeat",
     create_shift: "/shift/createMultiple/with-available-employee",
     cancel_shift_in_bulk: "/shift/cancelMultipleShift",
     get_all_shift_id: "/shift/getAllActiveShiftIds",

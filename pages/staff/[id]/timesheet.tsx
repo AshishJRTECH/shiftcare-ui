@@ -1,14 +1,14 @@
 import { Box, styled } from "@mui/system";
 import {
-  Typography,
+  Paper,
   Table,
+  TableBody,
+  TableCell,
   TableContainer,
   TableHead,
-  TableBody,
-  TableRow,
-  TableCell,
   TablePagination,
-  Paper
+  TableRow,
+  Typography
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -41,30 +41,48 @@ export default function Index() {
   }, [data]);
 
   // Transform data to match columns definition
-  const transformedData = data.map((item) => ({
-    id: item.id,
-    date: `${item.date[0]}-${item.date[1]}-${item.date[2]}`,
-    shiftType: item.shift ? item.shift.shiftType : "",
-    clientName: item.client ? item.client.clientName : "",
-    startTime: `${item.startTime[0]}:${item.startTime[1] < 10 ? "0" : ""}${
-      item.startTime[1]
-    }`,
-    finishTime: `${item.finishTime[0]}:${item.finishTime[1] < 10 ? "0" : ""}${
-      item.finishTime[1]
-    }`,
-    breakTime: item.breakTime,
-    hours: item.hours.toFixed(2),
-    distance: item.distance,
-    expense: item.expense,
-    allowances: item.allowances.join(", "),
-    action: item.action
-  }));
+  const transformedData = data.map(
+    (item: {
+      id: any;
+      date: any[];
+      shift: { shiftType: any };
+      client: { clientName: any };
+      startTime: any[];
+      finishTime: any[];
+      breakTime: any;
+      hours: number;
+      distance: any;
+      expense: any;
+      allowances: any[];
+      action: any;
+    }) => ({
+      id: item.id,
+      date: `${item.date[0]}-${item.date[1]}-${item.date[2]}`,
+      shiftType: item.shift ? item.shift.shiftType : "",
+      clientName: item.client ? item.client.clientName : "",
+      startTime: `${item.startTime[0]}:${item.startTime[1] < 10 ? "0" : ""}${
+        item.startTime[1]
+      }`,
+      finishTime: `${item.finishTime[0]}:${item.finishTime[1] < 10 ? "0" : ""}${
+        item.finishTime[1]
+      }`,
+      breakTime: item.breakTime,
+      hours: item.hours.toFixed(2),
+      distance: item.distance,
+      expense: item.expense,
+      allowances: item.allowances.join(", "),
+      action: item.action
+    })
+  );
 
-  const handleChangePage = (event, newPage) => {
+  const handleChangePage = (
+    event: any,
+    newPage: React.SetStateAction<number>
+  ) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = (event: { target: { value: string } }) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -109,21 +127,179 @@ export default function Index() {
             <TableBody>
               {transformedData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell>{row.date}</TableCell>
-                    <TableCell>{row.shiftType}</TableCell>
-                    <TableCell>{row.clientName}</TableCell>
-                    <TableCell>{row.startTime}</TableCell>
-                    <TableCell>{row.finishTime}</TableCell>
-                    <TableCell>{row.breakTime}</TableCell>
-                    <TableCell>{row.hours}</TableCell>
-                    <TableCell>{row.distance}</TableCell>
-                    <TableCell>{row.expense}</TableCell>
-                    <TableCell>{row.allowances}</TableCell>
-                    <TableCell>{row.action}</TableCell>
-                  </TableRow>
-                ))}
+                .map(
+                  (row: {
+                    id: React.Key | null | undefined;
+                    date:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    shiftType:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    clientName:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    startTime:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    finishTime:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    breakTime:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    hours:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    distance:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    expense:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    allowances:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                    action:
+                      | string
+                      | number
+                      | bigint
+                      | boolean
+                      | React.ReactElement<
+                          any,
+                          string | React.JSXElementConstructor<any>
+                        >
+                      | Iterable<React.ReactNode>
+                      | React.ReactPortal
+                      | Promise<React.AwaitedReactNode>
+                      | null
+                      | undefined;
+                  }) => (
+                    <TableRow key={row.id}>
+                      <TableCell>{row.date}</TableCell>
+                      <TableCell>{row.shiftType}</TableCell>
+                      <TableCell>{row.clientName}</TableCell>
+                      <TableCell>{row.startTime}</TableCell>
+                      <TableCell>{row.finishTime}</TableCell>
+                      <TableCell>{row.breakTime}</TableCell>
+                      <TableCell>{row.hours}</TableCell>
+                      <TableCell>{row.distance}</TableCell>
+                      <TableCell>{row.expense}</TableCell>
+                      <TableCell>{row.allowances}</TableCell>
+                      <TableCell>{row.action}</TableCell>
+                    </TableRow>
+                  )
+                )}
             </TableBody>
           </Table>
         </TableContainer>

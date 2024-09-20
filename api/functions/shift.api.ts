@@ -1,4 +1,4 @@
-import { ShiftType } from "@/interface/shift.interface";
+import { ShiftRepeat, ShiftType } from "@/interface/shift.interface";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 
@@ -132,5 +132,10 @@ export const getAllShiftsIdList = async ({ token }: { token?: string }) => {
         }
       : {}
   });
+  return res.data;
+};
+
+export const repeatShift = async (body: ShiftRepeat) => {
+  const res = await axiosInstance.post(endpoints.shift.repeat_shift, body);
   return res.data;
 };

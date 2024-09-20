@@ -19,7 +19,7 @@ import {
   CustomStepperInput,
   daysOfWeek,
   repeatPeriods,
-  shiftTypeArray
+  shiftTypeArrays
 } from "./add-shift";
 import { DatePicker, TimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";

@@ -213,6 +213,7 @@ module.exports = {
     {
       files: ["*.d.ts"],
       rules: {
+        "no-unused-vars": "warn",
         "@typescript-eslint/no-unused-vars": "off"
       }
     }

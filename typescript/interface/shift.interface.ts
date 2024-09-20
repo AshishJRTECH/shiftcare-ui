@@ -1,4 +1,4 @@
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 
 export interface Task {
   taskId?: number;
@@ -152,4 +152,17 @@ export interface ClientList {
   displayName: string;
   clientMobileNumber: string;
   clientEmail: string;
+}
+
+export interface ShiftRepeat {
+  // shiftId: number | string;
+  startDate: dayjs.Dayjs;
+  endDate: dayjs.Dayjs;
+  isRepeated: boolean;
+  recurrance: string;
+  repeatNoOfDays: number | string;
+  repeatNoOfWeeks: number | string;
+  repeatNoOfMonths: number | string;
+  occursOnDays: string[];
+  occursOnDayOfMonth: number | string;
 }

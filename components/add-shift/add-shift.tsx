@@ -133,6 +133,12 @@ export const StyledButton = styled("button")`
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
   }
+
+  .css-1sucic7 {
+    position: fixed;
+    z-index: 5000 !important;
+    inset: 0px;
+  }
 `;
 
 export const CustomStepperInput = (
