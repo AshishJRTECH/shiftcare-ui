@@ -45,7 +45,7 @@ export const endpoints = {
     upload_documents: "/document/upload",
     edit_document: "/document/updateDocument",
     delete_document: "/document",
-    timesheet: "/timesheets/employee",
+    timesheet: "/timesheets/forEmployee",
     get_category: "/document-categories/all",
     get_sub_category: "/document-subcategories/all",
     create_compliance: (employeeId: string, subcategoryId: string) =>
