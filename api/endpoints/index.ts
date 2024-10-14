@@ -55,11 +55,18 @@ export const endpoints = {
       subcategoryId: string,
       documentId: string
     ) =>
-      `/document/uploaded-documents/${employeeId}/${subcategoryId}/${documentId}`
+      `/document/uploaded-documents/${employeeId}/${subcategoryId}/${documentId}`,
     // time_sheet: (id: number) => `/timesheets/${id}`
     // timesheets: "/timesheets/employee"
     // gettimesheet: "/timesheets/employee",
     // time_sheet: (id: string) => `/timesheets/${id}`
+    approve_timesheet: (id: string) => `/timesheets/${id}/approve`,
+    approve_all_timesheet: (employeeId: string) =>
+      `/timesheets/employee/${employeeId}/approveAllTimesheet`,
+    undo_timesheet: (timesheetId: string) =>
+      `/timesheets/${timesheetId}/undoApprove`,
+    undo_all_timesheet: (employeeId: string) =>
+      `/timesheets/employee/${employeeId}/undoAllApprovedTimesheet`
   },
   client: {
     get_all: "/client/by-company/active",

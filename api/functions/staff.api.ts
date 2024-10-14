@@ -6,6 +6,7 @@ import {
 import { IStaffPost } from "@/interface/staff.interfaces";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
+import dayjs from "dayjs";
 
 export const addStaff = async (body: IStaffPost) => {
   const res = await axiosInstance.post(endpoints.staff.new, body);
@@ -175,32 +176,7 @@ export const getAllActiveShifts = async ({
 };
 
 // export const getTimesheet = async (id: string) => {
-//   const res = await axiosInstance.get(endpoints.staff.time_sheet(id));
-//   return res.data;
-// };
-
-// export const getTimesheet = async (id: number) => {
-//   const res = await axiosInstance.get(`${endpoints.staff.time_sheet}/${id}`);
-//   return res.data;
-// };
-
-// export const getTimesheet = async (id: string) => {
 //   const res = await axiosInstance.get(`${endpoints.staff.timesheet}/${id}`);
-//   return res.data;
-// };
-
-// export const getTimesheet = async (id: number) => {
-//   const res = await axiosInstance.get(`${endpoints.staff.time_sheet}/${id}`);
-//   return res.data;
-// };
-
-export const getTimesheet = async (id: string) => {
-  const res = await axiosInstance.get(`${endpoints.staff.timesheet}/${id}`);
-  return res.data;
-};
-
-// export const getTimesheet = async (id: string) => {
-//   const res = await axiosInstance.get(endpoints.staff.time_sheet(id));
 //   return res.data;
 // };
 
@@ -254,5 +230,113 @@ export const updateCompliance = async ({
   } catch (error) {
     console.error("API error:", error);
     throw error;
+  }
+};
+
+const getCurrentWeekDates = () => {
+  const startDate = dayjs().startOf("week").add(1, "day");
+  const endDate = dayjs().endOf("week").add(1, "day");
+
+  return {
+    startDate: startDate.unix(),
+    endDate: endDate.unix()
+  };
+};
+
+export const getTimesheet = async (
+  id: string,
+  startDate?: number,
+  endDate?: number
+) => {
+  // If startDate and endDate are not provided, use the current week's dates
+  const { startDate: defaultStartDate, endDate: defaultEndDate } =
+    getCurrentWeekDates();
+
+  const res = await axiosInstance.get(`${endpoints.staff.timesheet}/${id}`, {
+    params: {
+      startDate: startDate || defaultStartDate,
+      endDate: endDate || defaultEndDate
+    }
+  });
+
+  return res.data;
+};
+
+export const approveTimesheet = async (id: string) => {
+  const res = await axiosInstance.put(endpoints.staff.approve_timesheet(id));
+  return res.data;
+};
+
+// export const approveAllTimesheet = async ({
+//   employeeId,
+//   startDate,
+//   endDate
+// }: {
+//   employeeId: string;
+//   startDate: number;
+//   endDate: number;
+// }) => {
+//   const requestBody = {
+//     startDate,
+//     endDate
+//   };
+
+//   const res = await axiosInstance.put(
+//     endpoints.staff.approve_all_timesheet(employeeId),
+//     requestBody
+//   );
+//   return res.data;
+// };
+
+export const approveAllTimesheet = async ({
+  employeeId,
+  startDate,
+  endDate
+}: {
+  employeeId: string;
+  startDate: number;
+  endDate: number;
+}) => {
+  const url = `${endpoints.staff.approve_all_timesheet(
+    employeeId
+  )}?startDate=${startDate}&endDate=${endDate}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.put(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};
+
+export const undoTimesheet = async (id: string) => {
+  const res = await axiosInstance.put(endpoints.staff.undo_timesheet(id));
+  return res.data;
+};
+
+export const undoAllTimesheet = async ({
+  employeeId,
+  startDate,
+  endDate
+}: {
+  employeeId: string;
+  startDate: number;
+  endDate: number;
+}) => {
+  const url = `${endpoints.staff.undo_all_timesheet(
+    employeeId
+  )}?startDate=${startDate}&endDate=${endDate}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.put(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
   }
 };
