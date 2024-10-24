@@ -142,3 +142,7 @@ export interface ClientContactBody {
   primaryContact: boolean;
   billingContact: boolean;
 }
+
+export interface ClientFundsList {
+  clientIds: string[]; // if clientIds should be strings
+}

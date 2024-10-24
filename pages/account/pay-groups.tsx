@@ -35,6 +35,10 @@ export default function PayGroups() {
     queryFn: () => getAllPayGroups((router.query.page as string) || "1")
   });
 
+  // useEffect(() => {
+  //   console.log("-----------: Pay Group List :-------------", data);
+  // }, [data]);
+
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues: {

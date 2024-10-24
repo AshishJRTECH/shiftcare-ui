@@ -66,7 +66,7 @@ import ShiftRelatedNotes from "./shift-related-notes";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import AddNoteModal from "./addNoteModal";
 import RepeatShift from "../add-shift/repeat-shift";
-import AdvanceShift from "./advance-shift";
+import ClientSectionAdvance from "./client-section-advance";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -75,7 +75,7 @@ interface DrawerInterface extends DrawerProps {
 export const StyledDrawer = styled(Drawer)<DrawerInterface>`
   z-index: 3000;
   > .drawer {
-    width: 700px;
+    width: auto;
     background-color: #f0f0f0;
     z-index: 3000;
     @media (width<=699px) {
@@ -400,7 +400,7 @@ const schema = yup.object().shape({
   dropOffApartmentNumber: yup.string(),
   tasks: yup.array().of(
     yup.object().shape({
-      task: yup.string().required("Please enter a task"),
+      task: yup.string(),
       isTaskMandatory: yup.boolean()
     })
   ),
@@ -409,11 +409,26 @@ const schema = yup.object().shape({
     .array()
     .of(yup.number())
     .required("Please Select a Paricipant"),
-  employeeIds: yup.array().of(yup.number()).required("Please Select a Carer"),
-  isOpenShift: yup.boolean()
+  employeeIds: yup.array().of(yup.number()),
+  isOpenShift: yup.boolean(),
+  // priceBookIds: yup.array().of(yup.number()),
+  // fundIds: yup.array().of(yup.number()),
+  employeePayGroups: yup.array().of(
+    yup.object().shape({
+      employeeId: yup.string(),
+      payGroupId: yup.array().of(yup.string())
+    })
+  ),
+  clientPriceBooks: yup.array().of(
+    yup.object().shape({
+      clientId: yup.number(),
+      priceBookIds: yup.array().of(yup.string()),
+      fundIds: yup.array().of(yup.string())
+    })
+  )
 });
 
-export default function AddShift({
+export default function AdvanceShift({
   // onSelectId,
   view,
   edit,
@@ -435,11 +450,10 @@ export default function AddShift({
     enabled: Boolean(client) && role === "ROLE_ADMINS"
   });
 
-  const [advanceShift, setAdvanceShift] = useState(false);
-  const [shiftModalAdvance, setShiftModalAdvance] = useState(false);
-
+  const [advanceShift, setAdvanceShift] = useState(true);
   const [noteModal, setNoteModal] = useState(false);
   const [selectedId, setSelectedId] = useState("");
+
   const methods = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -479,7 +493,15 @@ export default function AddShift({
         : staff
         ? [parseInt(staff as string)]
         : [],
-      isOpenShift: false
+      isOpenShift: false,
+      // priceBookIds: [],
+      // fundIds: [],
+      employeePayGroups: [
+        { employeeId: "", payGroupId: "" } // Initialize with an empty object for the first entry
+      ],
+      clientPriceBooks: [
+        { clientId: 0, priceBookIds: "", fundIds: "" } // Initialize with an empty object for the first entry
+      ]
     }
   });
 
@@ -532,6 +554,7 @@ export default function AddShift({
         clientIds: [shift?.client.id],
         employeeIds: [shift?.employee.id],
         isOpenShift: shift?.isOpenShift
+        // priceBookIds: shift?.priceBookIds
       });
     }
   }, [edit]);
@@ -563,25 +586,60 @@ export default function AddShift({
     }
   });
 
+  // const onSubmit = (data: ShiftBody) => {
+  //   const newData = {
+  //     ...data,
+  //     startDate: dayjs(data.startDate).format("YYYY-MM-DD"),
+  //     endDate: dayjs(data.endDate).format("YYYY-MM-DD"),
+  //     // shiftEndDate: data.isShiftEndsNextDay
+  //     //   ? dayjs(data.startDate).add(1, "day").format("YYYY-MM-DD")
+  //     //   : dayjs(data.startDate).format("YYYY-MM-DD"),
+  //     breakTimeInMins: data.breakTimeInMins || 0,
+  //     startTime: dayjs(data.startTime).format("HH:mm"),
+  //     endTime: dayjs(data.endTime).format("HH:mm"),
+  //     clientIds: data.clientIds,
+  //     id: shift?.id
+  //     // instruction: JSON.stringify(editor?.getJSON(), null, 2)
+  //   };
+  //   console.log(
+  //     "-------------------- Form Data ------------------------",
+  //     newData
+  //   );
+  //   if (edit) editMutate(newData);
+  //   else mutate(newData);
+  // };
+
   const onSubmit = (data: ShiftBody) => {
+    console.log(
+      "Raw employeePayGroups before processing:",
+      data.employeePayGroups
+    );
+
+    // Use the employeeIds array from the form data
+    const selectedCarerIdsArray = data.employeeIds;
+    const selectedClientIdsArray = data.clientIds;
+
     const newData = {
       ...data,
       startDate: dayjs(data.startDate).format("YYYY-MM-DD"),
       endDate: dayjs(data.endDate).format("YYYY-MM-DD"),
-      // shiftEndDate: data.isShiftEndsNextDay
-      //   ? dayjs(data.startDate).add(1, "day").format("YYYY-MM-DD")
-      //   : dayjs(data.startDate).format("YYYY-MM-DD"),
       breakTimeInMins: data.breakTimeInMins || 0,
       startTime: dayjs(data.startTime).format("HH:mm"),
       endTime: dayjs(data.endTime).format("HH:mm"),
       clientIds: data.clientIds,
-      id: shift?.id
-      // instruction: JSON.stringify(editor?.getJSON(), null, 2)
+      id: shift?.id,
+      employeePayGroups: data.employeePayGroups.map((group, index) => ({
+        ...group,
+        employeeId: selectedCarerIdsArray[index]?.toString() || "0" // Assign employeeId from employeeIds array
+      })),
+      clientPriceBooks: data.clientPriceBooks.map((group, index) => ({
+        ...group,
+        clientId: selectedClientIdsArray[index]?.toString() || "0" // Assign clientId from clientIds array
+      }))
     };
-    console.log(
-      "-------------------- Form Data ------------------------",
-      newData
-    );
+
+    console.log("Processed Form Data:", newData);
+
     if (edit) editMutate(newData);
     else mutate(newData);
   };
@@ -596,182 +654,204 @@ export default function AddShift({
   };
 
   return (
-    <>
-      <AdvanceShift
-        open={shiftModalAdvance}
-        onClose={() => setShiftModalAdvance(false)}
-      />
-      <StyledDrawer
-        anchor="right"
-        {...props}
-        open={props.open || view || edit || repeatshift}
-        PaperProps={{
-          className: "drawer"
-        }}
-        onClose={isPending ? undefined : props.onClose}
+    <StyledDrawer
+      anchor="right"
+      {...props}
+      open={props.open || view || edit || repeatshift}
+      PaperProps={{
+        className: "drawer"
+      }}
+      onClose={isPending ? undefined : props.onClose}
+    >
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        gap={2}
+        className="header"
       >
-        <Stack
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-          gap={2}
-          className="header"
-        >
-          {!edit ? (
-            <Button
-              variant="outlined"
-              startIcon={<Iconify icon="mingcute:close-fill" />}
-              onClick={props.onClose}
-              disabled={isPending}
+        {!edit ? (
+          <Button
+            variant="outlined"
+            startIcon={<Iconify icon="mingcute:close-fill" />}
+            onClick={props.onClose}
+            disabled={isPending}
+          >
+            Close
+          </Button>
+        ) : (
+          <Button
+            variant="outlined"
+            startIcon={<Iconify icon="ion:chevron-back-outline" />}
+            onClick={() => {
+              if (setEditModal && setViewModal) {
+                setEditModal(false);
+                setViewModal(true);
+              }
+            }}
+            disabled={isPending}
+          >
+            Back
+          </Button>
+        )}
+        {role === "ROLE_CARER" ? (
+          <Button
+            variant="contained"
+            startIcon={<Iconify icon="tabler:plus" fontSize={14} />}
+            onClick={() => setNoteModal(true)}
+          >
+            Add Note
+          </Button>
+        ) : !view ? (
+          // <>
+          //   <Stack direction="row" alignItems="center" gap={1}>
+          //     <LoadingButton
+          //       variant="contained"
+          //       startIcon={<Iconify icon="ic:baseline-save" />}
+          //       // onClick={methods.handleSubmit(onSubmit)}
+          //       // loading={isPending || isEditPending}
+          //     >
+          //       Advance Edit
+          //     </LoadingButton>
+          //   </Stack>
+          //   <Stack direction="row" alignItems="center" gap={1}>
+          //     <LoadingButton
+          //       variant="contained"
+          //       startIcon={<Iconify icon="ic:baseline-save" />}
+          //       onClick={methods.handleSubmit(onSubmit)}
+          //       loading={isPending || isEditPending}
+          //     >
+          //       Save
+          //     </LoadingButton>
+          //   </Stack>
+          // </>
+
+          <Stack direction="row" alignItems="center" gap={1}>
+            <LoadingButton
+              variant="contained"
+              startIcon={<Iconify icon="ic:baseline-save" />}
+              onClick={methods.handleSubmit(onSubmit)}
+              loading={isPending || isEditPending}
             >
-              Close
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              startIcon={<Iconify icon="ion:chevron-back-outline" />}
-              onClick={() => {
-                if (setEditModal && setViewModal) {
-                  setEditModal(false);
-                  setViewModal(true);
-                }
-              }}
-              disabled={isPending}
+              Save
+            </LoadingButton>
+          </Stack>
+        ) : (
+          <Stack direction="row" alignItems="center" gap={1}>
+            <LoadingButton
+              variant="contained"
+              color="error"
+              startIcon={
+                <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
+              }
+              loading={isShiftCancelling}
+              onClick={() => cancelMutate(shift?.id as number)}
             >
-              Back
-            </Button>
-          )}
-          {role === "ROLE_CARER" ? (
+              Cancel Shift
+            </LoadingButton>
+            <LoadingButton
+              variant="contained"
+              startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
+              // onClick={methods.handleSubmit(onSubmit)}
+              // loading={isPending || isEditPending}
+            >
+              Advance Edit
+            </LoadingButton>
             <Button
               variant="contained"
-              startIcon={<Iconify icon="tabler:plus" fontSize={14} />}
-              onClick={() => setNoteModal(true)}
+              startIcon={<RepeatIcon />}
+              onClick={() => {
+                handleRepeatShift(shift?.id as number); // Pass the ID here
+                setRepeatShiftModal(true);
+              }}
             >
-              Add Note
+              Repeat Shift
             </Button>
-          ) : !view ? (
-            // <>
-            //   <Stack direction="row" alignItems="center" gap={1}>
-            //     <LoadingButton
-            //       variant="contained"
-            //       startIcon={<Iconify icon="ic:baseline-save" />}
-            //       // onClick={methods.handleSubmit(onSubmit)}
-            //       // loading={isPending || isEditPending}
-            //     >
-            //       Advance Edit
-            //     </LoadingButton>
-            //   </Stack>
-            //   <Stack direction="row" alignItems="center" gap={1}>
-            //     <LoadingButton
-            //       variant="contained"
-            //       startIcon={<Iconify icon="ic:baseline-save" />}
-            //       onClick={methods.handleSubmit(onSubmit)}
-            //       loading={isPending || isEditPending}
-            //     >
-            //       Save
-            //     </LoadingButton>
-            //   </Stack>
-            // </>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <Button
-                variant="contained"
-                startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
-                onClick={() => setShiftModalAdvance(true)}
-              >
-                Advance Edit
-              </Button>
-              <LoadingButton
-                variant="contained"
-                startIcon={<Iconify icon="ic:baseline-save" />}
-                onClick={methods.handleSubmit(onSubmit)}
-                loading={isPending || isEditPending}
-              >
-                Save
-              </LoadingButton>
-            </Stack>
-          ) : (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <LoadingButton
-                variant="contained"
-                color="error"
-                startIcon={
-                  <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
-                }
-                loading={isShiftCancelling}
-                onClick={() => cancelMutate(shift?.id as number)}
-              >
-                Cancel Shift
-              </LoadingButton>
-              {/* <LoadingButton
-                variant="contained"
-                startIcon={<Iconify icon="ic:baseline-edit" />}
-                onClick={() => setShiftModalAdvance(true)}
-              >
-                Advance Edit 
-              </LoadingButton> */}
-              <Button
-                variant="contained"
-                startIcon={<RepeatIcon />}
-                onClick={() => {
-                  handleRepeatShift(shift?.id as number); // Pass the ID here
-                  setRepeatShiftModal(true);
-                }}
-              >
-                Repeat Shift
-              </Button>
-              <RepeatShift
-                open={repeatshiftModal}
-                onClose={() => setRepeatShiftModal(false)}
-                id={selectedId}
-              />
-              <Button
-                variant="contained"
-                startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
-                onClick={() => {
-                  if (setEditModal && setViewModal) {
-                    setEditModal(true);
-                    setViewModal(false);
-                  }
-                }}
-              >
-                Edit
-              </Button>
-            </Stack>
-          )}
-        </Stack>
-        <Divider />
-        <Stack
-          gap={2}
-          className="main-container"
-          sx={{
-            height: "100%",
-            overflow: "auto",
-            "&::-webkit-scrollbar": {
-              display: "none"
-            }
-          }}
-        >
-          <FormProvider {...methods}>
-            <ClientSection view={view} edit={edit} shift={shift} />
-            <StaffSection
-              view={view}
-              edit={edit}
-              shift={shift}
-              advanceShift={advanceShift}
+            <RepeatShift
+              open={repeatshiftModal}
+              onClose={() => setRepeatShiftModal(false)}
+              id={selectedId}
             />
-            {!view && <TaskSection edit={edit} />}
-            <InstructionSection view={view} edit={edit} shift={shift} />
-            <TimeLocation view={view} edit={edit} shift={shift} />
-            {view && <ShiftRelatedNotes shift={shift} />}
-          </FormProvider>
-        </Stack>
-        <AddNoteModal
-          open={noteModal}
-          onClose={() => setNoteModal(false)}
-          clientId={shift?.client.id}
-          title="Add Note"
-        />
-      </StyledDrawer>
-    </>
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
+              onClick={() => {
+                if (setEditModal && setViewModal) {
+                  setEditModal(true);
+                  setViewModal(false);
+                }
+              }}
+            >
+              Edit
+            </Button>
+          </Stack>
+        )}
+      </Stack>
+      <Divider />
+      <Stack
+        gap={2}
+        className="main-container"
+        sx={{
+          height: "100%",
+          overflow: "auto",
+          "&::-webkit-scrollbar": {
+            display: "none"
+          }
+        }}
+      >
+        <FormProvider {...methods}>
+          <Stack
+            direction="column"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={2}
+            className="header"
+          >
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ width: "100%", backgroundColor: "transparent" }}
+              justifyContent="space-between"
+            >
+              {/* Column 1 */}
+              <Stack direction="column" sx={{ width: "50%" }}>
+                {/* Content for Column 1 */}
+                <ClientSectionAdvance view={view} edit={edit} shift={shift} />
+                <br></br>
+                <TimeLocation
+                  view={view}
+                  edit={edit}
+                  shift={shift}
+                  advanceShift={advanceShift}
+                />
+                <br></br>
+                {view && <ShiftRelatedNotes shift={shift} />}
+              </Stack>
+
+              {/* Column 2 */}
+              <Stack direction="column" sx={{ width: "50%" }}>
+                {/* Content for Column 2 */}
+                <StaffSection
+                  view={view}
+                  edit={edit}
+                  shift={shift}
+                  advanceShift={advanceShift}
+                />
+                <br></br>
+                {!view && <TaskSection edit={edit} />}
+                <br></br>
+                <InstructionSection view={view} edit={edit} shift={shift} />
+              </Stack>
+            </Stack>
+          </Stack>
+        </FormProvider>
+      </Stack>
+      <AddNoteModal
+        open={noteModal}
+        onClose={() => setNoteModal(false)}
+        clientId={shift?.client.id}
+        title="Add Note"
+      />
+    </StyledDrawer>
   );
 }

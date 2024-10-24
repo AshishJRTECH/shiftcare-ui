@@ -1,4 +1,7 @@
-import { ClientContactBody } from "./../../typescript/interface/client.interface";
+import {
+  ClientContactBody,
+  ClientFundsList
+} from "./../../typescript/interface/client.interface";
 import {
   ClientBody,
   ClientFund,
@@ -45,11 +48,6 @@ export const getClient = async (id: string) => {
 
 export const getClientSettings = async (id: string) => {
   const res = await axiosInstance.get(endpoints.client.get_client_settngs(id));
-  return res.data;
-};
-
-export const getClientFunds = async (id: string) => {
-  const res = await axiosInstance.get(endpoints.client.get_client_funds(id));
   return res.data;
 };
 
@@ -186,5 +184,15 @@ export const getAllShiftNotes = async ({
       endDate
     }
   });
+  return res.data;
+};
+
+// export const getClientFunds = async (id: string) => {
+//   const res = await axiosInstance.get(endpoints.client.get_client_funds(id));
+//   return res.data;
+// };
+
+export const getClientFunds = async (body: ClientFundsList) => {
+  const res = await axiosInstance.post(endpoints.client.get_client_funds, body);
   return res.data;
 };

@@ -24,6 +24,7 @@ import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import Loader from "@/ui/Loader/Loder";
 import StyledPaper from "@/ui/Paper/Paper";
 import styled from "@emotion/styled";
+import { useEffect, useState } from "react";
 import {
   Avatar,
   Button,
@@ -42,7 +43,6 @@ import {
 import moment from "moment";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import React, { useState } from "react";
 import Settings from "@/components/client-settings/settings";
 import ClientDocuments from "@/components/client-docuements/documents";
 import ClientFunds from "@/components/client-funds/funds";
@@ -91,7 +91,7 @@ export default function Index() {
       },
       {
         queryKey: ["client-funds", id],
-        queryFn: () => getClientFunds(id as string)
+        queryFn: () => getClientFunds({ clientIds: [id.toString()] }) // Ensure id is a string
       },
       {
         queryKey: ["client-additional-information", id],
@@ -116,6 +116,13 @@ export default function Index() {
       };
     }
   });
+
+  useEffect(() => {
+    console.log(
+      "-------------: Client Fund :-------------",
+      data.funds[0]?.funds
+    );
+  }, [data.funds[0]?.funds]);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl((prev) => (prev ? null : event.currentTarget));
@@ -271,7 +278,7 @@ export default function Index() {
               <ClientDocuments document_data={data.documents} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <ClientFunds funds_data={data.funds} />
+              <ClientFunds funds_data={data.funds[0]?.funds} />
             </Grid>
           </Grid>
         </Grid>

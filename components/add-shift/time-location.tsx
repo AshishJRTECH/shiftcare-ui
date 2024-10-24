@@ -3,17 +3,19 @@ import StyledPaper from "@/ui/Paper/Paper";
 import {
   Checkbox,
   Chip,
+  CircularProgress,
   Divider,
   FormControlLabel,
+  FormHelperText,
   Grid,
   InputAdornment,
   MenuItem,
   Select,
   Typography
 } from "@mui/material";
-import { Stack } from "@mui/system";
+import { Box, Stack } from "@mui/system";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import {
   CustomStepperInput,
@@ -27,21 +29,34 @@ import CustomInput from "@/ui/Inputs/CustomInput";
 import Iconify from "../Iconify/Iconify";
 import { Shift } from "@/interface/shift.interface";
 import moment from "moment";
+import { useQuery } from "@tanstack/react-query";
+import { getAllAllowances } from "@/api/functions/allowances";
 
 export default function TimeLocation({
   view,
   edit,
-  shift
+  shift,
+  advanceShift
 }: {
   view?: boolean;
   edit?: boolean;
+  advanceShift?: boolean;
   shift?: Shift;
 }) {
   const { control, watch, setValue } = useFormContext();
-  console.log(
-    "==================== SHIFT INFORMATION ====================",
-    shiftTypeArrays
-  );
+  // console.log(
+  //   "==================== SHIFT INFORMATION ====================",
+  //   shiftTypeArrays
+  // );
+
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["allowances"],
+    queryFn: getAllAllowances
+  });
+
+  useEffect(() => {
+    console.log("------------------ Allowance List ------------------", data);
+  }, [data]);
   return (
     <StyledPaper>
       <Stack direction="row" alignItems="center" gap={2}>
@@ -162,6 +177,102 @@ export default function TimeLocation({
               )}
             />
           </Grid>
+
+          {advanceShift && (
+            <>
+              <Grid item lg={4} md={6} sm={12} xs={12}>
+                <Typography>Select Allowance</Typography>
+              </Grid>
+              {/* <Grid item lg={8} md={6} sm={12} xs={12}>
+            <Controller
+              control={control}
+              name="allowanceIds"
+              render={({ field, fieldState: { error, invalid } }) => (
+                <Box>
+                  <Select
+                    fullWidth
+                    size="small"
+                    {...field}
+                    value={Array.isArray(field.value) ? field.value : []}
+                    onChange={(e) => {
+                      const _value = e.target.value;
+                      field.onChange(Array.isArray(_value) ? _value : [_value]);
+                    }}
+                    displayEmpty
+                    renderValue={
+                      field.value?.length !== 0
+                        ? undefined
+                        : () => "Select Price Book"
+                    }
+                    multiple
+                  >
+                    {isLoading ? (
+                      <MenuItem disabled>
+                        <CircularProgress size={20} />
+                        Loading...
+                      </MenuItem>
+                    ) : (
+                      data?.map((allowance: any) => (
+                        <MenuItem value={allowance.id} key={allowance.id}>
+                          {allowance.allowancesName}
+                        </MenuItem>
+                      )) || <MenuItem disabled>No Allowance Available</MenuItem>
+                    )}
+                  </Select>
+                  {invalid && <FormHelperText>{error?.message}</FormHelperText>}
+                </Box>
+              )}
+            />
+          </Grid> */}
+              <Grid item lg={8} md={6} sm={12} xs={12}>
+                <Controller
+                  control={control}
+                  name="allowanceIds"
+                  render={({ field, fieldState: { error, invalid } }) => (
+                    <Box>
+                      <Select
+                        fullWidth
+                        size="small"
+                        {...field}
+                        value={
+                          Array.isArray(field.value) ? field.value[0] || "" : ""
+                        } // Get the first element or empty string
+                        onChange={(e) => {
+                          const _value = e.target.value;
+                          field.onChange([_value]); // Wrap the selected value in an array
+                        }}
+                        displayEmpty
+                        renderValue={
+                          field.value && field.value.length > 0
+                            ? undefined
+                            : () => "Select Allowance"
+                        }
+                      >
+                        {isLoading ? (
+                          <MenuItem disabled>
+                            <CircularProgress size={20} />
+                            Loading...
+                          </MenuItem>
+                        ) : data?.length > 0 ? (
+                          data.map((allowance: any) => (
+                            <MenuItem value={allowance.id} key={allowance.id}>
+                              {allowance.allowancesName}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem disabled>No Allowance Available</MenuItem>
+                        )}
+                      </Select>
+                      {invalid && (
+                        <FormHelperText>{error?.message}</FormHelperText>
+                      )}
+                    </Box>
+                  )}
+                />
+              </Grid>
+            </>
+          )}
+
           <Grid item lg={4} md={6} sm={12} xs={12}>
             Date
           </Grid>

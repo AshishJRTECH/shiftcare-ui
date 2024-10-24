@@ -52,35 +52,6 @@ function FundTableRow({
   balance,
   isDefault
 }: ClientFund) {
-  // const getStatus = (): {
-  //   status: string;
-  //   color:
-  //     | "error"
-  //     | "success"
-  //     | "warning"
-  //     | "default"
-  //     | "primary"
-  //     | "secondary"
-  //     | "info";
-  // } => {
-  //   if (expiry) {
-  //     return {
-  //       status: "Expired",
-  //       color: "error"
-  //     };
-  //   }
-  //   if (status && !expiry) {
-  //     return {
-  //       status: "Active",
-  //       color: "success"
-  //     };
-  //   }
-  //   return {
-  //     status: "Not Specified",
-  //     color: "warning"
-  //   };
-  // };
-
   return (
     <TableRow>
       <TableCell>{name}</TableCell>

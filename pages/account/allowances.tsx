@@ -26,7 +26,7 @@ import {
 import { Box, Stack } from "@mui/system";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "pages/_app";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
 
@@ -48,6 +48,10 @@ export default function Allowances() {
     queryKey: ["allowances"],
     queryFn: getAllAllowances
   });
+
+  useEffect(() => {
+    console.log("------------------ Allowance List ------------------", data);
+  }, [data]);
 
   const methods = useForm({
     resolver: yupResolver(schema),

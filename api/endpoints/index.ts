@@ -76,7 +76,7 @@ export const endpoints = {
     unarchive_client: "/client/unarchived",
     get_client: (id: string) => `/client/${id}`,
     get_client_settngs: (id: string) => `/clientSettings/client/${id}`,
-    get_client_funds: (id: string) => `/funds/client/${id}`,
+
     get_client_documents: (id: string) => `/document/client/${id}`,
     get_client_additional_information: (id: string) =>
       `/client/${id}/additionalInformation`,
@@ -90,7 +90,9 @@ export const endpoints = {
       `/client/${id}/additionalInformation`,
     update_client_contact: (id: string) => `/client/${id}/additional-contacts`,
     delete_client_contact: (id: string, contact_id: number) =>
-      `/client/${id}/additional-contacts/${contact_id}`
+      `/client/${id}/additional-contacts/${contact_id}`,
+    // get_client_funds: (id: string) => `/funds/client/${id}`
+    get_client_funds: "/funds/clients/allFunds"
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -112,7 +114,8 @@ export const endpoints = {
   },
   shift: {
     repeat_shift: "/shift/repeat",
-    create_shift: "/shift/createMultiple/with-available-employee",
+    // create_shift: "/shift/createMultiple/with-available-employee",
+    create_shift: "/shift/createMultiple/Unique/with-available-employee",
     cancel_shift_in_bulk: "/shift/cancelMultipleShift",
     get_all_shift_id: "/shift/getAllActiveShiftIds",
     get_all_shifts: "/shift/getAllActiveShiftNew",

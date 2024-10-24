@@ -5,6 +5,15 @@ export interface Task {
   task: string;
   isTaskMandatory: boolean;
 }
+export interface EmployeePayGroupDto {
+  employeeId: string;
+  payGroupId: string;
+}
+export interface ClientPriceBookDto {
+  clientId?: number;
+  priceBookIds: string;
+  fundIds: string;
+}
 
 export interface ShiftBody {
   startDate: Dayjs;
@@ -32,6 +41,10 @@ export interface ShiftBody {
   clientIds: number[];
   employeeIds: number[];
   isOpenShift: boolean;
+  // priceBookIds: any;
+  // fundIds: any;
+  employeePayGroups: EmployeePayGroupDto[];
+  clientPriceBooks: ClientPriceBookDto[];
 }
 
 export interface ShiftType {
