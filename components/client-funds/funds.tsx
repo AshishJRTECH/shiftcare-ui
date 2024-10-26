@@ -139,7 +139,7 @@ export default function ClientFunds({
       >
         <Typography variant="h5">Funds</Typography>
         <Stack direction="row" alignItems="center" gap={1}>
-          <Button size="small">View All</Button>
+          {/* <Button size="small">View All</Button> */}
           <Button size="small" onClick={() => setOpen(true)}>
             Add Fund
           </Button>
@@ -161,7 +161,7 @@ export default function ClientFunds({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {funds_data.length ? (
+                {funds_data!=null && funds_data.length ? (
                   funds_data.map((_data, index) => {
                     return <FundTableRow {..._data} key={index} />;
                   })

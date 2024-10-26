@@ -120,9 +120,10 @@ export default function Index() {
   useEffect(() => {
     console.log(
       "-------------: Client Fund :-------------",
-      data.funds[0]?.funds
+      // data.funds[0]?.funds
+      data
     );
-  }, [data.funds[0]?.funds]);
+  }, [data]);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl((prev) => (prev ? null : event.currentTarget));
@@ -277,9 +278,9 @@ export default function Index() {
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <ClientDocuments document_data={data.documents} />
             </Grid>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
-              <ClientFunds funds_data={data.funds[0]?.funds} />
-            </Grid>
+                <Grid item lg={12} md={12} sm={12} xs={12}>
+                <ClientFunds funds_data={data.funds[0]?.funds} />
+              </Grid>
           </Grid>
         </Grid>
         <Grid item md={4} sm={12} xs={12}>
