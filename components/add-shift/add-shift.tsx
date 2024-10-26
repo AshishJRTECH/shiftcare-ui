@@ -51,7 +51,7 @@ import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { useParams } from "next/navigation";
 import RichTextEditor from "../RichTextEditor/RichTextEditor";
-import { Shift, ShiftBody, Task } from "@/interface/shift.interface";
+import { Shift, ShiftBody, ShiftBodyS, Task } from "@/interface/shift.interface";
 import { cancelShift, createShift, editShift } from "@/api/functions/shift.api";
 import { LoadingButton } from "@mui/lab";
 import { useCurrentEditor } from "@tiptap/react";
@@ -563,7 +563,7 @@ export default function AddShift({
     }
   });
 
-  const onSubmit = (data: ShiftBody) => {
+  const onSubmit = (data: ShiftBodyS) => {
     const newData = {
       ...data,
       startDate: dayjs(data.startDate).format("YYYY-MM-DD"),

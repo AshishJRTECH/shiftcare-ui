@@ -46,6 +46,37 @@ export interface ShiftBody {
   employeePayGroups: EmployeePayGroupDto[];
   clientPriceBooks: ClientPriceBookDto[];
 }
+export interface ShiftBodyS {
+  startDate: Dayjs;
+  isShiftEndsNextDay: boolean;
+  startTime: Dayjs;
+  endTime: Dayjs;
+  breakTimeInMins: number | null;
+  // shiftEndDate?: Dayjs;
+  isRepeated: boolean;
+  address: string;
+  apartmentNumber: string;
+  shiftType: string;
+  recurrance: string;
+  repeatNoOfDays: number | string;
+  repeatNoOfWeeks: number | string;
+  occursOnDays: string[];
+  repeatNoOfMonths: number | string;
+  occursOnDayOfMonth: number | string;
+  endDate: Dayjs;
+  isDropOffAddress: boolean;
+  dropOffAddress: string;
+  dropOffApartmentNumber: string;
+  tasks: Task[];
+  instruction: string;
+  clientIds: number[];
+  employeeIds: number[];
+  isOpenShift: boolean;
+  // priceBookIds: any;
+  // fundIds: any;
+  // employeePayGroups: EmployeePayGroupDto[];
+  // clientPriceBooks: ClientPriceBookDto[];
+}
 
 export interface ShiftType {
   id?: number;

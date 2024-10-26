@@ -144,5 +144,5 @@ export interface ClientContactBody {
 }
 
 export interface ClientFundsList {
-  clientIds: string[]; // if clientIds should be strings
+  clientIds: number[]; // if clientIds should be strings
 }

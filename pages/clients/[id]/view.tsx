@@ -91,7 +91,8 @@ export default function Index() {
       },
       {
         queryKey: ["client-funds", id],
-        queryFn: () => getClientFunds({ clientIds: [id.toString()] }) // Ensure id is a string
+        // queryFn: () => getClientFunds({ clientIds: [id.toString()] }) // Ensure id is a string
+        queryFn: () => getClientFunds({ clientIds: [Number(id)] })
       },
       {
         queryKey: ["client-additional-information", id],
