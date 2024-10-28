@@ -91,7 +91,7 @@ export default function Index() {
       },
       {
         queryKey: ["client-funds", id],
-        queryFn: () => getClientFunds({ clientIds: [id.toString()] }) // Ensure id is a string
+        queryFn: () => getClientFunds({ clientIds: [Number(id)] })
       },
       {
         queryKey: ["client-additional-information", id],
@@ -120,9 +120,10 @@ export default function Index() {
   useEffect(() => {
     console.log(
       "-------------: Client Fund :-------------",
-      data.funds[0]?.funds
+      // data.funds[0]?.funds
+      data
     );
-  }, [data.funds[0]?.funds]);
+  }, [data]);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl((prev) => (prev ? null : event.currentTarget));

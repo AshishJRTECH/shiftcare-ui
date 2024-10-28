@@ -733,7 +733,7 @@ export default function AdvanceShift({
               onClick={methods.handleSubmit(onSubmit)}
               loading={isPending || isEditPending}
             >
-              Save
+              Save -
             </LoadingButton>
           </Stack>
         ) : (

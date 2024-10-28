@@ -161,7 +161,7 @@ export default function ClientFunds({
                 </TableRow>
               </TableHead>
               <TableBody>
-                {funds_data.length ? (
+                {funds_data != null && funds_data.length ? (
                   funds_data.map((_data, index) => {
                     return <FundTableRow {..._data} key={index} />;
                   })

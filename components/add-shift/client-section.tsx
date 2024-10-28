@@ -78,7 +78,7 @@ export default function ClientSection({
             height={512}
             className="icon"
           />
-          <Typography variant="h6">Paritcipant</Typography>
+          <Typography variant="h6">Participant</Typography>
         </Stack>
         <Divider sx={{ marginBlock: "10px" }} />
         {view ? (
