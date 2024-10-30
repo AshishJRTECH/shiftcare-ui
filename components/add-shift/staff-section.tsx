@@ -59,7 +59,10 @@ export default function StaffSection({
   }, [isOpenShift, setValue]);
 
   // console.log("------------- Staff List --------------", data);
-  console.log("------------- Exact Shift in Shift --------------", shift);
+  // console.log(
+  //   "-------------+++++++++++ Selected SHIFT +++++++++++ --------------",
+  //   shift
+  // );
 
   // console.log("============ SHIFT EDITABLE DATA =============", shift);
   const router = useRouter();
@@ -67,6 +70,13 @@ export default function StaffSection({
   const [selectedDisplayNames, setSelectedDisplayNames] = useState("");
   const [selectedCarerId, setSelectedCarerId] = useState("");
   const [open, setOpen] = React.useState(true);
+
+  const staffDisplayName = shift?.employee.displayName;
+  useEffect(() => {
+    if (staffDisplayName) {
+      setSelectedDisplayNames(staffDisplayName);
+    }
+  }, [shift?.client.displayName]);
 
   useEffect(() => {
     if (router.query.staff) {
@@ -78,6 +88,10 @@ export default function StaffSection({
     queryKey: ["pay-groups", router.query.page],
     queryFn: () => getAllPayGroups((router.query.page as string) || "1")
   });
+
+  // useEffect(()=>{
+
+  // },[])
 
   useEffect(() => {
     console.log(
@@ -199,7 +213,7 @@ export default function StaffSection({
                     <Typography>Choose Carer</Typography>
                   </Grid>
                   <Grid item lg={8} md={6} sm={12} xs={12}>
-                    <Controller
+                    {/* <Controller
                       control={control}
                       name="employeeIds"
                       render={({ field, fieldState: { error, invalid } }) => {
@@ -210,6 +224,7 @@ export default function StaffSection({
                               size="small"
                               {...field}
                               value={field.value || []} // Ensure value is an array
+                              
                               onChange={(e) => {
                                 const _value = e.target.value;
                                 field.onChange(_value); // _value should already be an array
@@ -260,6 +275,83 @@ export default function StaffSection({
                           </Box>
                         );
                       }}
+                    /> */}
+
+                    <Controller
+                      control={control}
+                      name="employeeIds"
+                      render={({ field, fieldState: { error, invalid } }) => {
+                        // Update selectedDisplayNames when the component mounts or field.value changes
+                        useEffect(() => {
+                          if (field.value) {
+                            const initialNames = data
+                              ?.filter((client: any) =>
+                                field.value.includes(client.id)
+                              )
+                              .map((client: any) => client.name)
+                              .join(", ");
+                            setSelectedDisplayNames(initialNames);
+                          }
+                        }, []); // Re-run when field.value or data changes
+
+                        return (
+                          <Box>
+                            <Select
+                              fullWidth
+                              size="small"
+                              {...field}
+                              value={field.value || []} // Ensure value is an array
+                              onChange={(e) => {
+                                const _value = e.target.value;
+                                field.onChange(_value); // _value should already be an array
+
+                                // Get the selected display names and update state directly
+                                const selectedNames = data
+                                  ?.filter((client: any) =>
+                                    _value.includes(client.id)
+                                  )
+                                  .map((client: any) => client.name)
+                                  .join(", ");
+                                setSelectedDisplayNames(selectedNames);
+
+                                // Get the selected IDs and update state
+                                const selectedId = data
+                                  ?.filter((client: any) =>
+                                    _value.includes(client.id)
+                                  )
+                                  .map((client: any) => client.id)
+                                  .join(", ");
+                                if (selectedId) {
+                                  setSelectedCarerId(selectedId);
+                                }
+
+                                // Optionally set open state based on selected names length
+                                setOpen(selectedNames.length);
+                              }}
+                              displayEmpty
+                              renderValue={
+                                field.value?.length !== 0
+                                  ? undefined
+                                  : () => "Select Carer"
+                              }
+                              multiple
+                            >
+                              {isLoading ? (
+                                <MenuItem disabled>Loading...</MenuItem>
+                              ) : (
+                                data?.slice(1).map((_data: IStaff) => (
+                                  <MenuItem value={_data.id} key={_data.id}>
+                                    {_data.name}
+                                  </MenuItem>
+                                ))
+                              )}
+                            </Select>
+                            {invalid && (
+                              <FormHelperText>{error?.message}</FormHelperText>
+                            )}
+                          </Box>
+                        );
+                      }}
                     />
                   </Grid>
                 </Grid>
@@ -279,8 +371,8 @@ export default function StaffSection({
                   .map((id) => id.trim()); // Ensure trimming of whitespace
 
                 // Log to debug the split result and index
-                console.log("Selected Carer IDs Array:", selectedCarerIdsArray);
-                console.log("Selected Display Names:", selectedDisplayNames);
+                // console.log("Selected Carer IDs Array:", selectedCarerIdsArray);
+                // console.log("Selected Display Names:", selectedDisplayNames);
 
                 // Ensure proper handling for the first index
                 const carerId = selectedCarerIdsArray[index]?.trim() || "0"; // Check if index exists
@@ -288,7 +380,7 @@ export default function StaffSection({
                 console.log(
                   `Index: ${index}, Name: ${name.trim()}, Carer ID: ${carerId}`
                 );
-
+                const prefilledPayGroupId = shift?.payGroups?.id;
                 return (
                   <Card
                     key={index}
@@ -351,7 +443,7 @@ export default function StaffSection({
                                 <Typography>Choose Pay Group</Typography>
                               </Grid>
                               <Grid item lg={8} md={6} sm={12} xs={12}>
-                                <Controller
+                                {/* <Controller
                                   control={control}
                                   name={`employeePayGroups[${index}].payGroupId`}
                                   render={({ field }) => (
@@ -398,6 +490,70 @@ export default function StaffSection({
                                           )
                                         )}
                                       </Select>
+                                    </Box>
+                                  )}
+                                /> */}
+
+                                <Controller
+                                  control={control}
+                                  name={`employeePayGroups[${index}].payGroupId`}
+                                  defaultValue={
+                                    prefilledPayGroupId
+                                      ? [prefilledPayGroupId]
+                                      : []
+                                  } // Initialize as an array
+                                  render={({
+                                    field,
+                                    fieldState: { error, invalid }
+                                  }) => (
+                                    <Box>
+                                      <Select
+                                        fullWidth
+                                        size="small"
+                                        {...field}
+                                        value={
+                                          field.value.length > 0
+                                            ? field.value[0]
+                                            : ""
+                                        } // Get the first element or default to empty
+                                        onChange={(e) => {
+                                          const _value = e.target.value;
+                                          field.onChange([_value]); // Wrap value in an array
+                                        }}
+                                        displayEmpty
+                                        renderValue={
+                                          field.value?.length > 0
+                                            ? undefined
+                                            : () => "Select Pay Group"
+                                        }
+                                      >
+                                        {isLoading ? (
+                                          <MenuItem disabled>
+                                            <CircularProgress size={20} />
+                                            Loading...
+                                          </MenuItem>
+                                        ) : paygroup?.payGroups?.length > 0 ? (
+                                          paygroup.payGroups.map(
+                                            (payGroup: any) => (
+                                              <MenuItem
+                                                value={payGroup.id}
+                                                key={payGroup.id}
+                                              >
+                                                {payGroup.payGroupName}
+                                              </MenuItem>
+                                            )
+                                          )
+                                        ) : (
+                                          <MenuItem disabled>
+                                            No Pay Groups Available
+                                          </MenuItem>
+                                        )}
+                                      </Select>
+                                      {invalid && (
+                                        <FormHelperText>
+                                          {error?.message}
+                                        </FormHelperText>
+                                      )}
                                     </Box>
                                   )}
                                 />

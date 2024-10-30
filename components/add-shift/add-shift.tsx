@@ -440,6 +440,8 @@ export default function AddShift({
     enabled: Boolean(client) && role === "ROLE_ADMINS"
   });
 
+  const [viewAdvanceModal, setViewAdvanceModal] = useState(false);
+  const [editAdvanceModal, setEditAdvanceModal] = useState(false);
   const [advanceShift, setAdvanceShift] = useState(false);
   const [shiftModalAdvance, setShiftModalAdvance] = useState(false);
 
@@ -603,8 +605,19 @@ export default function AddShift({
   return (
     <>
       <AdvanceShift
+        view={viewAdvanceModal}
+        edit={editAdvanceModal}
         open={shiftModalAdvance}
-        onClose={() => setShiftModalAdvance(false)}
+        onClose={() => {
+          setShiftModalAdvance(false);
+          setViewAdvanceModal(false);
+          setEditAdvanceModal(false);
+        }}
+        shift={shift}
+        // open={shiftModalAdvance}
+        // onClose={() => {
+        //   setShiftModalAdvance(false);
+        // }}
       />
       <StyledDrawer
         anchor="right"
@@ -646,6 +659,7 @@ export default function AddShift({
               Back
             </Button>
           )}
+
           {role === "ROLE_CARER" ? (
             <Button
               variant="contained"
@@ -655,45 +669,59 @@ export default function AddShift({
               Add Note
             </Button>
           ) : !view ? (
-            // <>
-            //   <Stack direction="row" alignItems="center" gap={1}>
-            //     <LoadingButton
-            //       variant="contained"
-            //       startIcon={<Iconify icon="ic:baseline-save" />}
-            //       // onClick={methods.handleSubmit(onSubmit)}
-            //       // loading={isPending || isEditPending}
-            //     >
-            //       Advance Edit
-            //     </LoadingButton>
-            //   </Stack>
-            //   <Stack direction="row" alignItems="center" gap={1}>
-            //     <LoadingButton
-            //       variant="contained"
-            //       startIcon={<Iconify icon="ic:baseline-save" />}
-            //       onClick={methods.handleSubmit(onSubmit)}
-            //       loading={isPending || isEditPending}
-            //     >
-            //       Save
-            //     </LoadingButton>
-            //   </Stack>
-            // </>
-            <Stack direction="row" alignItems="center" gap={1}>
-              <Button
-                variant="contained"
-                startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
-                onClick={() => setShiftModalAdvance(true)}
-              >
-                Advance Edit
-              </Button>
-              <LoadingButton
-                variant="contained"
-                startIcon={<Iconify icon="ic:baseline-save" />}
-                onClick={methods.handleSubmit(onSubmit)}
-                loading={isPending || isEditPending}
-              >
-                Save
-              </LoadingButton>
-            </Stack>
+            <>
+              {!edit ? (
+                <>
+                  <Stack direction="row" alignItems="center" gap={1}>
+                    <Button
+                      variant="contained"
+                      startIcon={
+                        <Iconify icon="basil:edit-outline" fontSize={14} />
+                      }
+                      onClick={() => {
+                        setShiftModalAdvance(true);
+                        setEditAdvanceModal(false);
+                        setViewAdvanceModal(false);
+                      }}
+                    >
+                      Advance Shift
+                    </Button>
+                    <LoadingButton
+                      variant="contained"
+                      startIcon={<Iconify icon="ic:baseline-save" />}
+                      onClick={methods.handleSubmit(onSubmit)}
+                      loading={isPending || isEditPending}
+                    >
+                      Save
+                    </LoadingButton>
+                  </Stack>
+                </>
+              ) : (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Button
+                    variant="contained"
+                    startIcon={
+                      <Iconify icon="basil:edit-outline" fontSize={14} />
+                    }
+                    onClick={() => {
+                      setShiftModalAdvance(true);
+                      setEditAdvanceModal(true);
+                      setViewAdvanceModal(false);
+                    }}
+                  >
+                    Advance Edit
+                  </Button>
+                  <LoadingButton
+                    variant="contained"
+                    startIcon={<Iconify icon="ic:baseline-save" />}
+                    onClick={methods.handleSubmit(onSubmit)}
+                    loading={isPending || isEditPending}
+                  >
+                    Save
+                  </LoadingButton>
+                </Stack>
+              )}
+            </>
           ) : (
             <Stack direction="row" alignItems="center" gap={1}>
               <LoadingButton

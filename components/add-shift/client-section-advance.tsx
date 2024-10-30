@@ -49,6 +49,14 @@ export default function ClientSectionAdvance({
   edit?: boolean;
   shift?: Shift;
 }) {
+  // console.log("Selcted Shift ::::::::::::::::::", shift?.funds?.fundId);
+  // console.log("Selcted Shift ::::::::::::::::::", shift?.priceBooks?.id);
+  // console.log("Selcted Shift ::::::::::::::::::", shift?.funds?.fundId);
+  // This should display the id if it exists, or undefined if it doesn't
+  // console.log("Selcted Shift priceBooks ::::::::::::::::::", shift?.priceBooks);
+  // console.log("Selcted Shift Funds ::::::::::::::::::", shift?.funds);
+  // console.log("Selcted Shift PayGroups ::::::::::::::::::", shift?.payGroups);
+
   const [selectedDisplayNames, setSelectedDisplayNames] = useState("");
   const { control, setValue, getValues } = useFormContext();
   const role = getRole();
@@ -59,6 +67,21 @@ export default function ClientSectionAdvance({
       margin-bottom: 40px;
     }
   `;
+
+  const participantDisplayName = shift?.client.displayName;
+  // console.log(
+  //   "::::::::::::::::::Selected Participant Display Name:::::",
+  //   participantDisplayName
+  // );
+  // if (participantDisplayName) {
+  //   setSelectedDisplayNames(participantDisplayName);
+  // }
+
+  useEffect(() => {
+    if (participantDisplayName) {
+      setSelectedDisplayNames(participantDisplayName);
+    }
+  }, [shift?.client.displayName]);
 
   const { data, isLoading } = useQuery({
     queryKey: ["client_list"],
@@ -86,10 +109,17 @@ export default function ClientSectionAdvance({
   const clientIdsString = selectedClientId; // Example string
   const clientIds = clientIdsString.split(",").map((id) => Number(id.trim())); // [3, 4]
   console.log("Id----------------------", clientIds);
+
+  const participantId: number[] =
+    shift?.client.id !== undefined && shift.client.id !== null
+      ? [shift.client.id] // Wrap in an array if defined
+      : Array.isArray(clientIds)
+      ? clientIds // Use clientIds if it's an array
+      : [];
   const { data: fundsData, isLoading: isloadings } = useQuery({
     queryKey: ["client-funds", selectedClientId],
-    queryFn: () => getClientFunds({ clientIds: clientIds }),
-    enabled: !!selectedClientId // Ensures that the query runs only if staffid is truthy (not null or empty)
+    queryFn: () => getClientFunds({ clientIds: participantId })
+    // enabled: !!selectedClientId // Ensures that the query runs only if staffid is truthy (not null or empty)
   });
 
   useEffect(() => {
@@ -190,66 +220,6 @@ export default function ClientSectionAdvance({
               </Grid>
 
               <Grid item lg={8} md={6} sm={12} xs={12}>
-                {/* <Controller
-                  control={control}
-                  name="clientIds"
-                  render={({ field, fieldState: { error, invalid } }) => (
-                    <Box>
-                      <Select
-                        fullWidth
-                        size="small"
-                        {...field}
-                        value={Array.isArray(field.value) ? field.value : []}
-                        onChange={(e) => {
-                          const _value = e.target.value;
-                          field.onChange(
-                            Array.isArray(_value) ? _value : [_value]
-                          );
-
-                          // Set selectedClientId state
-                          setSelectedClientId(
-                            Array.isArray(_value) ? _value.join(", ") : _value
-                          );
-
-                          // Get the selected display names
-                          const selectedNames = data
-                            ?.filter((client: any) =>
-                              _value.includes(client.id)
-                            )
-                            .map((client: any) => client.displayName)
-                            .join(", ");
-                          setOpen(selectedNames.length);
-                          // Set selected display names state
-                          setSelectedDisplayNames(selectedNames);
-                        }}
-                        displayEmpty
-                        renderValue={
-                          field.value?.length !== 0
-                            ? undefined
-                            : () => "Select Participant"
-                        }
-                        multiple
-                      >
-                        {isLoading ? (
-                          <MenuItem disabled>
-                            <CircularProgress size={20} />
-                            Loading...
-                          </MenuItem>
-                        ) : (
-                          data?.map((_data: IClient) => (
-                            <MenuItem value={_data.id} key={_data.id}>
-                              {_data.displayName}
-                            </MenuItem>
-                          ))
-                        )}
-                      </Select>
-                      {invalid && (
-                        <FormHelperText>{error?.message}</FormHelperText>
-                      )}
-                    </Box>
-                  )}
-                /> */}
-
                 <Controller
                   control={control}
                   name="clientIds"
@@ -282,6 +252,10 @@ export default function ClientSectionAdvance({
 
                             setOpen(selectedNames.length);
                             setSelectedDisplayNames(selectedNames);
+                            console.log(
+                              ":::::::::::::::::: Selected Name of Participant::::::::",
+                              selectedNames
+                            );
                           }}
                           displayEmpty
                           renderValue={
@@ -316,7 +290,8 @@ export default function ClientSectionAdvance({
           </Grid>
         )}
       </StyledPaper>
-      {open && selectedDisplayNames ? (
+
+      {/* {open && selectedDisplayNames ? (
         selectedDisplayNames.split(",").map((name: string, index: number) => {
           const clientData = Array.isArray(fundsData)
             ? fundsData.find(
@@ -425,6 +400,7 @@ export default function ClientSectionAdvance({
                         )}
                       />
                     </Grid>
+
                     <Grid item lg={4} md={6} sm={12} xs={12}>
                       <Typography>Choose Fund</Typography>
                     </Grid>
@@ -446,6 +422,182 @@ export default function ClientSectionAdvance({
                               onChange={(e) => {
                                 const _value = e.target.value;
                                 field.onChange([_value]); // Ensure value is wrapped in an array
+                              }}
+                              displayEmpty
+                              renderValue={
+                                field.value && field.value.length > 0
+                                  ? undefined
+                                  : () => "Select Fund"
+                              }
+                            >
+                              {isLoading ? (
+                                <MenuItem disabled>
+                                  <CircularProgress size={20} />
+                                  Loading...
+                                </MenuItem>
+                              ) : relevantFunds.length > 0 ? (
+                                relevantFunds.map((fund: any) => (
+                                  <MenuItem
+                                    value={fund.fundId}
+                                    key={fund.fundId}
+                                  >
+                                    {fund.name}
+                                  </MenuItem>
+                                ))
+                              ) : (
+                                <MenuItem disabled>No Funds Available</MenuItem>
+                              )}
+                            </Select>
+                            {invalid && (
+                              <FormHelperText>{error?.message}</FormHelperText>
+                            )}
+                          </Box>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          );
+        })
+      ) : (
+        <Typography></Typography>
+      )} */}
+
+      {open && selectedDisplayNames ? (
+        selectedDisplayNames.split(",").map((name: string, index: number) => {
+          const clientData = Array.isArray(fundsData)
+            ? fundsData.find(
+                (client) => client.clientName.trim() === name.trim()
+              )
+            : null;
+
+          const relevantFunds = clientData ? clientData.funds : [];
+
+          // Prefilling values for priceBookId and fundId
+          const prefilledPriceBookId = shift?.priceBooks?.id; // Use the id from the priceBooks JSON
+          // const prefilledPriceBookId = shift?.priceBooks?.[0]?.id || ""; // Use the id from the priceBooks JSON
+          const prefilledFundId = shift?.funds?.fundId;
+          // relevantFunds.length > 0 ? relevantFunds[0].fundId : ""; // Use the first fundId if available
+
+          return (
+            <Card
+              key={index}
+              sx={{
+                minWidth: 275,
+                position: "relative",
+                bgcolor: "#f5f5f5",
+                border: "1px solid #ccc",
+                boxShadow: 2,
+                margin: "10px 0px 0px 6px"
+              }}
+            >
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: -3,
+                  right: -3,
+                  border: "6px solid #ffffff",
+                  color: "white",
+                  width: "0.6em",
+                  height: "0.6em",
+                  bgcolor: "red",
+                  "&:hover": {
+                    bgcolor: "darkred"
+                  }
+                }}
+                onClick={() => handleRemoveName(name)}
+              >
+                <CloseIcon />
+              </IconButton>
+              <CardContent>
+                <Grid container alignItems="center">
+                  <Divider
+                    style={{ marginTop: "20px", marginBottom: "20px" }}
+                  />
+                  <Grid container spacing={2}>
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Participant Name</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      {name.trim()}
+                    </Grid>
+
+                    {/* Price Book Selection */}
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Choose Price</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name={`clientPriceBooks[${index}].priceBookIds`}
+                        defaultValue={[prefilledPriceBookId]} // Set default value
+                        render={({ field, fieldState: { error, invalid } }) => (
+                          <Box>
+                            <Select
+                              fullWidth
+                              size="small"
+                              {...field}
+                              value={field.value || prefilledPriceBookId} // Ensure the selected value is correctly set
+                              onChange={(e) => {
+                                const _value = e.target.value;
+                                field.onChange([_value]); // Wrap value in an array
+                              }}
+                              displayEmpty
+                              renderValue={
+                                field.value && field.value.length > 0
+                                  ? undefined
+                                  : () => "Select Price Book"
+                              }
+                            >
+                              {isLoading ? (
+                                <MenuItem disabled>
+                                  <CircularProgress size={20} />
+                                  Loading...
+                                </MenuItem>
+                              ) : price?.priceBooks?.length > 0 ? (
+                                price.priceBooks.map((priceBook: any) => (
+                                  <MenuItem
+                                    value={priceBook.id}
+                                    key={priceBook.id}
+                                  >
+                                    {priceBook.priceBookName}
+                                  </MenuItem>
+                                ))
+                              ) : (
+                                <MenuItem disabled>
+                                  No Price Books Available
+                                </MenuItem>
+                              )}
+                            </Select>
+                            {invalid && (
+                              <FormHelperText>{error?.message}</FormHelperText>
+                            )}
+                          </Box>
+                        )}
+                      />
+                    </Grid>
+
+                    {/* Fund Selection */}
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Choose Fund</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name={`clientPriceBooks[${index}].fundIds`}
+                        defaultValue={[prefilledFundId]} // Set default value
+                        render={({ field, fieldState: { error, invalid } }) => (
+                          <Box>
+                            <Select
+                              fullWidth
+                              size="small"
+                              {...field}
+                              value={field.value || prefilledFundId} // Ensure the selected value is correctly set
+                              onChange={(e) => {
+                                const _value = e.target.value;
+                                field.onChange([_value]); // Wrap value in an array
                               }}
                               displayEmpty
                               renderValue={

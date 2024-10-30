@@ -370,8 +370,8 @@ interface AddShiftProps extends DrawerProps {
   view?: boolean;
   edit?: boolean;
   repeatshift?: boolean;
-  setViewModal?: React.Dispatch<SetStateAction<boolean>>;
-  setEditModal?: React.Dispatch<SetStateAction<boolean>>;
+  setViewAdvanceModal?: React.Dispatch<SetStateAction<boolean>>;
+  setEditAdvanceModal?: React.Dispatch<SetStateAction<boolean>>;
   shift?: Shift;
   onClose: () => void;
   selectedDate?: Moment | null;
@@ -433,8 +433,10 @@ export default function AdvanceShift({
   view,
   edit,
   repeatshift,
-  setViewModal,
-  setEditModal,
+  setViewAdvanceModal,
+  setEditAdvanceModal,
+  // setViewModal,
+  // setEditModal,
   shift,
   ...props
 }: AddShiftProps) {
@@ -500,7 +502,7 @@ export default function AdvanceShift({
         { employeeId: "", payGroupId: "" } // Initialize with an empty object for the first entry
       ],
       clientPriceBooks: [
-        { clientId: 0, priceBookIds: "", fundIds: "" } // Initialize with an empty object for the first entry
+        { clientId: 0, priceBookIds: "", fundIds: [] } // Initialize with an empty object for the first entry
       ]
     }
   });
@@ -611,8 +613,8 @@ export default function AdvanceShift({
 
   const onSubmit = (data: ShiftBody) => {
     console.log(
-      "Raw employeePayGroups before processing:",
-      data.employeePayGroups
+      "-----------------------FORM DATA:----------------------------",
+      data
     );
 
     // Use the employeeIds array from the form data
@@ -626,7 +628,9 @@ export default function AdvanceShift({
       breakTimeInMins: data.breakTimeInMins || 0,
       startTime: dayjs(data.startTime).format("HH:mm"),
       endTime: dayjs(data.endTime).format("HH:mm"),
-      clientIds: data.clientIds,
+      // clientIds: data.clientIds,
+      clientIds: data.clientIds.filter((clientIds) => clientIds !== null),
+
       id: shift?.id,
       employeePayGroups: data.employeePayGroups.map((group, index) => ({
         ...group,
@@ -683,12 +687,13 @@ export default function AdvanceShift({
           <Button
             variant="outlined"
             startIcon={<Iconify icon="ion:chevron-back-outline" />}
-            onClick={() => {
-              if (setEditModal && setViewModal) {
-                setEditModal(false);
-                setViewModal(true);
-              }
-            }}
+            // onClick={() => {
+            //   if (setEditAdvanceModal && setViewAdvanceModal) {
+            //     setEditAdvanceModal(false);
+            //     setViewAdvanceModal(true);
+            //   }
+            // }}
+            onClick={props.onClose}
             disabled={isPending}
           >
             Back
@@ -703,29 +708,6 @@ export default function AdvanceShift({
             Add Note
           </Button>
         ) : !view ? (
-          // <>
-          //   <Stack direction="row" alignItems="center" gap={1}>
-          //     <LoadingButton
-          //       variant="contained"
-          //       startIcon={<Iconify icon="ic:baseline-save" />}
-          //       // onClick={methods.handleSubmit(onSubmit)}
-          //       // loading={isPending || isEditPending}
-          //     >
-          //       Advance Edit
-          //     </LoadingButton>
-          //   </Stack>
-          //   <Stack direction="row" alignItems="center" gap={1}>
-          //     <LoadingButton
-          //       variant="contained"
-          //       startIcon={<Iconify icon="ic:baseline-save" />}
-          //       onClick={methods.handleSubmit(onSubmit)}
-          //       loading={isPending || isEditPending}
-          //     >
-          //       Save
-          //     </LoadingButton>
-          //   </Stack>
-          // </>
-
           <Stack direction="row" alignItems="center" gap={1}>
             <LoadingButton
               variant="contained"
@@ -733,7 +715,7 @@ export default function AdvanceShift({
               onClick={methods.handleSubmit(onSubmit)}
               loading={isPending || isEditPending}
             >
-              Save -
+              Save
             </LoadingButton>
           </Stack>
         ) : (
@@ -776,9 +758,9 @@ export default function AdvanceShift({
               variant="contained"
               startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
               onClick={() => {
-                if (setEditModal && setViewModal) {
-                  setEditModal(true);
-                  setViewModal(false);
+                if (setEditAdvanceModal && setViewAdvanceModal) {
+                  setEditAdvanceModal(true);
+                  setViewAdvanceModal(false);
                 }
               }}
             >

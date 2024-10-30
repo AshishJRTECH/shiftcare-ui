@@ -5,14 +5,27 @@ export interface Task {
   task: string;
   isTaskMandatory: boolean;
 }
+export interface ClientFundsDto {
+  fundId: string;
+  name: string;
+}
+export interface payGroupsDTO {
+  id: string;
+  payGroupName: string;
+}
+export interface priceBooksDTO {
+  id: string;
+  priceBookName: string;
+}
 export interface EmployeePayGroupDto {
+  id?: number;
   employeeId: string;
   payGroupId: string;
 }
 export interface ClientPriceBookDto {
   clientId?: number;
   priceBookIds: string;
-  fundIds: string;
+  fundIds: string[];
 }
 
 export interface ShiftBody {
@@ -145,7 +158,48 @@ export interface Shift {
   clientEndTime: number[];
   occurrenceCounter?: boolean;
   isOpenShift: boolean;
+  funds: ClientFundsDto;
+  payGroups: payGroupsDTO;
+  priceBooks: priceBooksDTO;
+  // payGroups: EmployeePayGroupDto[];
+  // priceBooks: ClientPriceBookDto[];
 }
+// export interface ShiftPayPrice {
+//   id: number;
+//   startDate: number;
+//   isShiftEndsNextDay: boolean;
+//   startTime: number[];
+//   endTime: number[];
+//   breakTimeInMins: number;
+//   shiftEndDate: number;
+//   shiftHours: number;
+//   isRepeated: boolean;
+//   address: string;
+//   apartmentNumber: string;
+//   shiftType: string;
+//   recurrance: string;
+//   repeatNoOfDays: number;
+//   repeatNoOfWeeks: number;
+//   occursOnDays: string[];
+//   repeatNoOfMonths: number;
+//   occursOnDayOfMonth: number;
+//   endDate: number;
+//   isDropOffAddress: boolean;
+//   dropOffAddress: string;
+//   dropOffApartmentNumber: string;
+//   tasks: Task[];
+//   instruction: string;
+//   client: ShiftUser;
+//   employee: ShiftUser;
+//   employeeStartTime: number[];
+//   employeeEndTime: number[];
+//   clientStartTime: number[];
+//   clientEndTime: number[];
+//   occurrenceCounter?: boolean;
+//   isOpenShift: boolean;
+//   payGroups: EmployeePayGroupDto[];
+//   priceBooks: ClientPriceBookDto[];
+// }
 
 export interface Document {
   documentId: any;

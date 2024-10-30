@@ -137,7 +137,7 @@ export default function StaffTableRow({
             handleCloseMenu(e);
           }}
           sx={{ color: "error.main" }}
-          disabled={index === 0}
+          // disabled={index === 0}
         >
           <Iconify icon="eva:trash-2-outline" sx={{ mr: 2 }} />
           Delete

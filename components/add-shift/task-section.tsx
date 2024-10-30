@@ -147,7 +147,7 @@ export default function TaskSection({
             Add Task
           </Button>
         </Stack>
-        {watch("tasks").map((_task: Task, index: number) => (
+        {/* {watch("tasks").map((_task: Task, index: number) => (
           <Stack
             key={index}
             direction="row"
@@ -188,7 +188,52 @@ export default function TaskSection({
               />
             </button>
           </Stack>
-        ))}
+        ))} */}
+
+        {watch("tasks") &&
+          Array.isArray(watch("tasks")) &&
+          watch("tasks").map((_task: Task, index: number) => (
+            <Stack
+              key={index}
+              direction="row"
+              alignItems="center"
+              justifyContent="space-between"
+              gap={2}
+              padding={1}
+              paddingRight={5}
+              marginBottom={2}
+              position="relative"
+              sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
+            >
+              <Typography>{_task.task}</Typography>
+              <Typography>
+                <strong>Mandatory: </strong>
+                {_task.isTaskMandatory ? "Yes" : "No"}
+              </Typography>
+              <button
+                style={{
+                  borderRadius: "50%",
+                  backgroundColor: "#fff",
+                  color: "#fff",
+                  border: "2px solid #fff",
+                  position: "absolute",
+                  top: -10,
+                  right: -10,
+                  boxShadow: "0 1px 2px 0 rgba(0,0,0,.3)",
+                  cursor: "pointer"
+                }}
+                onClick={() => remove(index)}
+              >
+                <Image
+                  src={assets.delete}
+                  alt="delete"
+                  width={512}
+                  height={512}
+                  style={{ width: 25, height: 25 }}
+                />
+              </button>
+            </Stack>
+          ))}
       </Box>
     </StyledPaper>
   );
