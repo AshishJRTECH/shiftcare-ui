@@ -611,7 +611,8 @@ export default function ClientSectionAdvance({
                                   <CircularProgress size={20} />
                                   Loading...
                                 </MenuItem>
-                              ) : relevantFunds.length > 0 ? (
+                              ) : Array.isArray(relevantFunds) &&
+                                relevantFunds.length > 0 ? (
                                 relevantFunds.map((fund: any) => (
                                   <MenuItem
                                     value={fund.fundId}

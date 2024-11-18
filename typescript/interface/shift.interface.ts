@@ -126,6 +126,7 @@ export interface ShiftUser {
 }
 
 export interface Shift {
+  deleted: any;
   id: number;
   startDate: number;
   isShiftEndsNextDay: boolean;

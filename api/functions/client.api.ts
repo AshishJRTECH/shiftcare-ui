@@ -196,3 +196,29 @@ export const getClientFunds = async (body: ClientFundsList) => {
   const res = await axiosInstance.post(endpoints.client.get_client_funds, body);
   return res.data;
 };
+
+export const getBillingReport = async ({
+  clientid,
+  fundId,
+  startDate,
+  endDate
+}: {
+  clientid: string;
+  fundId: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const url = `${endpoints.client.get_billing_report(
+    clientid
+  )}?startDate=${startDate}&endDate=${endDate}&fundId=${fundId}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.get(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};

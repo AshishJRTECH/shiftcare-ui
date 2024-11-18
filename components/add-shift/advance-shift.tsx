@@ -731,14 +731,6 @@ export default function AdvanceShift({
             >
               Cancel Shift
             </LoadingButton>
-            <LoadingButton
-              variant="contained"
-              startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
-              // onClick={methods.handleSubmit(onSubmit)}
-              // loading={isPending || isEditPending}
-            >
-              Advance Edit
-            </LoadingButton>
             <Button
               variant="contained"
               startIcon={<RepeatIcon />}

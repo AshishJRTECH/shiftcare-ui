@@ -222,6 +222,13 @@ export const ShiftBox = ({
     </Stack>
   );
 
+  // useEffect(() => {
+  //   console.log(
+  //     "---------------------: All Shift List :----------------------",
+  //     shifts
+  //   );
+  // }, [shifts]);
+
   return (
     <Box
       sx={{
@@ -231,16 +238,6 @@ export const ShiftBox = ({
         width: "100%"
       }}
     >
-      {/* {shifts.slice(0, 1).map((_shift) => (
-        <Shift
-          shift={_shift}
-          key={_shift.id}
-          type={"comfortable"}
-          isClient={isClient}
-          bulkaction={bulkaction}
-          selectall={selectall}
-        />
-      ))} */}
       {shifts.map((_shift) => (
         <Shift
           shift={_shift}
@@ -251,22 +248,6 @@ export const ShiftBox = ({
           selectall={selectall}
         />
       ))}
-      {/* <StyledTooltip title={otherShifts}>
-        <Typography
-          variant="body1"
-          style={{
-            display: "block",
-            marginTop: "5px",
-            paddingLeft: "10px",
-            fontSize: "15px",
-            color: "#0a9797",
-            fontWeight: "500",
-            cursor: "pointer"
-          }}
-        >
-          {shifts.length > 1 && `+ ${shifts.length - 1} more`}
-        </Typography>
-      </StyledTooltip> */}
     </Box>
   );
 };
@@ -358,24 +339,13 @@ export default function TimeSheetTable({
     const savedIds = sessionStorage.getItem("shiftIds");
 
     if (selectall === true) {
-      // if (allSelectedData) {
-      //   // const allselectedShifts = JSON.parse(allSelectedData) as number[];
-      //   mutate(allSelectedData);
-      // }
       if (savedIds) {
         const shiftIdsArray = JSON.parse(savedIds) as number[];
         mutate(shiftIdsArray);
-        // console.log("Cancel the selected Shift:", shiftIdsArray);
 
-        // Uncomment the below code once the above function begin to work fine
-        // // Clear the session storage
         sessionStorage.removeItem("shiftIds");
 
-        // // Optionally, you could save an empty array to the session storage (not strictly necessary)
         sessionStorage.setItem("shiftIds", JSON.stringify([]));
-
-        // // Update the component state to reflect the cleared array
-        // setShiftIds([]);
       }
     } else {
       if (savedIds) {

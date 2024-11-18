@@ -735,13 +735,6 @@ export default function AddShift({
               >
                 Cancel Shift
               </LoadingButton>
-              {/* <LoadingButton
-                variant="contained"
-                startIcon={<Iconify icon="ic:baseline-edit" />}
-                onClick={() => setShiftModalAdvance(true)}
-              >
-                Advance Edit 
-              </LoadingButton> */}
               <Button
                 variant="contained"
                 startIcon={<RepeatIcon />}

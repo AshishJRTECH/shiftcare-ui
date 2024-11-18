@@ -92,7 +92,9 @@ export const endpoints = {
     delete_client_contact: (id: string, contact_id: number) =>
       `/client/${id}/additional-contacts/${contact_id}`,
     // get_client_funds: (id: string) => `/funds/client/${id}`
-    get_client_funds: "/funds/clients/allFunds"
+    get_client_funds: "/funds/clients/allFunds",
+    get_billing_report: (clientId?: string) =>
+      `/billingReport/client/${clientId}/dates`
   },
   teams: {
     get_all: "/teams/allTeams",

@@ -21,6 +21,7 @@ export default function StaffRoster() {
         endDate: date.endOf("month").format("X")
       })
   });
+
   return (
     <DashboardLayout isLoading={isLoading}>
       <CalendarToolbar date={date} setDate={setDate} />

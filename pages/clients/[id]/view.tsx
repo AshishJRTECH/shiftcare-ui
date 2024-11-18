@@ -42,7 +42,7 @@ import {
 } from "@tanstack/react-query";
 import moment from "moment";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Settings from "@/components/client-settings/settings";
 import ClientDocuments from "@/components/client-docuements/documents";
 import ClientFunds from "@/components/client-funds/funds";
@@ -132,6 +132,11 @@ export default function Index() {
 
   const handlePopoverClose = () => {
     setAnchorEl(null);
+  };
+
+  const router = useRouter();
+  const handleRedirectToBillingReport = () => {
+    router.push(`/clients/${id}/billing-report`);
   };
 
   const open = Boolean(anchorEl);
@@ -244,8 +249,10 @@ export default function Index() {
               Communications
             </MenuItem>
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                handlePopoverClose();
+                handleRedirectToBillingReport();
+              }}
             >
               Billing Report
             </MenuItem>
