@@ -5,11 +5,40 @@ import { Typography } from "@mui/material";
 import { Shift as IShift } from "@/interface/shift.interface";
 import moment from "moment";
 import AddShift from "../add-shift/add-shift";
+import CheckIcon from "@mui/icons-material/Check";
+import DoneIcon from "@mui/icons-material/Done";
+
 // import { Grid } from "antd";
 
-const ShiftBox = styled(Box)<{ selected: boolean }>`
-  background-color: ${(props) => (props.selected ? "#12ff004d" : "#f0f0f0")};
-  cursor: pointer;
+// const ShiftBox = styled(Box)<{ selected: boolean; deleted: boolean }>`
+//   background-color: ${(props) =>
+//     props.deleted ? "#ffe1b9" : props.selected ? "#12ff004d" : "#f0f0f0"};
+//   cursor: ${(props) =>
+//     props.deleted ? "pointer" : "pointer"}; /* Make clickable */
+//   padding: 16px;
+//   padding-left: 10px;
+//   width: auto;
+//   border: 0.5px solid #cecece;
+//   border-radius: 3px;
+//   margin: 3px 5px;
+//   padding: 1px 10px;
+//   border-bottom: 2px solid #aeaeae;
+// `;
+
+const ShiftBox = styled(Box)<{
+  selected: boolean;
+  deleted: boolean;
+  isTimesheetApproved: boolean;
+}>`
+  background-color: ${(props) =>
+    props.isTimesheetApproved
+      ? "#e7e7fa"
+      : props.deleted
+      ? "#ffe1b9"
+      : props.selected
+      ? "#12ff004d"
+      : "#f0f0f0"};
+  cursor: pointer; /* Make clickable */
   padding: 16px;
   padding-left: 10px;
   width: auto;
@@ -74,14 +103,14 @@ export default function Shift({
       if (shiftIdsList !== "" || shiftIdsList !== null) {
         setShiftIds(shiftIdsList); // setting data into array shiftIds fetched from array shiftIdsList
         sessionStorage.setItem("shiftIds", JSON.stringify(shiftIdsList)); // saving data of array shiftIds into session
-        console.log(
-          "All Selected Shift Ids shiftIdsList----------------------------",
-          shiftIdsList
-        );
-        console.log(
-          "All Selected Shift Ids shiftIds----------------------------",
-          shiftIds
-        );
+        // console.log(
+        //   "All Selected Shift Ids shiftIdsList----------------------------",
+        //   shiftIdsList
+        // );
+        // console.log(
+        //   "All Selected Shift Ids shiftIds----------------------------",
+        //   shiftIds
+        // );
       }
     } else {
       sessionStorage.removeItem("shiftIds");
@@ -158,11 +187,14 @@ export default function Shift({
   const handleClicktoUnselectBulkselected = () => {
     toUnselectBulkselected(shift.id);
   };
+
   return (
     <>
       {selectall ? (
         <ShiftBox
           selected={isSelected}
+          deleted={shift.deleted} // Pass the deleted prop here
+          isTimesheetApproved={shift.isTimesheetApproved} // Pass the deleted prop here
           sx={
             type === "comfortable"
               ? {
@@ -255,6 +287,8 @@ export default function Shift({
       ) : (
         <ShiftBox
           selected={isSelected}
+          deleted={shift.deleted} // Pass the deleted prop here
+          isTimesheetApproved={shift.isTimesheetApproved}
           sx={
             type === "comfortable"
               ? {
@@ -273,7 +307,7 @@ export default function Shift({
         >
           {type === "comfortable" ? (
             <>
-              <Box className="time">
+              {/* <Box className="time">
                 <Box className="border" />
                 <Typography variant="caption" lineHeight="1.4">
                   {moment()
@@ -292,7 +326,47 @@ export default function Shift({
                     })
                     .format("hh:mm a")}
                 </Typography>
+              </Box> */}
+              <Box className="time" position="relative">
+                {/* Debugging: Check if the condition is met */}
+                {shift.isTimesheetApproved && (
+                  <Box
+                    position="absolute"
+                    top={2}
+                    right={-7}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    bgcolor="green"
+                    color="white"
+                    borderRadius="50%"
+                    width={20}
+                    height={20}
+                  >
+                    {/* Check icon */}
+                    <DoneIcon fontSize="small" sx={{ color: "white" }} />
+                  </Box>
+                )}
+                <Box className="border" />
+                <Typography variant="caption" lineHeight="1.4">
+                  {moment()
+                    .set({
+                      hours: shift.startTime[0],
+                      minutes: shift.startTime[1]
+                    })
+                    .format("hh:mm a")}{" "}
+                  <br />
+                  {"To"}
+                  <br />{" "}
+                  {moment()
+                    .set({
+                      hours: shift.endTime[0],
+                      minutes: shift.endTime[1]
+                    })
+                    .format("hh:mm a")}
+                </Typography>
               </Box>
+
               <Stack
                 direction="row"
                 alignItems="center"
@@ -325,7 +399,6 @@ export default function Shift({
                   : shift.client.displayName}
               </Typography>
               <Typography variant="caption">
-                From
                 {moment()
                   .set({
                     hours: shift.startTime[0],

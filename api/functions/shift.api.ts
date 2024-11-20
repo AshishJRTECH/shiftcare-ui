@@ -139,3 +139,8 @@ export const repeatShift = async (body: ShiftRepeat) => {
   const res = await axiosInstance.post(endpoints.shift.repeat_shift, body);
   return res.data;
 };
+
+export const rebookShift = async (shiftid: number) => {
+  const res = await axiosInstance.put(endpoints.shift.rebook_shift(shiftid));
+  return res.data;
+};

@@ -127,6 +127,7 @@ export const endpoints = {
       `/shift/getAllActiveShift/ForAEmployee/${id}`,
     edit_shift: (id?: number) => `/shift/update/${id}`,
     cancel_shift: (id?: number) => `/shift/cancelShift/${id}`,
+    rebook_shift: (shiftid?: number) => `/shift/rebookShift/${shiftid}`,
     notes: {
       get_all_shift_notes: `/shiftNote/getAllShiftNotes`,
       get_all_notes: (id?: string) => `/shiftNote/getAllForClient/${id}`,

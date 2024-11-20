@@ -1,4 +1,5 @@
 interface TransformedItem {
+  shiftDeleted: any;
   isTimesheetApproved: any;
   id: any;
   date: string;

@@ -43,7 +43,7 @@ import {
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getStaffList } from "@/api/functions/staff.api";
+import { getStaffList, undoTimesheet } from "@/api/functions/staff.api";
 import { IStaff } from "@/interface/staff.interfaces";
 import { getAllClients } from "@/api/functions/client.api";
 import { IClient } from "@/interface/client.interface";
@@ -72,6 +72,8 @@ import { getRole } from "@/lib/functions/_helpers.lib";
 import AddNoteModal from "./addNoteModal";
 import RepeatShift from "../add-shift/repeat-shift";
 import AdvanceShift from "./advance-shift";
+import { rebookShift } from "@/api/functions/shift.api";
+import { toast } from "sonner";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -602,6 +604,46 @@ export default function AddShift({
     );
   };
 
+  const { mutate: rebook, isPending: pending } = useMutation({
+    mutationFn: rebookShift,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all_shifts"] });
+      props.onClose();
+    }
+  });
+
+  const handleRebookShift = (shiftId: number) => {
+    rebook(shiftId);
+  };
+
+  // useEffect(() => {
+  //   console.log(
+  //     "-------------: Shift Details in Add-shift page is as below :-------------",
+  //     shift
+  //   );
+  // }, []);
+
+  // ---------------------------- Time Sheet Undo Start Here ----------------------------
+  const { mutate: undoTimesheetMutation, isPending: ispendingUndo } =
+    useMutation({
+      mutationFn: undoTimesheet,
+      onSuccess: (response) => {
+        toast.success(response.message);
+        // console.log("Response:", response);
+        queryClient.invalidateQueries({ queryKey: ["all_shifts"] });
+        props.onClose();
+      }
+    });
+  const handleUndoTimesheet = (time_sheet_id: string) => {
+    if (typeof time_sheet_id === "string") {
+      // console.log("Undo Timesheet of Id:", time_sheet_id);
+      undoTimesheetMutation(time_sheet_id);
+    } else {
+      console.error("Invalid id type. Expected a string.");
+    }
+  };
+  // ---------------------------- Time Sheet Undo End Here ----------------------------
+
   return (
     <>
       <AdvanceShift
@@ -723,46 +765,140 @@ export default function AddShift({
               )}
             </>
           ) : (
-            <Stack direction="row" alignItems="center" gap={1}>
-              <LoadingButton
-                variant="contained"
-                color="error"
-                startIcon={
-                  <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
-                }
-                loading={isShiftCancelling}
-                onClick={() => cancelMutate(shift?.id as number)}
-              >
-                Cancel Shift
-              </LoadingButton>
-              <Button
-                variant="contained"
-                startIcon={<RepeatIcon />}
-                onClick={() => {
-                  handleRepeatShift(shift?.id as number); // Pass the ID here
-                  setRepeatShiftModal(true);
-                }}
-              >
-                Repeat Shift
-              </Button>
-              <RepeatShift
-                open={repeatshiftModal}
-                onClose={() => setRepeatShiftModal(false)}
-                id={selectedId}
-              />
-              <Button
-                variant="contained"
-                startIcon={<Iconify icon="basil:edit-outline" fontSize={14} />}
-                onClick={() => {
-                  if (setEditModal && setViewModal) {
-                    setEditModal(true);
-                    setViewModal(false);
-                  }
-                }}
-              >
-                Edit
-              </Button>
-            </Stack>
+            // <>
+            //   {shift?.deleted ? (
+            //     // <Typography>Shift Deleted</Typography>
+            //     <Stack direction="row" alignItems="center" gap={1}>
+            //       <Button
+            //         variant="contained"
+            //         startIcon={<RepeatIcon />}
+            //         onClick={() => {
+            //           handleRebookShift(shift?.id as number); // Pass the ID here
+            //         }}
+            //       >
+            //         Rebook
+            //       </Button>
+            //     </Stack>
+            //   ) : (
+            //     // <Typography>Shift Not Deleted</Typography>
+            //     <Stack direction="row" alignItems="center" gap={1}>
+            //       <LoadingButton
+            //         variant="contained"
+            //         color="error"
+            //         startIcon={
+            //           <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
+            //         }
+            //         loading={isShiftCancelling}
+            //         onClick={() => cancelMutate(shift?.id as number)}
+            //       >
+            //         Cancel Shift
+            //       </LoadingButton>
+            //       <Button
+            //         variant="contained"
+            //         startIcon={<RepeatIcon />}
+            //         onClick={() => {
+            //           handleRepeatShift(shift?.id as number); // Pass the ID here
+            //           setRepeatShiftModal(true);
+            //         }}
+            //       >
+            //         Repeat Shift
+            //       </Button>
+            //       <RepeatShift
+            //         open={repeatshiftModal}
+            //         onClose={() => setRepeatShiftModal(false)}
+            //         id={selectedId}
+            //       />
+            //       <Button
+            //         variant="contained"
+            //         startIcon={
+            //           <Iconify icon="basil:edit-outline" fontSize={14} />
+            //         }
+            //         onClick={() => {
+            //           if (setEditModal && setViewModal) {
+            //             setEditModal(true);
+            //             setViewModal(false);
+            //           }
+            //         }}
+            //       >
+            //         Edit
+            //       </Button>
+            //     </Stack>
+            //   )}
+            // </>
+
+            <>
+              {shift?.deleted ? (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Button
+                    variant="contained"
+                    startIcon={<RepeatIcon />}
+                    onClick={() => {
+                      handleRebookShift(shift?.id as number); // Pass the ID here
+                    }}
+                  >
+                    Rebook
+                  </Button>
+                </Stack>
+              ) : shift?.isTimesheetApproved ? (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <Button
+                    variant="contained"
+                    // color="warning"
+                    sx={{ backgroundColor: "#b4ceff", color: "#000000" }}
+                    startIcon={
+                      <Iconify icon="mdi:undo-variant" fontSize={14} />
+                    }
+                    // onClick={() => handleUnapproveShift(shift?.id as number)} // Handle unapprove logic here
+                    onClick={() => handleUndoTimesheet(String(shift.id))}
+                  >
+                    Unapprove
+                  </Button>
+                </Stack>
+              ) : (
+                <Stack direction="row" alignItems="center" gap={1}>
+                  <LoadingButton
+                    variant="contained"
+                    color="error"
+                    startIcon={
+                      <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
+                    }
+                    loading={isShiftCancelling}
+                    onClick={() => cancelMutate(shift?.id as number)}
+                  >
+                    Cancel Shift
+                  </LoadingButton>
+                  <Button
+                    variant="contained"
+                    startIcon={<RepeatIcon />}
+                    onClick={() => {
+                      handleRepeatShift(shift?.id as number); // Pass the ID here
+                      setRepeatShiftModal(true);
+                    }}
+                  >
+                    Repeat Shift
+                  </Button>
+                  <RepeatShift
+                    open={repeatshiftModal}
+                    onClose={() => setRepeatShiftModal(false)}
+                    id={selectedId}
+                  />
+                  <Button
+                    variant="contained"
+                    startIcon={
+                      <Iconify icon="basil:edit-outline" fontSize={14} />
+                    }
+                    onClick={() => {
+                      if (setEditModal && setViewModal) {
+                        setEditModal(true);
+                        setViewModal(false);
+                      }
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Stack>
+              )}
+            </>
           )}
         </Stack>
         <Divider />

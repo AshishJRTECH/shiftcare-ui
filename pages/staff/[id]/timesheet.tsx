@@ -42,6 +42,7 @@ import { toast } from "sonner";
 import FilterListIcon from "@mui/icons-material/FilterList"; // Icon for Filter
 import CheckCircleIcon from "@mui/icons-material/CheckCircle"; // Icon for Approve All
 import UndoIcon from "@mui/icons-material/Undo"; // Icon for Undo All
+import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 
 const StyledUserPage = styled(Box)`
   padding: 20px 10px;
@@ -138,7 +139,7 @@ export default function Index() {
   // ------------------ To fetch data from the database end here ------------------
 
   useEffect(() => {
-    // console.log("============== Data List =================", data);
+    console.log("============== Data List =================", data);
   }, [data]);
 
   // ------------ Filter Function is start here -----------
@@ -178,6 +179,7 @@ export default function Index() {
         totalApprovedHours: any;
         totalApprovedSleepover: any;
         totalHours: any;
+        shiftDeleted: boolean;
       }) => ({
         id: item.id,
         date:
@@ -211,7 +213,8 @@ export default function Index() {
         totalApprovedHours: item.totalApprovedHours,
         totalApprovedSleepover: item.totalApprovedSleepover,
         totalHours: item.totalHours,
-        isTimesheetApproved: item.isTimesheetApproved
+        isTimesheetApproved: item.isTimesheetApproved,
+        shiftDeleted: item.shiftDeleted
       })
     );
   }
@@ -510,7 +513,14 @@ export default function Index() {
               {transformedData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row) => (
-                  <TableRow key={row.id}>
+                  <TableRow
+                    key={row.id}
+                    style={{
+                      backgroundColor: row.shiftDeleted
+                        ? "lightyellow"
+                        : "transparent"
+                    }}
+                  >
                     <TableCell>{row.date}</TableCell>
                     <TableCell>{row.shiftType}</TableCell>
                     <TableCell>{row.clientName}</TableCell>
@@ -546,22 +556,37 @@ export default function Index() {
                           </Box>
                         </>
                       ) : (
-                        <Tooltip title="Approve the Timesheet">
-                          <Button
-                            onClick={() => handleApprove(String(row.id))}
-                            aria-label="approve"
-                            startIcon={<CheckIcon />}
-                            sx={{
-                              backgroundColor: "#1877f2",
-                              color: "white",
-                              "&:hover": {
-                                backgroundColor: "#155cb2"
-                              }
-                            }}
-                          >
-                            Approve
-                          </Button>
-                        </Tooltip>
+                        <>
+                          {row.shiftDeleted ? (
+                            // <Typography>Shift Deleted</Typography>
+                            <Tooltip title="Shift Deleted">
+                              <Box display="flex" alignItems="center">
+                                <DoNotDisturbIcon color="error" />
+                                {/* <Typography variant="body1" color="error" ml={1}>
+                                Shift Deleted
+                              </Typography> */}
+                              </Box>
+                            </Tooltip>
+                          ) : (
+                            // <Typography>Shift Not Deleted</Typography>
+                            <Tooltip title="Approve the Timesheet">
+                              <Button
+                                onClick={() => handleApprove(String(row.id))}
+                                aria-label="approve"
+                                startIcon={<CheckIcon />}
+                                sx={{
+                                  backgroundColor: "#1877f2",
+                                  color: "white",
+                                  "&:hover": {
+                                    backgroundColor: "#155cb2"
+                                  }
+                                }}
+                              >
+                                Approve
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </>
                       )}
                     </TableCell>
                   </TableRow>
