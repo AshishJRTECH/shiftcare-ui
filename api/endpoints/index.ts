@@ -93,8 +93,13 @@ export const endpoints = {
       `/client/${id}/additional-contacts/${contact_id}`,
     // get_client_funds: (id: string) => `/funds/client/${id}`
     get_client_funds: "/funds/clients/allFunds",
+    // get_billing_report: (clientId?: string) =>
+    //   `/billingReport/client/${clientId}/dates`,
     get_billing_report: (clientId?: string) =>
-      `/billingReport/client/${clientId}/dates`
+      `/billingReport/get/client/${clientId}/dates`,
+    get_billing_list: () => `/invoices/to-be-generated`,
+    update_billing_report: (billingReportId: string) =>
+      `/billingReport/update/${billingReportId}`
   },
   teams: {
     get_all: "/teams/allTeams",

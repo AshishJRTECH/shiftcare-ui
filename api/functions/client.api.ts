@@ -11,6 +11,7 @@ import {
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 import ClientFunds from "@/components/client-funds/funds";
+import { BillingDataEdit } from "@/interface/billingreport.interface";
 
 export const getAllClients = async () => {
   const res = await axiosInstance.get(endpoints.client.get_all);
@@ -221,4 +222,38 @@ export const getBillingReport = async ({
     // console.error("Error approving timesheet:", error);
     throw error; // Rethrow to allow mutation to handle it
   }
+};
+
+export const getBillingList = async ({
+  startDate,
+  endDate
+}: {
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const url = `${endpoints.client.get_billing_list()}?startDate=${startDate}&endDate=${endDate}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.get(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};
+
+export const updateBillingReport = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: BillingDataEdit;
+}) => {
+  const res = await axiosInstance.put(
+    endpoints.client.update_billing_report(id),
+    data
+  );
+  return res.data;
 };

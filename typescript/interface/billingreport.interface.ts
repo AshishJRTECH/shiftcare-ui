@@ -21,3 +21,22 @@ export interface BillingData {
     invoice: string | null;
   }>;
 }
+
+export interface BillingDataEdit {
+  date: string;
+  startTime: string;
+  finishTime: string;
+  priceBookId: number;
+  hourlyRate: number;
+  hours: number;
+  hourlyCost: number;
+  additionalCost: number;
+  distanceRate: number;
+  distance: number;
+  distanceCost: number;
+  isShiftUpdated: boolean;
+  shiftDto: any;
+  isFundsSelected: boolean;
+  isAbsent: boolean;
+  fundIds: number;
+}

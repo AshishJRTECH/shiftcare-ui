@@ -5,6 +5,11 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
   Grid,
   IconButton,
   MenuItem,
@@ -28,11 +33,36 @@ import { Controller, useForm } from "react-hook-form";
 import EditIcon from "@mui/icons-material/Edit";
 import BlockIcon from "@mui/icons-material/Block";
 import Tooltip from "@mui/material/Tooltip";
+import { useRouter } from "next/router";
+import CheckIcon from "@mui/icons-material/Check";
+import EditBillForm from "./edit-bill-section";
 
 const BillingReport = () => {
+  const getWeekDates = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 (Sunday) to 6 (Saturday)
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek; // Adjust if today is Sunday
+    const monday = new Date(today);
+    monday.setDate(today.getDate() + diffToMonday);
+    const sunday = new Date(monday);
+    sunday.setDate(monday.getDate() + 6);
+
+    // Format dates as YYYY-MM-DD
+    const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+    return {
+      startOfWeek: formatDate(monday),
+      endOfWeek: formatDate(sunday)
+    };
+  };
+
+  const { startOfWeek, endOfWeek } = getWeekDates();
+  const [startDate, setStartDate] = useState<string>(startOfWeek);
+  const [endDate, setEndDate] = useState<string>(endOfWeek);
+
   const { id } = useParams<{ id: string }>(); // Ensure type for `id` from URL params
-  const [startDate, setStartDate] = useState<string>(""); // For start date
-  const [endDate, setEndDate] = useState<string>(""); // For end date
+  // const [startDate, setStartDate] = useState<string>(""); // For start date
+  // const [endDate, setEndDate] = useState<string>(""); // For end date
   const [billingData, setBillingData] = useState<BillingData | null>(null);
   const [totalCost, setTotalCost] = useState(0);
   const [totalHours, setTotalHours] = useState(0);
@@ -42,6 +72,22 @@ const BillingReport = () => {
     queryKey: ["client-funds", id],
     queryFn: () => getClientFunds({ clientIds: [Number(id)] })
   });
+
+  // ---------------------START----------------------
+  const router = useRouter();
+
+  // Get the query parameters from the URL
+  const { start_Date, end_Date } = router.query;
+
+  const [openModal, setModal] = useState(false);
+
+  useEffect(() => {
+    if (start_Date && end_Date) {
+      // Check if start_Date is an array, and handle accordingly
+      setStartDate(Array.isArray(start_Date) ? start_Date[0] : start_Date);
+      setEndDate(Array.isArray(end_Date) ? end_Date[0] : end_Date);
+    }
+  }, [start_Date, end_Date]);
 
   useEffect(() => {
     if (fundsData && fundsData.length > 0 && fundsData[0]?.funds) {
@@ -98,13 +144,65 @@ const BillingReport = () => {
         endDate: formattedEndDate // Pass the end date as yyyy-mm-dd
       });
 
-      console.log("Fetched Billing Data:", data);
+      // console.log("Fetched Billing Data:", data);
       setTotalCost(data.totalCost);
       setTotalHours(data.totalHours);
       setBillingData(data.billingReports); // Optionally, update the UI with the data
+      console.error("------------ Billing Report -----------:", data);
     } catch (error) {
       console.error("Error fetching billing report:", error);
     }
+  };
+
+  useEffect(() => {
+    const fetchingdata = async () => {
+      if (start_Date && end_Date) {
+        const data = await getBillingReport({
+          clientid: id,
+          fundId: fundids,
+          startDate: start_Date.toString(),
+          endDate: end_Date.toString()
+        });
+        setTotalCost(data.totalCost);
+        setTotalHours(data.totalHours);
+        setBillingData(data.billingReports); // Optionally, update the UI with the data
+      }
+    };
+
+    fetchingdata();
+  }, [start_Date, end_Date]);
+
+  useEffect(() => {
+    const fetchingdata = async () => {
+      if (startDate && endDate) {
+        const data = await getBillingReport({
+          clientid: id,
+          fundId: fundids,
+          startDate: startDate.toString(),
+          endDate: endDate.toString()
+        });
+        setTotalCost(data.totalCost);
+        setTotalHours(data.totalHours);
+        setBillingData(data.billingReports); // Optionally, update the UI with the data
+        console.log("------------***------------", data);
+      }
+    };
+
+    fetchingdata();
+  }, [startDate, endDate]);
+
+  const handleModal = () => {
+    setModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setModal(false);
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    // Perform your update logic here, such as form validation and API calls
+    console.log("Form Data:", e);
   };
 
   return (
@@ -173,7 +271,6 @@ const BillingReport = () => {
             </Grid>
           </Grid>
 
-          {/* Right Side: Start Date, End Date, and Button */}
           <Grid item xs={12} sm={6} md={8} container spacing={1}>
             <Grid item xs={12} sm={3}>
               <Controller
@@ -233,7 +330,6 @@ const BillingReport = () => {
               />
             </Grid>
 
-            {/* Start Date */}
             <Grid item xs={12} sm={3}>
               <TextField
                 label="Start Date"
@@ -408,8 +504,10 @@ const BillingReport = () => {
                       key={dataRow.id}
                       sx={{
                         backgroundColor: dataRow.shiftCanceled
-                          ? "rgba(255, 165, 0, 0.2)"
-                          : "transparent",
+                          ? "rgba(255, 165, 0, 0.2)" // Orange for canceled shifts
+                          : dataRow.isInvoiceGenerated
+                          ? "rgba(187, 255, 199, 0.63)" // Light blue for invoice generated
+                          : "transparent", // Default background
                         height: "32px" // Set a fixed row height
                       }}
                     >
@@ -525,6 +623,12 @@ const BillingReport = () => {
                               style={{ fontSize: 20, color: "#f44336" }}
                             />
                           </Tooltip>
+                        ) : dataRow.isInvoiceGenerated ? (
+                          <Tooltip title="Invoice Generated" arrow>
+                            <CheckIcon
+                              style={{ fontSize: 20, color: "green" }}
+                            />
+                          </Tooltip>
                         ) : (
                           <Tooltip title="Edit" arrow>
                             <IconButton
@@ -532,6 +636,7 @@ const BillingReport = () => {
                                 padding: 4, // Minimal padding
                                 margin: 0 // Remove margin
                               }}
+                              onClick={() => handleModal()}
                             >
                               <EditIcon
                                 style={{ fontSize: 20, color: "#1877f2" }}
@@ -550,6 +655,36 @@ const BillingReport = () => {
             No data available!
           </Typography>
         )}
+
+        {/* ---------------: Edit Billing Report :--------------- */}
+        <Dialog
+          open={openModal}
+          onClose={handleCloseModal}
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle>Billing Report Edit</DialogTitle>
+          <Divider />
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <EditBillForm />
+            </DialogContent>
+            <DialogActions>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  onClick={handleCloseModal}
+                >
+                  Close
+                </Button>
+                <Button type="submit" variant="contained" color="success">
+                  Update
+                </Button>
+              </Box>
+            </DialogActions>
+          </form>
+        </Dialog>
       </Container>
     </DashboardLayout>
   );
