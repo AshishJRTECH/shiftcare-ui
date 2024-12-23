@@ -376,23 +376,26 @@ const Home: React.FC = () => {
                         variant="outlined"
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell style={{ width: "210px" }}>
+                      {" "}
+                      {/* Set a fixed or min-width for the TableCell */}
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker
                           label="Due Date"
-                          value={row.dueAt}
+                          value={dayjs(row.dueAt)} // Convert the array to a Dayjs object
                           onChange={(newDate) =>
                             updateData(index, "dueAt", newDate)
                           }
                           slotProps={{
                             textField: {
                               variant: "outlined",
-                              fullWidth: true
+                              fullWidth: true // Ensure the TextField uses full width within TableCell
                             }
                           }}
                         />
                       </LocalizationProvider>
                     </TableCell>
+
                     <TableCell>
                       <Checkbox
                         checked={row.selection}
@@ -404,7 +407,20 @@ const Home: React.FC = () => {
                     <TableCell>
                       ${row.selection ? row.totalCostWithTax : row.totalCost}
                     </TableCell>
-                    <TableCell>{row.status}</TableCell>
+                    <TableCell
+                      style={{
+                        textTransform: "uppercase",
+                        fontSize: "12px",
+                        color:
+                          row.status === "READY_TO_BE_INVOICED"
+                            ? "green"
+                            : "darkred"
+                      }}
+                    >
+                      {row.status
+                        .replace(/_/g, " ")
+                        .replace(/^[a-z]/, (match) => match.toUpperCase())}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

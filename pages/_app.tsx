@@ -2,7 +2,6 @@
 // import EventListeners from "@/components/EventListener/EventListener";
 import EventListeners from "@/components/EventListener/EventListener";
 import { checkWindow } from "@/lib/functions/_helpers.lib";
-import { store } from "@/reduxtoolkit/store/store";
 import "@/styles/global.scss";
 import MuiThemeProvider from "@/themes/MuiThemeProvider";
 import createEmotionCache from "@/themes/createEmotionCache";
@@ -15,6 +14,7 @@ import type { AppContext, AppProps } from "next/app";
 import App from "next/app";
 import React from "react";
 import { Provider } from "react-redux";
+import { store } from "@/reduxtoolkit/store/store";
 import { Toaster } from "sonner";
 
 /**

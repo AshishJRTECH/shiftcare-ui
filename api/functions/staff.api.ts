@@ -340,3 +340,24 @@ export const undoAllTimesheet = async ({
     throw error; // Rethrow to allow mutation to handle it
   }
 };
+
+export const getStaffReports = async (clientId: string) => {
+  const res = await axiosInstance.get(
+    endpoints.staff.get_staff_report(clientId)
+  );
+  return res.data;
+};
+
+export const getStaffShiftList = async (
+  employeeID: string,
+  startDate: string,
+  endDate: string
+) => {
+  const res = await axiosInstance.get(
+    endpoints.staff.get_client_shift_list(employeeID),
+    {
+      params: { startDate, endDate } // Query parameters will be appended to the URL
+    }
+  );
+  return res.data;
+};

@@ -66,7 +66,11 @@ export const endpoints = {
     undo_timesheet: (timesheetId: string) =>
       `/timesheets/${timesheetId}/undoApprove`,
     undo_all_timesheet: (employeeId: string) =>
-      `/timesheets/employee/${employeeId}/undoAllApprovedTimesheet`
+      `/timesheets/employee/${employeeId}/undoAllApprovedTimesheet`,
+    get_staff_report: (categoryName: string) =>
+      `/document/employee-documents/getReport/withExpiry/${categoryName}`,
+    get_client_shift_list: (employeeID: string) =>
+      `/shift/employee/${employeeID}/locations/new`
   },
   client: {
     get_all: "/client/by-company/active",
@@ -99,7 +103,10 @@ export const endpoints = {
       `/billingReport/get/client/${clientId}/dates`,
     get_billing_list: () => `/invoices/to-be-generated`,
     update_billing_report: (billingReportId: string) =>
-      `/billingReport/update/${billingReportId}`
+      `/billingReport/update/${billingReportId}`,
+    get_invoice_preview: "/invoices/preview",
+    generate_invoice: "/invoices/generateNew",
+    get_invoice_list: "/invoices/generated"
   },
   teams: {
     get_all: "/teams/allTeams",

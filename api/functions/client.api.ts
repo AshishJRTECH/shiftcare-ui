@@ -257,3 +257,87 @@ export const updateBillingReport = async ({
   );
   return res.data;
 };
+
+//
+export const getInvoicePreview = async ({
+  clientId,
+  startDate,
+  endDate,
+  billingReportIds,
+  taxType
+}: {
+  clientId?: string;
+  startDate?: string;
+  endDate?: string;
+  billingReportIds: string;
+  taxType: string;
+}) => {
+  // Use the get_invoice_preview string directly in the URL construction
+  const url = `${endpoints.client.get_invoice_preview}?clientId=${clientId}&startDate=${startDate}&endDate=${endDate}&billingReportIds=${billingReportIds}&taxType=${taxType}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.post(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};
+
+export const generateInvoice = async ({
+  clientId,
+  startDate,
+  endDate,
+  billingReportIds,
+  taxType
+}: {
+  clientId?: string;
+  startDate?: string;
+  endDate?: string;
+  billingReportIds: string;
+  taxType: string;
+}) => {
+  // Use the get_invoice_preview string directly in the URL construction
+  const url = `${endpoints.client.generate_invoice}?clientId=${clientId}&startDate=${startDate}&endDate=${endDate}&billingReportIds=${billingReportIds}&taxType=${taxType}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.post(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};
+
+export const getInvoiceList = async ({
+  startDate,
+  endDate,
+  issuedDate,
+  status,
+  clientName
+}: {
+  startDate?: string;
+  endDate?: string;
+  issuedDate?: string;
+  status?: string;
+  clientName?: string;
+}) => {
+  // Use the get_invoice_preview string directly in the URL construction
+  // const url = `${endpoints.client.get_invoice_list}?startDate=${startDate}&endDate=${endDate}`;
+
+  const url = `${endpoints.client.get_invoice_list}?startDate=${startDate}&endDate=${endDate}&issuedDate=${issuedDate}&status=${status}&clientName=${clientName}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.get(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};

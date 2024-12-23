@@ -23,20 +23,13 @@ export interface BillingData {
 }
 
 export interface BillingDataEdit {
+  // id: string;
   date: string;
   startTime: string;
   finishTime: string;
-  priceBookId: number;
-  hourlyRate: number;
-  hours: number;
-  hourlyCost: number;
+  priceBookId: number[];
   additionalCost: number;
-  distanceRate: number;
   distance: number;
-  distanceCost: number;
   isShiftUpdated: boolean;
-  shiftDto: any;
-  isFundsSelected: boolean;
-  isAbsent: boolean;
-  fundIds: number;
+  fundIds: number[];
 }

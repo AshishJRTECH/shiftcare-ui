@@ -219,7 +219,8 @@ const AddressInput = ({ ...props }: CustomAutoCompleteProps) => {
       )}
       loading={isPlacePredictionsLoading}
       loadingText="Loading Locations"
-      options={placePredictions}
+      // options={placePredictions}
+      options={placePredictions.map((item) => item.description)}
       renderOption={(item) => <AddressItem description={item} />}
     />
   );

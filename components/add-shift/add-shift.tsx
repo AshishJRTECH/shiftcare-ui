@@ -210,6 +210,26 @@ const AddressInput = ({ ...props }: CustomAutoCompleteProps) => {
   };
 
   return (
+    // <Autocomplete
+    //   size="small"
+    //   freeSolo
+    //   {...props}
+    //   onChange={(e: any, newValue: any | null) => {
+    //     console.log(e, newValue, "dfd");
+    //   }}
+    //   onInputChange={(e: any, value: string) => {
+    //     getPlacePredictions({ input: value });
+    //     props.onChange && props.onChange(value as string);
+    //   }}
+    //   renderInput={(params) => (
+    //     <TextField {...params} placeholder="Search Address" />
+    //   )}
+    //   loading={isPlacePredictionsLoading}
+    //   loadingText="Loading Locations"
+    //   options={placePredictions}
+    //   renderOption={(item) => <AddressItem description={item} />}
+    // />
+
     <Autocomplete
       size="small"
       freeSolo
@@ -226,8 +246,10 @@ const AddressInput = ({ ...props }: CustomAutoCompleteProps) => {
       )}
       loading={isPlacePredictionsLoading}
       loadingText="Loading Locations"
-      options={placePredictions}
-      renderOption={(item) => <AddressItem description={item} />}
+      options={placePredictions.map((item) => item.description)} // Extract description as string[]
+      renderOption={(props, item) => (
+        <AddressItem {...props} description={item} />
+      )} // Ensure AddressItem uses string description
     />
   );
 };

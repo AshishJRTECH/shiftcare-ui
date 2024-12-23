@@ -266,3 +266,18 @@ export interface ShiftRepeat {
   occursOnDays: string[];
   occursOnDayOfMonth: number | string;
 }
+
+
+export interface GeoLocationCoordinatesTracking {
+  shiftId: number;
+  shiftStartTime: string;
+  shiftEndTime: string;
+  shiftLocation: string;
+  clockInEpoch: string;
+  clockInLatitude: string;
+  clockInLongitude: string;
+  clockOutEpoch: string;
+  clockOutLatitude: string;
+  clockOutLongitude: string;
+  participantName: string;
+}

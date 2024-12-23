@@ -206,8 +206,8 @@ const navConfig: NavItem[] = [
         hasChild: false
       },
       {
-        title: "Competency",
-        path: "/reports/competency",
+        title: "Competencies",
+        path: "/reports/competencies",
         icon: SettingsIcon,
         children: [],
         hasChild: false
@@ -220,8 +220,15 @@ const navConfig: NavItem[] = [
         hasChild: false
       },
       {
-        title: "Qualification",
-        path: "/reports/qualification",
+        title: "Qualifications",
+        path: "/reports/qualifications",
+        icon: SettingsIcon,
+        children: [],
+        hasChild: false
+      },
+      {
+        title: "Other",
+        path: "/reports/other",
         icon: SettingsIcon,
         children: [],
         hasChild: false
