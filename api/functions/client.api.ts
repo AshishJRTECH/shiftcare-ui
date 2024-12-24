@@ -316,20 +316,18 @@ export const generateInvoice = async ({
 export const getInvoiceList = async ({
   startDate,
   endDate,
-  issuedDate,
   status,
   clientName
 }: {
   startDate?: string;
   endDate?: string;
-  issuedDate?: string;
   status?: string;
   clientName?: string;
 }) => {
   // Use the get_invoice_preview string directly in the URL construction
   // const url = `${endpoints.client.get_invoice_list}?startDate=${startDate}&endDate=${endDate}`;
 
-  const url = `${endpoints.client.get_invoice_list}?startDate=${startDate}&endDate=${endDate}&issuedDate=${issuedDate}&status=${status}&clientName=${clientName}`;
+  const url = `${endpoints.client.get_invoice_list}?startDate=${startDate}&endDate=${endDate}&status=${status}&clientName=${clientName}`;
 
   // console.log("Request URL:", url); // Log the URL for debugging
 
@@ -340,4 +338,9 @@ export const getInvoiceList = async ({
     // console.error("Error approving timesheet:", error);
     throw error; // Rethrow to allow mutation to handle it
   }
+};
+
+export const getInvoiceView = async (id: string) => {
+  const res = await axiosInstance.get(endpoints.client.get_invoice_view(id));
+  return res.data;
 };

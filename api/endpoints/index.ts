@@ -106,7 +106,8 @@ export const endpoints = {
       `/billingReport/update/${billingReportId}`,
     get_invoice_preview: "/invoices/preview",
     generate_invoice: "/invoices/generateNew",
-    get_invoice_list: "/invoices/generated"
+    get_invoice_list: "/invoices/generated",
+    get_invoice_view: (invoiceId?: string) => `/invoices/${invoiceId}`
   },
   teams: {
     get_all: "/teams/allTeams",
