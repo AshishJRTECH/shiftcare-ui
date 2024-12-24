@@ -149,27 +149,27 @@ const navConfig: NavItem[] = [
     path: "/reports/activity",
     icon: TocIcon,
     children: [
-      {
-        title: "Activity",
-        path: "/reports/activity",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Billing",
-        path: "/reports/billing",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Fund Balances",
-        path: "/reports/fund-balances",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
+      // {
+      //   title: "Activity",
+      //   path: "/reports/activity",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Billing",
+      //   path: "/reports/billing",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Fund Balances",
+      //   path: "/reports/fund-balances",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
       {
         title: "Geolocation",
         path: "/reports/geolocation",
@@ -177,27 +177,27 @@ const navConfig: NavItem[] = [
         children: [],
         hasChild: false
       },
-      {
-        title: "Performance",
-        path: "/reports/performances",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Exception report",
-        path: "/reports/exception-reports",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Timesheet",
-        path: "/reports/timesheet",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
+      // {
+      //   title: "Performance",
+      //   path: "/reports/performances",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Exception report",
+      //   path: "/reports/exception-reports",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Timesheet",
+      //   path: "/reports/timesheet",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
       {
         title: "KPI",
         path: "/reports/kpi",
@@ -232,14 +232,14 @@ const navConfig: NavItem[] = [
         icon: SettingsIcon,
         children: [],
         hasChild: false
-      },
-      {
-        title: "Events",
-        path: "/reports/events",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
       }
+      // {
+      //   title: "Events",
+      //   path: "/reports/events",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // }
     ],
     hasChild: true
   },
@@ -248,20 +248,20 @@ const navConfig: NavItem[] = [
     path: "/account/settings",
     icon: ManageAccountsIcon,
     children: [
-      {
-        title: "Settings",
-        path: "/account/settings",
-        icon: SettingsIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Invoice Settings",
-        path: "/account/invoice-settings",
-        icon: ContentPasteGoIcon,
-        children: [],
-        hasChild: false
-      },
+      // {
+      //   title: "Settings",
+      //   path: "/account/settings",
+      //   icon: SettingsIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Invoice Settings",
+      //   path: "/account/invoice-settings",
+      //   icon: ContentPasteGoIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
       {
         title: "Prices",
         path: "/account/prices",
@@ -282,21 +282,21 @@ const navConfig: NavItem[] = [
         icon: PersonAddIcon,
         children: [],
         hasChild: false
-      },
-      {
-        title: "Reminders",
-        path: "/account/reminders",
-        icon: UpdateIcon,
-        children: [],
-        hasChild: false
-      },
-      {
-        title: "Subscription",
-        path: "/account/subscription",
-        icon: SubscriptionsIcon,
-        children: [],
-        hasChild: false
       }
+      // {
+      //   title: "Reminders",
+      //   path: "/account/reminders",
+      //   icon: UpdateIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
+      // {
+      //   title: "Subscription",
+      //   path: "/account/subscription",
+      //   icon: SubscriptionsIcon,
+      //   children: [],
+      //   hasChild: false
+      // }
     ],
     hasChild: true
   }
