@@ -38,6 +38,7 @@ import moment from "moment";
 import React, { useRef, useState } from "react";
 import {
   addCompliance,
+  deleteDocument,
   getCategory,
   getSub_Category,
   updateCompliance
@@ -194,6 +195,29 @@ export default function Compliance({
   const handleClose = () => {
     setOpen(false);
   };
+
+  // ---------------- To Delete the Document Start Here ----------------
+  const { mutate: deleteDoc, isPending } = useMutation({
+    mutationFn: deleteDocument,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["staffalldocuments"] });
+      setOpenDocumentDeleteModal(false);
+      setOpenListModal(true);
+    }
+  });
+
+  const onDelete = (params: { docid: number }) => {
+    deleteDoc(params.docid);
+  };
+
+  const confirmDocumentDelete = () => {
+    console.log("Deletable-Data:", documentId);
+    onDelete({
+      docid: Number(documentId) // Convert documentId to number
+    });
+  };
+
+  // ---------------- To Delete the Document End Here ----------------
 
   // ---------------- To Add the Document Start Here ----------------
   const { mutate } = useMutation({
@@ -664,7 +688,7 @@ export default function Compliance({
           >
             No
           </Button>
-          <Button variant="contained" onClick={handleOpenDocumentDeleteModal}>
+          <Button variant="contained" onClick={confirmDocumentDelete}>
             Yes
           </Button>
         </DialogActions>
