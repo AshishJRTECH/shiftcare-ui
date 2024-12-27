@@ -115,7 +115,10 @@ export const endpoints = {
     get_Payment_List: (invoiceId: string) =>
       `/invoices/${invoiceId}/getPayments`,
     delete_invoice_payment: (invoiceId: string, paymentId: string) =>
-      `/invoices/${invoiceId}/deletePayments/${paymentId}`
+      `/invoices/${invoiceId}/deletePayments/${paymentId}`,
+    get_time_line: (invoiceId?: string) => `/invoices/${invoiceId}/timeline`,
+    create_invoice_notes: (invoiceId?: string) =>
+      `/invoices/${invoiceId}/addNotes`
   },
   teams: {
     get_all: "/teams/allTeams",

@@ -12,7 +12,10 @@ import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 import ClientFunds from "@/components/client-funds/funds";
 import { BillingDataEdit } from "@/interface/billingreport.interface";
-import { InvoicePayment } from "@/interface/invoicepayment";
+import {
+  InvoiceNotesInterface,
+  InvoicePayment
+} from "@/interface/invoicepayment";
 
 export const getAllClients = async () => {
   const res = await axiosInstance.get(endpoints.client.get_all);
@@ -388,6 +391,25 @@ export const deleteInvoicePayment = async ({
 }) => {
   const res = await axiosInstance.delete(
     endpoints.client.delete_invoice_payment(invoiceId, paymentId)
+  );
+  return res.data;
+};
+
+export const getTimeLine = async (id: string) => {
+  const res = await axiosInstance.get(endpoints.client.get_time_line(id));
+  return res.data;
+};
+
+export const addInvoiceNotes = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: InvoiceNotesInterface;
+}) => {
+  const res = await axiosInstance.post(
+    endpoints.client.create_invoice_notes(id),
+    data
   );
   return res.data;
 };

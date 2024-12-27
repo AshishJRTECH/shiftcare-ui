@@ -9,3 +9,10 @@ export interface ReadInvoicePayment {
   paymentReference: string;
   amountReceived: string;
 }
+export interface InvoiceNotesInterface {
+  note: string;
+}
+export interface ReadInvoiceNotesInterface {
+  id: string;
+  note: string;
+}

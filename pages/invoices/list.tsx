@@ -10,6 +10,9 @@ import {
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import { DatePicker } from "@mui/x-date-pickers";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Card,
@@ -72,6 +75,9 @@ import { InvoicePayment, ReadInvoicePayment } from "@/interface/invoicepayment";
 import dayjs, { Dayjs } from "dayjs";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { queryClient } from "pages/_app";
+import TimeLine from "./timeline";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import InvoiceNotes from "./invoicenotes";
 
 const schema = yup.object().shape({
   paymentReference: yup.string().required("Payment Reference is required"),
@@ -358,6 +364,7 @@ export default function ListPage() {
   }, [selectedPaymentId]); // Dependency on selectedPaymentId
 
   // ------------------- Code to delete the Invoice Payment end here ---------------------
+
   return (
     <DashboardLayout>
       <Container>
@@ -1143,7 +1150,6 @@ export default function ListPage() {
             </Box>
 
             {/* ------------------------- Invoice Payment start here ------------------------ */}
-
             <Box
               sx={{
                 padding: 3,
@@ -1332,10 +1338,79 @@ export default function ListPage() {
                 </Box>
               )}
             </Box>
-
             {/* ------------------------- Invoice Payment end here ------------------------ */}
-          </DialogContent>
+            {/* <Box
+              sx={{
+                padding: 3,
+                border: "1px solid #e0e0e0", // Light border around the box
+                backgroundColor: "white",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 2,
+                maxWidth: 1000,
+                margin: "0 auto",
+                fontFamily: "'Roboto', sans-serif",
+                fontSize: "0.75rem" // Even smaller font size for a more compact look
+              }}
+            >
+              <TimeLine selectedInvoiceId={selectedInvoiceId}></TimeLine>
+            </Box> */}
+            <Box
+              sx={{
+                padding: 3,
+                border: "1px solid #e0e0e0", // Light border around the box
+                backgroundColor: "white",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 2,
+                maxWidth: 1000,
+                margin: "0 auto",
+                fontFamily: "'Roboto', sans-serif",
+                fontSize: "0.75rem" // Even smaller font size for a more compact look
+              }}
+            >
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="panel1a-content"
+                  id="panel1a-header"
+                  sx={{
+                    backgroundColor: "#f5f5f5", // Light background for the summary
+                    padding: "0 16px"
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontFamily: "'Roboto', sans-serif",
+                      fontSize: "0.875rem", // Small font for summary
+                      fontWeight: 500
+                    }}
+                  >
+                    Timeline Details
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <TimeLine selectedInvoiceId={selectedInvoiceId} />
+                </AccordionDetails>
+              </Accordion>
+            </Box>
 
+            <Box
+              sx={{
+                padding: 3,
+                border: "1px solid #e0e0e0", // Light border around the box
+                backgroundColor: "white",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 2,
+                maxWidth: 1000,
+                margin: "0 auto",
+                fontFamily: "'Roboto', sans-serif",
+                fontSize: "0.75rem" // Even smaller font size for a more compact look
+              }}
+            >
+              <InvoiceNotes
+                selectedInvoiceId={selectedInvoiceId}
+              ></InvoiceNotes>
+            </Box>
+          </DialogContent>
           <DialogActions>
             <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
               <Button
