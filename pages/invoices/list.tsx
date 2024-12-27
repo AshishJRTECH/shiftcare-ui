@@ -1,7 +1,11 @@
 import {
+  addInvoicePayment,
+  createInvoiceVoid,
+  deleteInvoicePayment,
   getAllClients,
   getInvoiceList,
-  getInvoiceView
+  getInvoiceView,
+  getPaymentList
 } from "@/api/functions/client.api";
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -20,8 +24,10 @@ import {
   Divider,
   FormControl,
   FormControlLabel,
+  FormHelperText,
   Grid,
   Icon,
+  IconButton,
   InputLabel,
   MenuItem,
   Paper,
@@ -33,11 +39,11 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs, { Dayjs } from "dayjs";
 import { useParams } from "next/navigation";
 import { Key, useEffect, useRef, useState } from "react";
 import {
@@ -49,12 +55,33 @@ import {
 } from "@mui/icons-material"; // Example icons
 
 import FilterAltIcon from "@mui/icons-material/FilterAlt";
-import { Controller } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { Controller, FormProvider, useForm } from "react-hook-form";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Email, LocationOn, Payment, Person, Phone } from "@mui/icons-material";
 import { jsPDF } from "jspdf";
 import html2canvas from "html2canvas";
 import PrintIcon from "@mui/icons-material/Print";
+import CancelIcon from "@mui/icons-material/Cancel";
+import BlockIcon from "@mui/icons-material/Block";
+import { toast } from "sonner";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoadingButton } from "@mui/lab";
+import CustomInput from "@/ui/Inputs/CustomInput";
+import { InvoicePayment, ReadInvoicePayment } from "@/interface/invoicepayment";
+import dayjs, { Dayjs } from "dayjs";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { queryClient } from "pages/_app";
+
+const schema = yup.object().shape({
+  paymentReference: yup.string().required("Payment Reference is required"),
+  paymentDate: yup.string().required("Payment Date is required"),
+  amountReceived: yup.string().required("Amount is required")
+
+  // paymentReference: yup.string(),
+  // paymentDate: yup.string(),
+  // amountReceived: yup.string()
+});
 
 export default function ListPage() {
   const { id } = useParams();
@@ -73,6 +100,40 @@ export default function ListPage() {
   const formattedEndDate = endDate?.format("YYYY-MM-DD");
   const formattedIssedDate = issuedDate?.format("YYYY-MM-DD");
   const [openModal, setModal] = useState(false);
+  const [openModalMessage, setModalMessage] = useState(false);
+  const [amountReceived, setAmountReceived] = useState("");
+  const [error, setError] = useState("");
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState("");
+  const [selectedPaymentId, setSelectedPaymentId] = useState("");
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    // Allow only numbers, including floats
+    const numericValue = parseFloat(value);
+
+    // Check if the value is a valid number
+    if (value === "" || !isNaN(numericValue)) {
+      // Check if the entered value is less than or equal to the balance
+      if (numericValue <= invoiceViewData?.balance || value === "") {
+        setAmountReceived(value);
+        setError("");
+      } else if (numericValue > invoiceViewData?.balance) {
+        setError("Sorry, you cannot enter an amount more than the balance.");
+      }
+    } else {
+      setError("Please enter a valid number.");
+    }
+  };
+
+  const methods = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      paymentReference: "",
+      paymentDate: "",
+      amountReceived: ""
+    }
+  });
 
   const handleInvoiceList = async () => {
     if (!startDate || !endDate) {
@@ -94,6 +155,25 @@ export default function ListPage() {
     }
   };
 
+  // --------------- To read payments start here ---------------
+  const {
+    data: getPayment,
+    isLoading: paymentLoading,
+    error: paymentError
+  } = useQuery<any>({
+    queryKey: ["get_payment_list", selectedInvoiceId],
+    queryFn: () =>
+      selectedInvoiceId
+        ? getPaymentList(selectedInvoiceId)
+        : Promise.reject("Client ID is undefined"),
+    enabled: !!selectedInvoiceId
+  });
+
+  useEffect(() => {
+    console.log("Payment List::::::::::::", getPayment);
+  }, [getPayment]);
+  // --------------- To read payments end here ---------------
+
   const formatDate = (date: number[]) => {
     return dayjs(new Date(date[0], date[1] - 1, date[2])).format("DD/MM/YYYY");
   };
@@ -114,22 +194,47 @@ export default function ListPage() {
   //   console.log("Selected List View", data.invoiceId);
   // };
 
-  const handleListView = async (data: any) => {
-    // console.log("Selected List View ID", data.invoiceId);
-
+  const handleInvoiceVoid = async (invoiceId: any) => {
+    console.log("Selected Invoice's ID:::::::", invoiceId);
     try {
       // Assuming getInvoiceView is a function that accepts invoiceId and returns the invoice view
-      const invoiceView = await getInvoiceView(data.invoiceId);
-      setModal(true);
-      setInvoiceViewData(invoiceView);
+      const response = await createInvoiceVoid(invoiceId);
+      if (response) {
+        toast.success(response.message);
+        setModalMessage(true);
+      }
+      console.log("INVOICE VOID RESPONSE:-------------", response);
+      // window.location.reload();
+      setModal(false);
     } catch (error) {
       console.error("Error fetching invoice view:", error);
     }
   };
 
-  useEffect(() => {
-    console.log("Selected View Data:---------", invoiceViewData);
-  }, [invoiceViewData]);
+  const handleCloseModalMessage = () => {
+    setModalMessage(false);
+    window.location.reload();
+  };
+
+  const handleListView = async (data: any) => {
+    // console.log("Selected List View ID", data.invoiceId);
+    console.log("Selected List", data);
+
+    try {
+      // Assuming getInvoiceView is a function that accepts invoiceId and returns the invoice view
+      const invoiceView = await getInvoiceView(data.invoiceId);
+      console.log("Selected invoice data:::::", invoiceView);
+      setModal(true);
+      setInvoiceViewData(invoiceView);
+      setSelectedInvoiceId(data.invoiceId);
+    } catch (error) {
+      console.error("Error fetching invoice view:", error);
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log("Selected View Data:---------", invoiceViewData);
+  // }, [invoiceViewData]);
 
   const handleCloseModal = () => {
     setModal(false);
@@ -157,6 +262,102 @@ export default function ListPage() {
     }
   };
 
+  // ------------------------ Invoice Payment code start here -------------------------
+  const { control, handleSubmit, reset } = methods;
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: addInvoicePayment,
+    onSuccess: (data) => {
+      toast.success(data.message); // Show success toast
+    }
+  });
+
+  const onSubmit = (
+    data: Omit<InvoicePayment, "paymentDate"> & {
+      paymentDate: Dayjs | null | string;
+    }
+  ) => {
+    console.log("Invoice Payment::::::::::::::::", selectedInvoiceId);
+
+    const formattedData: InvoicePayment = {
+      ...data,
+      paymentDate: dayjs(data.paymentDate).isValid()
+        ? dayjs(data.paymentDate).format("DD/MM/YYYY")
+        : ""
+    };
+
+    // Pass FormData to mutate function
+    mutate({
+      id: selectedInvoiceId,
+      data: formattedData
+    });
+  };
+
+  // ------------------------ Invoice Payment code end here -------------------------
+  const { setValue, watch } = methods;
+  useEffect(() => {
+    setValue("amountReceived", amountReceived);
+  }, [amountReceived, setValue]);
+
+  // const handleDelete = (payment: any) => {
+  //   setSelectedPaymentId(payment.paymentId);
+  //   console.log(
+  //     "Display Payment id to delete teh payment:::::",
+  //     payment.paymentId
+  //   );
+  // };
+
+  // ------------------- Code to delete the Invoice Payment start here ---------------------
+  const { mutate: deleteMutation, isPending: isDeleting } = useMutation({
+    mutationFn: deleteInvoicePayment,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["get_payment_list"] });
+      toast.success(data.message);
+    }
+  });
+
+  const handleDelete = (payment: any) => {
+    // Set the selected paymentId and invoiceId
+    setSelectedPaymentId(payment.paymentId);
+
+    console.log(
+      "Display Payment id to delete the payment:::::",
+      payment.paymentId
+    );
+    console.log(
+      "Display Payment id to delete the payment:::2::",
+      selectedPaymentId
+    );
+
+    // Define the data to be passed to onSubmit
+    const data = {
+      paymentId: payment.paymentId, // Passing paymentId from the selected payment
+      invoiceId: payment.invoiceId, // Passing invoiceId from the selected payment
+      // Add any other data you need for the onSubmit
+      salutation: null // or set it based on your needs
+    };
+
+    // Call the onSubmit function with the constructed data
+  };
+
+  const prevSelectedPaymentId = useRef(selectedPaymentId);
+
+  const onSubmitDelete = (data: any) => {
+    deleteMutation({
+      invoiceId: selectedInvoiceId,
+      paymentId: selectedPaymentId
+    });
+  };
+
+  useEffect(() => {
+    // Only call onSubmitDelete if selectedPaymentId has changed and is different from the initial value
+    if (selectedPaymentId !== prevSelectedPaymentId.current) {
+      onSubmitDelete(data);
+      prevSelectedPaymentId.current = selectedPaymentId; // Update the previous selectedPaymentId
+    }
+  }, [selectedPaymentId]); // Dependency on selectedPaymentId
+
+  // ------------------- Code to delete the Invoice Payment end here ---------------------
   return (
     <DashboardLayout>
       <Container>
@@ -173,7 +374,7 @@ export default function ListPage() {
           >
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-                label="Select Start Date"
+                label="Select Date"
                 value={startDate}
                 onChange={(newValue: Dayjs | null) => {
                   setStartDate(newValue);
@@ -626,7 +827,7 @@ export default function ListPage() {
                 </Box>
               </Box>
 
-              {invoiceViewData?.billingReports?.map(
+              {/* {invoiceViewData?.billingReports?.map(
                 (report: any, index: Key | null | undefined) => (
                   <Box
                     key={index}
@@ -659,9 +860,125 @@ export default function ListPage() {
                         {report?.hourlyRate}
                       </Typography>
                       <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.totalCost}
+                        {report?.hourlyCost}
                       </Typography>
                     </Box>
+                  </Box>
+                )
+              )}
+
+              {invoiceViewData?.billingReports?.map(
+                (report: any, index: Key | null | undefined) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: 3,
+                      // borderBottom: "1px solid #e0e0e0",
+                      backgroundColor: "#F0F0F0",
+                      padding: "8px"
+                    }}
+                  >
+                    <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
+                      {report?.description}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "50%"
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.typeDistance}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.distance}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.distanceRate}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.distanceCost}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )
+              )} */}
+
+              {invoiceViewData?.billingReports?.map(
+                (report: any, index: Key | null | undefined) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      marginBottom: 3,
+                      backgroundColor: "#F0F0F0",
+                      padding: "8px"
+                    }}
+                  >
+                    <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
+                      {report?.description}
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: "50%"
+                      }}
+                    >
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.typeHour}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.hour}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.hourlyRate}
+                      </Typography>
+                      <Typography sx={{ fontSize: "0.875rem" }}>
+                        {report?.hourlyCost}
+                      </Typography>
+                    </Box>
+
+                    {/* Conditionally render the distance section if report?.distance > 0 */}
+                    {report?.distance > 0 && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          marginBottom: 3,
+                          backgroundColor: "#F0F0F0",
+                          padding: "8px"
+                        }}
+                      >
+                        <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
+                          {report?.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            width: "50%"
+                          }}
+                        >
+                          <Typography sx={{ fontSize: "0.875rem" }}>
+                            {report?.typeDistance}
+                          </Typography>
+                          <Typography sx={{ fontSize: "0.875rem" }}>
+                            {report?.distance}
+                          </Typography>
+                          <Typography sx={{ fontSize: "0.875rem" }}>
+                            {report?.distanceRate}
+                          </Typography>
+                          <Typography sx={{ fontSize: "0.875rem" }}>
+                            {report?.distanceCost}
+                          </Typography>
+                        </Box>
+                      </Box>
+                    )}
                   </Box>
                 )
               )}
@@ -822,10 +1139,201 @@ export default function ListPage() {
                   </Box>
                 </Box>
               </Box>
-
               {/* Divider Line */}
-              {/* <Box sx={{ width: "100%", my: 2 }} /> */}
             </Box>
+
+            {/* ------------------------- Invoice Payment start here ------------------------ */}
+
+            <Box
+              sx={{
+                padding: 3,
+                border: "1px solid #e0e0e0", // Light border around the box
+                backgroundColor: "white",
+                boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 2,
+                maxWidth: 1000,
+                margin: "0 auto",
+                fontFamily: "'Roboto', sans-serif",
+                fontSize: "0.75rem" // Even smaller font size for a more compact look
+              }}
+            >
+              <Typography variant="h6" sx={{ mb: 1 }}>
+                Payments
+              </Typography>
+              <Divider></Divider>
+              <TableContainer component={Paper}>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell
+                        style={{ padding: "4px 8px", fontWeight: "bold" }}
+                      >
+                        Payment Reference
+                      </TableCell>
+                      <TableCell
+                        style={{ padding: "4px 8px", fontWeight: "bold" }}
+                      >
+                        Payment Date
+                      </TableCell>
+                      <TableCell
+                        style={{ padding: "4px 8px", fontWeight: "bold" }}
+                      >
+                        Amount Received
+                      </TableCell>
+                      <TableCell
+                        style={{ padding: "4px 8px", fontWeight: "bold" }}
+                      >
+                        Actions
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {getPayment?.map((payment: any, index: any) => (
+                      <TableRow
+                        key={index}
+                        style={{
+                          height: "36px" // Reducing row height
+                        }}
+                      >
+                        <TableCell style={{ padding: "4px 8px" }}>
+                          {payment.paymentReference}
+                        </TableCell>
+                        <TableCell style={{ padding: "4px 8px" }}>
+                          {payment.paymentDate}
+                        </TableCell>
+                        <TableCell style={{ padding: "4px 8px" }}>
+                          {payment.amountReceived}
+                        </TableCell>
+                        <TableCell style={{ padding: "4px 8px" }}>
+                          <IconButton
+                            color="error"
+                            onClick={() => handleDelete(payment)}
+                            size="small"
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+
+              {invoiceViewData?.status != "PAID" && (
+                <Box className="inner-container">
+                  <br></br>
+                  <FormProvider {...methods}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item lg={3} md={3} sm={6} xs={12}>
+                        <Controller
+                          control={methods.control}
+                          name="paymentDate"
+                          render={({
+                            field: { value, onChange },
+                            fieldState: { error, invalid }
+                          }) => {
+                            // Ensure the value is a valid Dayjs object
+                            const validValue = value ? dayjs(value) : null;
+
+                            return (
+                              <Box>
+                                <DatePicker
+                                  sx={{
+                                    width: "100%",
+                                    "& .MuiInputBase-root": {
+                                      height: "40px",
+                                      borderRadius: "4px"
+                                    },
+                                    "& .MuiOutlinedInput-input": {
+                                      padding: "12px"
+                                    }
+                                  }}
+                                  className="date-picker"
+                                  value={validValue}
+                                  onChange={(newValue) =>
+                                    onChange(
+                                      newValue ? newValue.toDate() : null
+                                    )
+                                  } // Convert to Date object
+                                  slotProps={{
+                                    textField: {
+                                      size: "small"
+                                    }
+                                  }}
+                                />
+                                {invalid && (
+                                  <FormHelperText sx={{ color: "#FF5630" }}>
+                                    {error?.message}
+                                  </FormHelperText>
+                                )}
+                              </Box>
+                            );
+                          }}
+                        />
+                      </Grid>
+                      <Grid item lg={3} md={3} sm={6} xs={12}>
+                        <CustomInput
+                          fullWidth
+                          name="paymentReference"
+                          placeholder="Reference"
+                          sx={{
+                            height: "40px",
+                            borderRadius: "4px",
+                            "& .MuiInputBase-root": {
+                              height: "100%"
+                            }
+                          }}
+                        />
+                      </Grid>
+                      <Grid item lg={3} md={3} sm={6} xs={12}>
+                        <div>
+                          <CustomInput
+                            fullWidth
+                            name="amountReceived"
+                            placeholder="Amount Received"
+                            value={amountReceived}
+                            onChange={handleAmountChange} // Passing the entered value directly here
+                            sx={{
+                              height: "40px",
+                              borderRadius: "4px",
+                              "& .MuiInputBase-root": {
+                                height: "100%"
+                              }
+                            }}
+                          />
+                          {error && (
+                            <FormHelperText error>{error}</FormHelperText>
+                          )}
+                        </div>
+                      </Grid>
+                      <Grid
+                        item
+                        lg={3}
+                        md={3}
+                        sm={6}
+                        xs={12}
+                        style={{ display: "flex", justifyContent: "flex-end" }}
+                      >
+                        <LoadingButton
+                          variant="contained"
+                          onClick={methods.handleSubmit(onSubmit)}
+                          loading={isPending}
+                          sx={{
+                            height: "40px",
+                            minWidth: "100px",
+                            borderRadius: "4px"
+                          }}
+                        >
+                          Submit
+                        </LoadingButton>
+                      </Grid>
+                    </Grid>
+                  </FormProvider>
+                </Box>
+              )}
+            </Box>
+
+            {/* ------------------------- Invoice Payment end here ------------------------ */}
           </DialogContent>
 
           <DialogActions>
@@ -838,12 +1346,49 @@ export default function ListPage() {
               >
                 Print
               </Button>
+              {invoiceViewData?.paid === 0 && (
+                <Button
+                  onClick={() => handleInvoiceVoid(selectedInvoiceId)}
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<BlockIcon />}
+                >
+                  Void
+                </Button>
+              )}
+
               <Button
                 variant="contained"
                 color="error"
+                startIcon={<CancelIcon />}
                 onClick={handleCloseModal}
               >
                 Close
+              </Button>
+            </Box>
+          </DialogActions>
+        </Dialog>
+
+        {/* Model Message  */}
+        <Dialog
+          open={openModalMessage}
+          onClose={handleCloseModalMessage}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Message Box</DialogTitle>
+          <Divider />
+          <DialogContent>
+            <Typography>Invoice marked void successfully.</Typography>
+          </DialogContent>
+          <DialogActions>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+              <Button
+                variant="contained"
+                color="error"
+                onClick={handleCloseModalMessage}
+              >
+                OK
               </Button>
             </Box>
           </DialogActions>

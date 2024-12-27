@@ -107,7 +107,15 @@ export const endpoints = {
     get_invoice_preview: "/invoices/preview",
     generate_invoice: "/invoices/generateNew",
     get_invoice_list: "/invoices/generated",
-    get_invoice_view: (invoiceId?: string) => `/invoices/${invoiceId}`
+    get_invoice_view: (invoiceId?: string) => `/invoices/${invoiceId}`,
+    get_list_void: "/invoices/getAll/voidInvoice",
+    create_Invoice_Void: (invoiceId?: string) => `/invoices/${invoiceId}/void`,
+    create_invoice_payment: (invoiceId: string) =>
+      `/invoices/${invoiceId}/addPayments`,
+    get_Payment_List: (invoiceId: string) =>
+      `/invoices/${invoiceId}/getPayments`,
+    delete_invoice_payment: (invoiceId: string, paymentId: string) =>
+      `/invoices/${invoiceId}/deletePayments/${paymentId}`
   },
   teams: {
     get_all: "/teams/allTeams",

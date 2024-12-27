@@ -12,6 +12,7 @@ import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 import ClientFunds from "@/components/client-funds/funds";
 import { BillingDataEdit } from "@/interface/billingreport.interface";
+import { InvoicePayment } from "@/interface/invoicepayment";
 
 export const getAllClients = async () => {
   const res = await axiosInstance.get(endpoints.client.get_all);
@@ -342,5 +343,51 @@ export const getInvoiceList = async ({
 
 export const getInvoiceView = async (id: string) => {
   const res = await axiosInstance.get(endpoints.client.get_invoice_view(id));
+  return res.data;
+};
+
+export const getListVoid = async () => {
+  const res = await axiosInstance.get(endpoints.client.get_list_void);
+  return res.data;
+};
+
+export const createInvoiceVoid = async (id: string) => {
+  const res = await axiosInstance.post(
+    endpoints.client.create_Invoice_Void(id)
+  );
+  return res.data;
+};
+
+export const addInvoicePayment = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: InvoicePayment;
+}) => {
+  const res = await axiosInstance.post(
+    endpoints.client.create_invoice_payment(id),
+    data
+  );
+  return res.data;
+};
+
+export const getPaymentList = async (clientId: string) => {
+  const res = await axiosInstance.get(
+    endpoints.client.get_Payment_List(clientId)
+  );
+  return res.data;
+};
+
+export const deleteInvoicePayment = async ({
+  invoiceId,
+  paymentId
+}: {
+  invoiceId: string;
+  paymentId: string;
+}) => {
+  const res = await axiosInstance.delete(
+    endpoints.client.delete_invoice_payment(invoiceId, paymentId)
+  );
   return res.data;
 };
