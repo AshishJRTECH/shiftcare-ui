@@ -817,7 +817,7 @@ export default function ListPage() {
                       width: "25%", // Matches data column width
                       fontSize: "0.875rem",
                       fontWeight: "bold",
-                      textAlign: "center" // Matches data alignment
+                      textAlign: "left" // Matches data alignment
                     }}
                   >
                     Type
@@ -847,7 +847,7 @@ export default function ListPage() {
                       width: "25%", // Matches data column width
                       fontSize: "0.875rem",
                       fontWeight: "bold",
-                      textAlign: "center" // Matches data alignment
+                      textAlign: "right" // Matches data alignment
                     }}
                   >
                     Cost
@@ -887,7 +887,7 @@ export default function ListPage() {
                           sx={{
                             width: "33%",
                             fontSize: "0.875rem",
-                            textAlign: "center"
+                            textAlign: "left"
                           }}
                         >
                           {report?.typeHour}
@@ -914,7 +914,7 @@ export default function ListPage() {
                           sx={{
                             width: "33%",
                             fontSize: "0.875rem",
-                            textAlign: "center"
+                            textAlign: "right"
                           }}
                         >
                           {report?.hourlyCost}
@@ -944,7 +944,7 @@ export default function ListPage() {
                             sx={{
                               width: "33%",
                               fontSize: "0.875rem",
-                              textAlign: "center"
+                              textAlign: "left"
                             }}
                           >
                             {report?.typeDistance}
@@ -971,7 +971,7 @@ export default function ListPage() {
                             sx={{
                               width: "33%",
                               fontSize: "0.875rem",
-                              textAlign: "center"
+                              textAlign: "right"
                             }}
                           >
                             {report?.distanceCost}
