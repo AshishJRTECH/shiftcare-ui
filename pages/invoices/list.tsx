@@ -812,146 +812,122 @@ export default function ListPage() {
                     width: "50%"
                   }}
                 >
-                  <Typography sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
+                  <Typography
+                    sx={{
+                      width: "25%", // Matches data column width
+                      fontSize: "0.875rem",
+                      fontWeight: "bold",
+                      textAlign: "center" // Matches data alignment
+                    }}
+                  >
                     Type
                   </Typography>
-                  <Typography sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
+                  <Typography
+                    sx={{
+                      width: "25%", // Matches data column width
+                      fontSize: "0.875rem",
+                      fontWeight: "bold",
+                      textAlign: "center" // Matches data alignment
+                    }}
+                  >
                     Quantity
                   </Typography>
-                  <Typography sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
+                  <Typography
+                    sx={{
+                      width: "25%", // Matches data column width
+                      fontSize: "0.875rem",
+                      fontWeight: "bold",
+                      textAlign: "center" // Matches data alignment
+                    }}
+                  >
                     Rate
                   </Typography>
-                  <Typography sx={{ fontSize: "0.875rem", fontWeight: "bold" }}>
+                  <Typography
+                    sx={{
+                      width: "25%", // Matches data column width
+                      fontSize: "0.875rem",
+                      fontWeight: "bold",
+                      textAlign: "center" // Matches data alignment
+                    }}
+                  >
                     Cost
                   </Typography>
                 </Box>
               </Box>
 
-              {/* {invoiceViewData?.billingReports?.map(
-                (report: any, index: Key | null | undefined) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: 3,
-                      // borderBottom: "1px solid #e0e0e0",
-                      backgroundColor: "#F0F0F0",
-                      padding: "8px"
-                    }}
-                  >
-                    <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
-                      {report?.description}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "50%"
-                      }}
-                    >
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.typeHour}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hour}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hourlyRate}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hourlyCost}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )
-              )}
-
               {invoiceViewData?.billingReports?.map(
                 (report: any, index: Key | null | undefined) => (
-                  <Box
+                  <Stack
                     key={index}
+                    spacing={3}
                     sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      marginBottom: 3,
-                      // borderBottom: "1px solid #e0e0e0",
-                      backgroundColor: "#F0F0F0",
-                      padding: "8px"
-                    }}
-                  >
-                    <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
-                      {report?.description}
-                    </Typography>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        width: "50%"
-                      }}
-                    >
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.typeDistance}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.distance}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.distanceRate}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.distanceCost}
-                      </Typography>
-                    </Box>
-                  </Box>
-                )
-              )} */}
-
-              {invoiceViewData?.billingReports?.map(
-                (report: any, index: Key | null | undefined) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
                       marginBottom: 3,
                       backgroundColor: "#F0F0F0",
                       padding: "8px"
                     }}
                   >
-                    <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
-                      {report?.description}
-                    </Typography>
+                    {/* Main report section */}
                     <Box
                       sx={{
                         display: "flex",
-                        justifyContent: "space-between",
-                        width: "50%"
+                        justifyContent: "space-between"
                       }}
                     >
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.typeHour}
+                      <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
+                        {report?.description}
                       </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hour}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hourlyRate}
-                      </Typography>
-                      <Typography sx={{ fontSize: "0.875rem" }}>
-                        {report?.hourlyCost}
-                      </Typography>
-                    </Box>
-
-                    {/* Conditionally render the distance section if report?.distance > 0 */}
-                    {report?.distance > 0 && (
                       <Box
                         sx={{
                           display: "flex",
                           justifyContent: "space-between",
-                          marginBottom: 3,
-                          backgroundColor: "#F0F0F0",
-                          padding: "8px"
+                          width: "50%"
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            width: "33%",
+                            fontSize: "0.875rem",
+                            textAlign: "center"
+                          }}
+                        >
+                          {report?.typeHour}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            width: "33%",
+                            fontSize: "0.875rem",
+                            textAlign: "center"
+                          }}
+                        >
+                          {report?.hour}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            width: "33%",
+                            fontSize: "0.875rem",
+                            textAlign: "center"
+                          }}
+                        >
+                          {report?.hourlyRate}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            width: "33%",
+                            fontSize: "0.875rem",
+                            textAlign: "center"
+                          }}
+                        >
+                          {report?.hourlyCost}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Distance section (conditionally rendered) */}
+                    {report?.distance > 0 && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between"
                         }}
                       >
                         <Typography sx={{ width: "50%", fontSize: "0.875rem" }}>
@@ -964,22 +940,46 @@ export default function ListPage() {
                             width: "50%"
                           }}
                         >
-                          <Typography sx={{ fontSize: "0.875rem" }}>
+                          <Typography
+                            sx={{
+                              width: "33%",
+                              fontSize: "0.875rem",
+                              textAlign: "center"
+                            }}
+                          >
                             {report?.typeDistance}
                           </Typography>
-                          <Typography sx={{ fontSize: "0.875rem" }}>
+                          <Typography
+                            sx={{
+                              width: "33%",
+                              fontSize: "0.875rem",
+                              textAlign: "center"
+                            }}
+                          >
                             {report?.distance}
                           </Typography>
-                          <Typography sx={{ fontSize: "0.875rem" }}>
+                          <Typography
+                            sx={{
+                              width: "33%",
+                              fontSize: "0.875rem",
+                              textAlign: "center"
+                            }}
+                          >
                             {report?.distanceRate}
                           </Typography>
-                          <Typography sx={{ fontSize: "0.875rem" }}>
+                          <Typography
+                            sx={{
+                              width: "33%",
+                              fontSize: "0.875rem",
+                              textAlign: "center"
+                            }}
+                          >
                             {report?.distanceCost}
                           </Typography>
                         </Box>
                       </Box>
                     )}
-                  </Box>
+                  </Stack>
                 )
               )}
 
