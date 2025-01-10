@@ -70,10 +70,14 @@ export const endpoints = {
     get_staff_report: (categoryName: string) =>
       `/document/employee-documents/getReport/withExpiry/${categoryName}`,
     get_client_shift_list: (employeeID: string) =>
-      `/shift/employee/${employeeID}/locations/new`
+      `/shift/employee/${employeeID}/locations/new`,
+    create_document_subcategory: (categoryId: string) =>
+      `/document-subcategories/${categoryId}`
   },
   client: {
-    get_all: "/client/by-company/active",
+    // get_all: "/client/by-company/active",
+    get_all_temorary_client: "/client/by-company/active/temp",
+    get_all: "/client/by-company/Limited/active",
     get_archieved_clients: "/client/by-company/inactive",
     add_client: "/client/add",
     delete_client: "/client/softDelete",
@@ -118,7 +122,18 @@ export const endpoints = {
       `/invoices/${invoiceId}/deletePayments/${paymentId}`,
     get_time_line: (invoiceId?: string) => `/invoices/${invoiceId}/timeline`,
     create_invoice_notes: (invoiceId?: string) =>
-      `/invoices/${invoiceId}/addNotes`
+      `/invoices/${invoiceId}/addNotes`,
+    get_all_template_documents: `/clientDocument/clients/documents/by-category/new`,
+    create_client_document_subcategory: (categoryId: string) =>
+      `/clientDocument-subcategories/${categoryId}`,
+    create_template_document: (subCategoryId: string) =>
+      `/clientDocument-subcategories/upload/${subCategoryId}`,
+    delete_client_document: "clientDocument/delete",
+    get_client_category: "/client/document-categories/all",
+    get_client_document_category: `/client/document-categories/all`,
+    get_client_sub_category: "/clientDocument-subcategories/all",
+    update_client_document: (subCategoryId: string, documentId: string) =>
+      `/clientDocument-subcategories/update-documents/${subCategoryId}/${documentId}`
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -156,7 +171,8 @@ export const endpoints = {
       get_all_shift_notes: `/shiftNote/getAllShiftNotes`,
       get_all_notes: (id?: string) => `/shiftNote/getAllForClient/${id}`,
       add_note: `/shiftNote/add`,
-      export: (id: string) => `/shiftNote/exportShiftNotesToPdf/email/${id}`
+      export: (id: number) => `/shiftNote/exportShiftNotesToPdf/email/${id}`,
+      exportpdf: (id: number) => `/shiftNote/exportShiftNotes/ToPdf/${id}`
     }
   },
   settings: {

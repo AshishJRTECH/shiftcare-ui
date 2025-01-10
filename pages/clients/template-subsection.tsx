@@ -1,5 +1,7 @@
 import {
+  TenplateAllDocuments,
   complianceData,
+  documents,
   staffAllDocuments
 } from "@/interface/common.interface";
 import StyledPaper from "@/ui/Paper/Paper";
@@ -40,12 +42,11 @@ import {
   Typography
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { useMutation, useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries, useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   addCompliance,
-  addDocumentSubCategory,
   deleteDocument,
   getCategory,
   getSub_Category,
@@ -70,6 +71,15 @@ import { toast } from "sonner";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IDocumentSubCategory } from "@/interface/staff.interfaces";
+import {
+  addClientDocumentSubCategory,
+  addTemplateDocument,
+  deleteClientDocument,
+  getClientCategory,
+  getClientDocumentsCategory,
+  getClientSub_Category,
+  updateClientDocument
+} from "@/api/functions/client.api";
 
 const StyledBox = styled(Box)`
   th:not(:nth-of-type(1)),
@@ -84,20 +94,25 @@ const StyledBox = styled(Box)`
 `;
 
 function ComplianceTableRow({
-  fileName,
-  fileType,
-  fileSize,
-  lastUpdated,
-  downloadURL,
-  expiryDate,
-  expiry,
-  status,
-  employee,
-  documentSubCategory,
   client,
   clientDocumentCategory,
+  clientDocumentCategoryId,
+  clientDocumentSubCategory,
+  clientDocumentSubCategoryId,
+  documentId,
+  documentName,
+  downloadURL,
+  expiry,
+  expiryDate,
+  fileName,
+  fileSize,
+  fileType,
+  isExpiryMandatory,
+  lastUpdated,
+  staffVisible,
+  status,
   onClick // Accepting the onClick prop
-}: complianceData & { onClick?: () => void }) {
+}: any & { onClick?: () => void }) {
   // Add the type for onClick prop
   const getStatus = (): {
     status: string;
@@ -132,7 +147,7 @@ function ComplianceTableRow({
     <TableRow onClick={onClick}>
       {" "}
       {/* Apply onClick to the TableRow */}
-      <TableCell>{documentSubCategory}</TableCell>
+      <TableCell>{clientDocumentSubCategory}</TableCell>
       <TableCell>
         {expiryDate ? moment(expiryDate).format("LL") : "-"}
       </TableCell>
@@ -150,10 +165,10 @@ function ComplianceTableRow({
   );
 }
 
-export default function Compliance({
-  staffalldocuments
+export default function TemplateSubsection({
+  templates
 }: {
-  staffalldocuments: staffAllDocuments[];
+  templates: any[];
 }) {
   interface SubCategory {
     documentSubCategoryId: number | null; // Use appropriate types
@@ -161,8 +176,8 @@ export default function Compliance({
   }
 
   console.log(
-    "---------------------staffalldocuments--------------------------",
-    staffalldocuments
+    "--------------------- staffalldocuments --------------------------",
+    templates
   );
 
   const schema = yup.object().shape({
@@ -186,7 +201,7 @@ export default function Compliance({
   });
   const [displayingDate, setDisplayingDate] = useState("");
   const [categoryId, setCategoryId] = useState("");
-  const [subcategoryId, setSubcategoryId] = useState<string>("");
+  const [subCategoryId, setSubcategoryId] = useState<string>("");
   const [documentId, setDocumentId] = useState<string>("");
   const [openListModal, setOpenListModal] = useState(false);
   const [openComplianceModal, setOpenComplianceModal] = useState(false);
@@ -237,7 +252,7 @@ export default function Compliance({
 
   const handleOpenDocumentEditModal = (data: any) => {
     setDocumentId(data.documentId);
-    setSubcategoryId(data.documentSubCategoryId);
+    setSubcategoryId(data.clientDocumentSubCategoryId);
     setFile(data.fileName ? data.fileName[0] : null);
     const date = new Date(data.expiryDate);
     // Extract the day, month, and year
@@ -284,9 +299,11 @@ export default function Compliance({
   };
 
   const { mutate: addSubcategory } = useMutation({
-    mutationFn: addDocumentSubCategory,
+    mutationFn: addClientDocumentSubCategory,
     onSuccess: (resonse) => {
-      queryClient.invalidateQueries({ queryKey: ["staffalldocuments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["admin_subcategory_list"]
+      });
       toast.success(resonse.message);
       setLoading(false); // Stop loading on success
       setOpenComplianceModalSubcategory(false);
@@ -299,12 +316,14 @@ export default function Compliance({
 
   // ---------------- To Add the Document Start Here ----------------
   const { mutate } = useMutation({
-    mutationFn: addCompliance,
+    mutationFn: addTemplateDocument,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["staffalldocuments"] });
-      // console.log("Compliance Data saved successfully");
       setLoading(false); // Stop loading on success
       handleClose();
+      queryClient.invalidateQueries({
+        queryKey: ["templates_document_list_admin"]
+      });
+      // console.log("Compliance Data saved successfully");
     },
     onError: (error) => {
       console.error("Error saving Compliance Data:", error);
@@ -313,8 +332,7 @@ export default function Compliance({
   });
 
   const onSubmit = (params: {
-    employeeId: string;
-    subcategoryId: string;
+    subCategoryId: string;
     data: FormData;
     isExpiryMandatory: boolean;
     expiryDate: Date;
@@ -323,7 +341,7 @@ export default function Compliance({
   };
 
   const handleSubmit = () => {
-    if (employeeId && category && file) {
+    if (category && file) {
       const formattedExpiryDate = expiryDate
         ? new Date(expiryDate).toLocaleDateString("en-GB").split("/").join("-")
         : null;
@@ -359,7 +377,6 @@ export default function Compliance({
         console.log(
           "Submitting data",
           {
-            employeeId,
             category,
             file,
             expiryDateEnabled,
@@ -369,8 +386,7 @@ export default function Compliance({
         );
 
         onSubmit({
-          employeeId,
-          subcategoryId: category,
+          subCategoryId: category,
           data: formData,
           isExpiryMandatory: expiryDateEnabled,
           expiryDate: convertedDate ?? new Date()
@@ -389,11 +405,10 @@ export default function Compliance({
         );
 
         onSubmit({
-          employeeId,
-          subcategoryId: category,
+          subCategoryId: category,
           data: formData,
           isExpiryMandatory: expiryDateEnabled,
-          expiryDate: convertedDate ?? new Date()
+          expiryDate: new Date()
         });
 
         setOpenComplianceModal(false);
@@ -402,7 +417,6 @@ export default function Compliance({
       }
     } else {
       console.log("Missing data", {
-        employeeId,
         category,
         file,
         expiryDateEnabled,
@@ -415,15 +429,18 @@ export default function Compliance({
 
   // ---------------- To Update the Document Start Here ----------------
   const { mutate: updateDocument } = useMutation({
-    mutationFn: updateCompliance,
+    mutationFn: updateClientDocument,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["staffalldocuments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["templates_document_list_admin"]
+      });
+      setLoading(false);
       setOpenDocumentEditModal(false);
       setOpenListModal(true);
       // console.log("Compliance Data saved successfully");
-      setLoading(false); // Stop loading on success
-      handleClose();
-      return toast.success("Compliance Data saved successfully");
+      // setLoading(false); // Stop loading on success
+      // handleClose();
+      return toast.success("Document Data saved successfully");
     },
     onError: (error) => {
       console.error("Error saving Compliance Data:", error);
@@ -432,8 +449,7 @@ export default function Compliance({
   });
 
   const onUpdate = (params: {
-    employeeId: string;
-    subcategoryId: string;
+    subCategoryId: string;
     documentId: string;
     data: FormData;
     isExpiryMandatory: boolean;
@@ -450,7 +466,7 @@ export default function Compliance({
   }
 
   const handleUpdate = () => {
-    if (employeeId && subcategoryId && file && documentId) {
+    if (subCategoryId && file && documentId) {
       setLoading(true); // Start loading
       const formattedExpiryDate = expiryDate
         ? new Date(expiryDate).toLocaleDateString("en-GB").split("/").join("-")
@@ -483,7 +499,6 @@ export default function Compliance({
       console.log(
         "Submitting data",
         {
-          employeeId,
           category,
           file,
           expiryDateEnabled,
@@ -493,8 +508,7 @@ export default function Compliance({
       );
 
       onUpdate({
-        employeeId,
-        subcategoryId,
+        subCategoryId,
         documentId,
         data: formData,
         isExpiryMandatory: expiryDateEnabled,
@@ -506,8 +520,7 @@ export default function Compliance({
       setOpenListModal(true);
     } else {
       console.log("Missing data in Edit", {
-        employeeId,
-        subcategoryId,
+        subCategoryId,
         documentId,
         file,
         expiryDateEnabled,
@@ -520,9 +533,11 @@ export default function Compliance({
   // ---------------- To Update the Document End Here ----------------
   // ---------------- To Delete the Document Start Here ----------------
   const { mutate: deleteDoc, isPending } = useMutation({
-    mutationFn: deleteDocument,
+    mutationFn: deleteClientDocument,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["staffalldocuments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["additional_document_list"]
+      });
       setOpenDocumentDeleteModal(false);
       setOpenListModal(true);
     }
@@ -546,20 +561,53 @@ export default function Compliance({
     queries: [
       {
         queryKey: ["category_list"],
-        queryFn: getCategory
+        queryFn: getClientCategory
       },
       {
         queryKey: ["subcategory_list"],
-        queryFn: getSub_Category
+        queryFn: getClientSub_Category
       }
     ]
   });
+
+  useEffect(() => {
+    console.log(
+      "-------------: category and Subcategory :-------------",
+      results
+    );
+  }, [results]);
 
   const [categoryResult, subCategoryResult] = results;
 
   const isLoading = categoryResult.isLoading || subCategoryResult.isLoading;
   const error = categoryResult.error || subCategoryResult.error;
   const subcategories = subCategoryResult.data;
+
+  const {
+    data,
+    isLoading: loading2,
+    isError
+  } = useQuery({
+    queryKey: ["admin_subcategory_list"],
+    queryFn: () => getClientDocumentsCategory() // pass the id as an object
+  });
+
+  useEffect(() => {
+    console.log(
+      "-----------------: Client Document Category :-----------------",
+      data
+    );
+  }, [data]);
+
+  useEffect(() => {
+    // Your reload logic here
+    console.log("Component mounted and loaded once");
+
+    // Optionally, you can place cleanup code here if needed
+    return () => {
+      // cleanup code
+    };
+  }, []); // Empty dependency array ensures this runs only once
 
   if (isLoading) {
     return <Typography>Loading...</Typography>;
@@ -595,14 +643,6 @@ export default function Compliance({
       setOpenComplianceModalDirect(true);
     }
   };
-
-  const categories = [
-    { id: 1, category: "Competencies " },
-    { id: 2, category: "Qualifications " },
-    { id: 3, category: "Compliance" },
-    { id: 4, category: "KPI" },
-    { id: 5, category: "Other" }
-  ];
 
   // const handleAddSubCategorySubmit = () => {
   //   setOpenComplianceModalSubcategory(false);
@@ -677,9 +717,8 @@ export default function Compliance({
       </Stack>
       <Divider />
 
-      {/* Existing document list in the original place */}
       <StyledBox>
-        {(Object.keys(staffalldocuments[1]) as (keyof staffAllDocuments)[]).map(
+        {(Object.keys(templates[1]) as (keyof TenplateAllDocuments)[]).map(
           (category) => (
             <Accordion key={category}>
               <AccordionSummary
@@ -701,33 +740,22 @@ export default function Compliance({
                           <TableCell>Status</TableCell>
                         </TableRow>
                       </TableHead>
-                      {/* <TableBody>
-                        {staffalldocuments[1][category]?.map((_data, index) => (
-                          <ComplianceTableRow {..._data} key={index} />
-                        ))}
-                      </TableBody> */}
 
                       <TableBody>
-                        {staffalldocuments[1][category]?.map((_data, index) => (
-                          <ComplianceTableRow
-                            {..._data}
-                            key={index}
-                            onClick={() => handleRowClick(_data)} // Pass the onClick handler here
-                          />
-                        ))}
+                        {templates[1][category]?.map(
+                          (
+                            _data: JSX.IntrinsicAttributes &
+                              documents & { onClick?: () => void },
+                            index: React.Key | null | undefined
+                          ) => (
+                            <ComplianceTableRow
+                              {..._data}
+                              key={index}
+                              onClick={() => handleRowClick(_data)} // Pass the onClick handler here
+                            />
+                          )
+                        )}
                       </TableBody>
-
-                      {/* <TableBody>
-                        {staffalldocuments[1][category]?.map((_data, index) => (
-                          <TableRow
-                            key={index}
-                            onClick={() => handleRowClick(_data)}
-                            style={{ width: "100%", cursor: "pointer" }}
-                          >
-                            <ComplianceTableRow {..._data} />
-                          </TableRow>
-                        ))}
-                      </TableBody> */}
                     </Table>
                   </TableContainer>
                 </Scrollbar>
@@ -761,19 +789,13 @@ export default function Compliance({
               </TableHead>
               <TableBody>
                 {/* Render a single table with documents where fileName is not empty */}
-                {(
-                  Object.keys(
-                    staffalldocuments[1]
-                  ) as (keyof staffAllDocuments)[]
-                )
+                {(Object.keys(templates[1]) as (keyof TenplateAllDocuments)[])
                   .flatMap((category) =>
-                    staffalldocuments[1][category]?.filter(
-                      (doc) => doc.fileName
-                    )
+                    templates[1][category]?.filter((doc: any) => doc.fileName)
                   )
                   .map((_data, index) => (
                     <TableRow key={index}>
-                      <TableCell>{_data.documentSubCategory}</TableCell>
+                      <TableCell>{_data.clientDocumentSubCategory}</TableCell>
                       <TableCell>{_data.fileName}</TableCell>
                       <TableCell>
                         {_data.expiryDate
@@ -938,7 +960,7 @@ export default function Compliance({
                 onChange={(e) => setExpiryDateEnabled(e.target.checked)}
               />
             }
-            label="Is expiry date requirement for this doc?"
+            label="Expiry date requirement for this doc?"
             sx={{ marginBottom: 2 }}
           />
 
@@ -1225,12 +1247,16 @@ export default function Compliance({
                   onChange={handleChange}
                   label="Category"
                 >
-                  {/* Render Category Dropdown */}
-                  {categories.map((item) => (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.category}
-                    </MenuItem>
-                  ))}
+                  {/* Render Category Dropdown if data is not empty */}
+                  {data && data.length > 0 ? (
+                    data.map((item: any) => (
+                      <MenuItem key={item.id} value={item.id}>
+                        {item.name}
+                      </MenuItem>
+                    ))
+                  ) : (
+                    <MenuItem disabled>No categories available</MenuItem>
+                  )}
                 </Select>
               </FormControl>
 

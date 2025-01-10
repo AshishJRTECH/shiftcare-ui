@@ -118,7 +118,8 @@ const schema = yup.object().shape({
     .required(validationText.error.maritalStatus),
   nationality: yup.string().trim().required(validationText.error.nationality),
   language: yup.array().of(yup.string()),
-  prospect: yup.boolean()
+  prospect: yup.boolean(),
+  isTemporary: yup.boolean()
 });
 
 export default function Index() {
@@ -145,7 +146,8 @@ export default function Index() {
       maritalStatus: "",
       nationality: "",
       language: [],
-      prospect: false
+      prospect: false,
+      isTemporary: false
     }
   });
 
@@ -543,6 +545,23 @@ export default function Index() {
                     <FormControlLabel
                       control={<Checkbox size="small" />}
                       label="Client is a prospect"
+                      checked={field.value}
+                      onChange={field.onChange}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item lg={3} md={12} sm={12} xs={12}>
+                Is Temporary:
+              </Grid>
+              <Grid item lg={9} md={12} sm={12} xs={12}>
+                <Controller
+                  name="isTemporary"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox size="small" />}
+                      label=""
                       checked={field.value}
                       onChange={field.onChange}
                     />

@@ -48,6 +48,8 @@ import ClientDocuments from "@/components/client-docuements/documents";
 import ClientFunds from "@/components/client-funds/funds";
 import ClientContacts from "@/components/client-contacts/client-contacts";
 import ClientAdditionalContacts from "@/components/client-additional-contacts/client-additional-contacts";
+import DocumentTemplate from "../document-templates";
+import DocumentTemplateInside from "../template-document-inside";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -284,7 +286,8 @@ export default function Index() {
               <Details client={data.client} />
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
-              <ClientDocuments document_data={data.documents} />
+              {/* <ClientDocuments document_data={data.documents} /> */}
+              <DocumentTemplateInside></DocumentTemplateInside>
             </Grid>
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <ClientFunds funds_data={data.funds[0]?.funds} />

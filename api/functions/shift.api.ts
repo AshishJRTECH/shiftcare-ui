@@ -109,7 +109,7 @@ export const addShiftNote = async (body: FormData) => {
   return res.data;
 };
 
-export const exportShiftNotes = async (id: string) => {
+export const exportShiftNotes = async (id: number) => {
   const res = await axiosInstance.get(endpoints.shift.notes.export(id));
   return res.data;
 };

@@ -1,4 +1,5 @@
 import {
+  IDocumentSubCategory,
   ISettings,
   IUpdateSettings,
   StaffTeamBody
@@ -358,6 +359,20 @@ export const getStaffShiftList = async (
     {
       params: { startDate, endDate } // Query parameters will be appended to the URL
     }
+  );
+  return res.data;
+};
+
+export const addDocumentSubCategory = async ({
+  categoryId,
+  data
+}: {
+  categoryId: string;
+  data: IDocumentSubCategory;
+}) => {
+  const res = await axiosInstance.post(
+    endpoints.staff.create_document_subcategory(categoryId),
+    data
   );
   return res.data;
 };

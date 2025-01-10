@@ -16,9 +16,24 @@ import {
   InvoiceNotesInterface,
   InvoicePayment
 } from "@/interface/invoicepayment";
+import { IDocumentSubCategory } from "@/interface/staff.interfaces";
 
 export const getAllClients = async () => {
   const res = await axiosInstance.get(endpoints.client.get_all);
+  return res.data;
+};
+
+export const getAllClientsShiftNote = async (token: string | undefined) => {
+  if (!token) {
+    throw new Error("Authentication token is missing");
+  }
+
+  const res = await axiosInstance.get(endpoints.client.get_all, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
   return res.data;
 };
 
@@ -413,3 +428,166 @@ export const addInvoiceNotes = async ({
   );
   return res.data;
 };
+
+export const exportNotesToEmail = async ({
+  id,
+  startDate,
+  endDate
+}: {
+  id: number;
+  startDate: string;
+  endDate: string;
+}) => {
+  try {
+    const data = new FormData();
+    data.append("startDate", startDate);
+    data.append("endDate", endDate);
+
+    const res = await axiosInstance.get(endpoints.shift.notes.export(id), {
+      params: data
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const exportNotesToPdf = async ({
+  id,
+  startDate,
+  endDate
+}: {
+  id: number;
+  startDate: string;
+  endDate: string;
+}) => {
+  try {
+    const data = new FormData();
+    data.append("startDate", startDate);
+    data.append("endDate", endDate);
+
+    const res = await axiosInstance.get(endpoints.shift.notes.exportpdf(id), {
+      params: data
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const getAllTemporaryClients = async (token?: string) => {
+  const res = await axiosInstance.get(
+    endpoints.client.get_all_temorary_client,
+    {
+      headers: token
+        ? {
+            Authorization: `Bearer ${token}`
+          }
+        : {}
+    }
+  );
+  return res.data;
+};
+
+export const getAllTemplateDocuments = async () => {
+  const res = await axiosInstance.get(
+    endpoints.client.get_all_template_documents
+  );
+  return res.data;
+};
+
+export const addClientDocumentSubCategory = async ({
+  categoryId,
+  data
+}: {
+  categoryId: string;
+  data: IDocumentSubCategory;
+}) => {
+  const res = await axiosInstance.post(
+    endpoints.client.create_client_document_subcategory(categoryId),
+    data
+  );
+  return res.data;
+};
+
+export const addTemplateDocument = async ({
+  subCategoryId,
+  data
+}: {
+  subCategoryId: string;
+  data: FormData;
+}) => {
+  try {
+    const res = await axiosInstance.post(
+      endpoints.client.create_template_document(subCategoryId),
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const deleteClientDocument = async (id: number) => {
+  const res = await axiosInstance.delete(
+    `${endpoints.client.delete_client_document}/${id}`
+  );
+  return res.data;
+};
+
+export const getClientCategory = async () => {
+  const res = await axiosInstance.get(endpoints.client.get_client_category);
+  return res.data;
+};
+
+export const getClientDocumentsCategory = async () => {
+  const res = await axiosInstance.get(
+    endpoints.client.get_client_document_category
+  );
+  return res.data;
+};
+
+export const getClientSub_Category = async () => {
+  const res = await axiosInstance.get(endpoints.client.get_client_sub_category);
+  return res.data;
+};
+
+export const updateClientDocument = async ({
+  subCategoryId,
+  documentId,
+  data
+}: {
+  subCategoryId: string;
+  documentId: string;
+  data: FormData;
+}) => {
+  try {
+    const res = await axiosInstance.put(
+      endpoints.client.update_client_document(subCategoryId, documentId),
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+// export const getAllTemporaryClients = async (token?: string) => {
+//   const res = await axiosInstance.get(
+//     endpoints.client.get_all_temorary_client,
+//     {
+//       headers: token
+//         ? {
+//             Authorization: `Bearer ${token}`
+//           }
+//         : {}
+//     }
+//   );
+//   return res.data;
+// };

@@ -121,7 +121,8 @@ const schema = yup.object().shape({
     .trim()
     .required(validationText.error.maritalStatus),
   nationality: yup.string().trim().required(validationText.error.nationality),
-  language: yup.array().of(yup.string())
+  language: yup.array().of(yup.string()),
+  isTemporary: yup.boolean()
 });
 
 export default function Details({ client }: { client: IClient }) {
@@ -149,7 +150,8 @@ export default function Details({ client }: { client: IClient }) {
       religion: client.religion,
       maritalStatus: client.maritalStatus,
       nationality: client.nationality,
-      language: client.language || []
+      language: client.language || [],
+      isTemporary: client.isTemporary
     }
   });
 
@@ -556,6 +558,23 @@ export default function Details({ client }: { client: IClient }) {
                         </FormHelperText>
                       )}
                     </Box>
+                  )}
+                />
+              </Grid>
+              <Grid item lg={3} md={12} sm={12} xs={12}>
+                Client is temporary:
+              </Grid>
+              <Grid item lg={9} md={12} sm={12} xs={12}>
+                <Controller
+                  name="isTemporary"
+                  control={methods.control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={<Checkbox size="small" />}
+                      label=""
+                      checked={!!field.value} // Ensure value is a boolean
+                      onChange={field.onChange}
+                    />
                   )}
                 />
               </Grid>

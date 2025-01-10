@@ -92,15 +92,29 @@ const navConfig: NavItem[] = [
         hasChild: false
       },
       {
+        title: "Temporary List",
+        path: "/clients/temporarylist",
+        icon: TocIcon,
+        children: [],
+        hasChild: false
+      },
+      {
         title: "Archived",
         path: "/clients/archived",
         icon: ArchiveIcon,
         children: [],
         hasChild: false
       },
+      // {
+      //   title: "Expired Documents",
+      //   path: "/clients/expired-documents",
+      //   icon: RuleFolderIcon,
+      //   children: [],
+      //   hasChild: false
+      // },
       {
-        title: "Expired Documents",
-        path: "/clients/expired-documents",
+        title: "Documents Templates",
+        path: "/clients/document-templates",
         icon: RuleFolderIcon,
         children: [],
         hasChild: false
@@ -242,6 +256,13 @@ const navConfig: NavItem[] = [
       // }
     ],
     hasChild: true
+  },
+  {
+    title: "Shift Notes",
+    path: "/shift-notes",
+    icon: TocIcon,
+    children: [],
+    hasChild: false
   },
   {
     title: "Account",

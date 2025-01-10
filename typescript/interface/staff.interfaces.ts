@@ -117,3 +117,8 @@ export interface ITimesheet {
   client: Client[];
   allowances: Allowance[];
 }
+
+export interface IDocumentSubCategory {
+  name: string;
+}
+

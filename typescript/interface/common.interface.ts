@@ -137,4 +137,33 @@ export interface staffAllDocuments {
   Other: documents[];
 }
 
+export interface ClientDocuments {
+  documentId: number | null;
+  fileName: string | null;
+  fileType: string | null;
+  fileSize: number | null;
+  lastUpdated: number | null;
+  downloadURL: string | null;
+  documentName: string | null;
+  expiryDate: number | null;
+  isExpiryMandatory: boolean | null;
+  expiry: boolean;
+  status: boolean;
+  clientDocumentCategoryId: number;
+  clientDocumentSubCategoryId: number;
+  clientDocumentSubCategory: string;
+  client: number | null;
+  clientDocumentCategory: string | null;
+  staffVisible: boolean;
+}
+
+export interface TenplateAllDocuments {
+  MedicationManagement: ClientDocuments[];
+  Core: ClientDocuments[];
+  StaffHR: ClientDocuments[];
+  Governance: ClientDocuments[];
+  BehaviourSupport: ClientDocuments[];
+  CommunityNursing: ClientDocuments[];
+}
+
 export {};

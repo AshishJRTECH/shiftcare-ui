@@ -1,4 +1,5 @@
 export interface IClient {
+  isTemporary: any;
   id: number;
   salutation: string;
   firstName: string;

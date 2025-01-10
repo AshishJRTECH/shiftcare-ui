@@ -1,5 +1,4 @@
 import { useState } from "react";
-
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import Popover from "@mui/material/Popover";
@@ -9,15 +8,13 @@ import MenuItem from "@mui/material/MenuItem";
 import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
-
 import Label from "@/ui/label/label";
 import Iconify from "@/components/Iconify/Iconify";
 import { useRouter } from "next/router";
 import DeleteModal from "@/components/deleteModal/deleteModal";
 import { useMutation } from "@tanstack/react-query";
-import { deleteStaff } from "@/api/functions/staff.api";
-import { queryClient } from "pages/_app";
 import { deleteClient } from "@/api/functions/client.api";
+import { queryClient } from "pages/_app";
 
 // ----------------------------------------------------------------------
 
@@ -80,9 +77,28 @@ export default function ClientTableRow({
     }
   });
 
+  // Custom handler for row click that checks if the last cell was clicked
+  const handleRowClick = (e: React.MouseEvent<HTMLElement>) => {
+    // Type assertion to HTMLElement
+    const row = e.currentTarget; // The clicked <TableRow>
+    const cells = row.getElementsByTagName("td");
+    const lastCell = cells[cells.length - 1]; // The last cell (with the IconButton)
+
+    // If the clicked element is not the last cell, perform the row action (navigate)
+    const target = e.target as HTMLElement; // Type assertion to HTMLElement
+    if (target !== lastCell && !lastCell.contains(target)) {
+      handleCloseMenu(e, `/clients/${id}/view`);
+    }
+  };
+
   return (
     <>
-      <TableRow hover tabIndex={-1}>
+      <TableRow
+        hover
+        tabIndex={-1}
+        onClick={handleRowClick} // Attach the custom onClick handler
+        sx={{ cursor: "pointer" }}
+      >
         {/* <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={handleClick} />
         </TableCell> */}
@@ -97,7 +113,6 @@ export default function ClientTableRow({
         </TableCell>
 
         <TableCell>{gender}</TableCell>
-
         <TableCell>{age}</TableCell>
         <TableCell>{ndis}</TableCell>
         <TableCell>{recipient_id}</TableCell>
@@ -136,7 +151,9 @@ export default function ClientTableRow({
           }
         }}
       >
-        <MenuItem onClick={(e) => handleCloseMenu(e, `/clients/${id}/view`)}>
+        <MenuItem
+          onClick={(e) => handleCloseMenu(e, `/participants/${id}/view`)}
+        >
           <Iconify icon="eva:file-text-outline" sx={{ mr: 2 }} />
           View
         </MenuItem>
@@ -156,6 +173,7 @@ export default function ClientTableRow({
           Delete
         </MenuItem>
       </Popover>
+
       <DeleteModal
         title="Delete Client"
         description="Are you sure, you want to delete this Client?"
