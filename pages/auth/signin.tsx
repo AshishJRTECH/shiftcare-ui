@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { getRole } from "@/lib/functions/_helpers.lib";
 // ----------------------------------------------------------------------
 
 const StyledLoginPage = styled(Box)`
@@ -78,13 +79,29 @@ export default function LoginView() {
     }
   });
 
+  const role = getRole();
+
+  // const { mutate, isPending } = useMutation({
+  //   mutationFn: loginMutation,
+  //   onSuccess: (data: any) => {
+  //     setCookieClient(process.env.NEXT_APP_TOKEN_NAME!, data.jwtToken);
+  //     delete data.jwtToken;
+  //     setCookieClient("user", JSON.stringify(data));
+  //     if (role === "ROLE_CARER") {
+  //       router.push("/staff-roster");
+  //     } else {
+  //       router.push("/");
+  //     }
+  //   }
+  // });
+
   const { mutate, isPending } = useMutation({
     mutationFn: loginMutation,
     onSuccess: (data: any) => {
       setCookieClient(process.env.NEXT_APP_TOKEN_NAME!, data.jwtToken);
       delete data.jwtToken;
       setCookieClient("user", JSON.stringify(data));
-      router.push("/");
+      router.push(data.role[0]?.name === "ROLE_ADMIN" ? "/" : "/staff-roster");
     }
   });
 

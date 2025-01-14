@@ -44,6 +44,7 @@ export default function StaffSection({
   const { control, watch, setValue, getValues } = useFormContext();
   const role = getRole();
   const isOpenShift = watch("isOpenShift");
+  const isPickupJob = watch("isPickupJob");
 
   const { data, isLoading } = useQuery({
     queryKey: ["user_list"],
@@ -52,7 +53,9 @@ export default function StaffSection({
   });
 
   useEffect(() => {
-    if (isOpenShift) {
+
+    if (isOpenShift || isPickupJob)
+    {
       // Unselect all selected carers by resetting employeeIds
       setValue("employeeIds", []);
     }
@@ -205,82 +208,124 @@ export default function StaffSection({
                 )}
               />
             </Grid>
-            <Grid item lg={8} md={6} sm={12} xs={12}></Grid>
-            {/* {!isOpenShift && ( */}
             {!isOpenShift && staffId !== "1" && (
-              <Grid container alignItems="center">
-                <Grid container spacing={2}>
-                  <Grid item lg={4} md={6} sm={12} xs={12}>
-                    <Typography>Choose Carer</Typography>
-                  </Grid>
-                  <Grid item lg={8} md={6} sm={12} xs={12}>
-                    <Controller
-                      control={control}
-                      name="employeeIds"
-                      render={({ field, fieldState: { error, invalid } }) => {
-                        return (
-                          <Box>
-                            <Select
-                              fullWidth
-                              size="small"
-                              {...field}
-                              value={field.value || []} // Ensure value is an array
-                              onChange={(e) => {
-                                const _value = e.target.value;
-                                field.onChange(_value); // _value should already be an array
-
-                                // Get the selected display names and update state directly
-                                const selectedNames = data
-                                  ?.filter((client: any) =>
-                                    _value.includes(client.id)
-                                  )
-                                  .map((client: any) => client.name)
-                                  .join(", ");
-                                setSelectedDisplayNames(selectedNames);
-
-                                // Get the selected IDs and update state
-                                const selectedId = data
-                                  ?.filter((client: any) =>
-                                    _value.includes(client.id)
-                                  )
-                                  .map((client: any) => client.id)
-                                  .join(", ");
-                                if (selectedId) {
-                                  setSelectedCarerId(selectedId);
-                                }
-
-                                // Optionally set open state based on selected names length
-                                setOpen(selectedNames.length);
-                              }}
-                              displayEmpty
-                              renderValue={
-                                field.value?.length !== 0
-                                  ? undefined
-                                  : () => "Select Carer"
-                              }
-                              multiple
-                            >
-                              {isLoading ? (
-                                <MenuItem disabled>Loading...</MenuItem>
-                              ) : (
-                                data?.slice(1).map((_data: IStaff) => (
-                                  <MenuItem value={_data.id} key={_data.id}>
-                                    {_data.name}
-                                  </MenuItem>
-                                ))
-                              )}
-                            </Select>
-                            {invalid && (
-                              <FormHelperText>{error?.message}</FormHelperText>
-                            )}
-                          </Box>
-                        );
-                      }}
+              <Grid item lg={4} md={6} sm={12} xs={12}>
+                <Controller
+                  name="isPickupJob"
+                  control={control}
+                  render={({ field }) => (
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          size="small"
+                          checked={staffId === "1" ? true : field.value} // Check if staffId is 1
+                          onChange={(e) => {
+                            field.onChange(e.target.checked); // Update the field value
+                            // console.log("Checked:", e.target.checked); // Log the checked state
+                          }}
+                        />
+                      }
+                      {...field}
+                      label="Is Pickup Job"
                     />
-                  </Grid>
-                </Grid>
+                  )}
+                />
               </Grid>
             )}
+            {/* <Grid item lg={8} md={6} sm={12} xs={12}></Grid> */}
+            {/* {!isOpenShift && ( */}
+            {!isOpenShift &&
+              staffId !== "1" &&
+              !isPickupJob &&(
+                <Grid container alignItems="center">
+                  <Grid container spacing={2}>
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Choose Carer</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name="employeeIds"
+                        render={({ field, fieldState: { error, invalid } }) => {
+                          return (
+                            <Box>
+                              <Select
+                                fullWidth
+                                size="small"
+                                {...field}
+                                value={field.value || []} // Ensure value is an array
+                                onChange={(e) => {
+                                  const _value = e.target.value;
+                                  field.onChange(_value); // _value should already be an array
+
+                                  // Get the selected display names and update state directly
+                                  const selectedNames = data
+                                    ?.filter((client: any) =>
+                                      _value.includes(client.id)
+                                    )
+                                    .map((client: any) => client.name)
+                                    .join(", ");
+                                  setSelectedDisplayNames(selectedNames);
+
+                                  // Get the selected IDs and update state
+                                  const selectedId = data
+                                    ?.filter((client: any) =>
+                                      _value.includes(client.id)
+                                    )
+                                    .map((client: any) => client.id)
+                                    .join(", ");
+                                  if (selectedId) {
+                                    setSelectedCarerId(selectedId);
+                                  }
+
+                                  // Optionally set open state based on selected names length
+                                  setOpen(selectedNames.length);
+                                }}
+                                displayEmpty
+                                renderValue={
+                                  field.value?.length !== 0
+                                    ? undefined
+                                    : () => "Select Carer"
+                                }
+                                multiple
+                              >
+                                {/* {isLoading ? (
+                                  <MenuItem disabled>Loading...</MenuItem>
+                                ) : (
+                                  data?.slice(1).map((_data: IStaff) => (
+                                    <MenuItem value={_data.id} key={_data.id}>
+                                      {_data.name}
+                                    </MenuItem>
+                                  ))
+                                )} */}
+                                {isLoading ? (
+                                  <MenuItem disabled>Loading...</MenuItem>
+                                ) : isPickupJob ? (
+                                  <MenuItem disabled>
+                                    No carers available for pickup jobs
+                                  </MenuItem>
+                                ) : (
+                                  // Only display carers if it's not a pickup job
+                                  data?.slice(2).map((_data: IStaff) => (
+                                    <MenuItem value={_data.id} key={_data.id}>
+                                      {_data.name}
+                                    </MenuItem>
+                                  ))
+                                )}
+                              </Select>
+                              {invalid && (
+                                <FormHelperText>
+                                  {error?.message}
+                                </FormHelperText>
+                              )}
+                            </Box>
+                          );
+                        }}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              )}
           </Grid>
         )}
       </StyledPaper>

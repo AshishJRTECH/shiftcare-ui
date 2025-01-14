@@ -74,6 +74,7 @@ import RepeatShift from "../add-shift/repeat-shift";
 import AdvanceShift from "./advance-shift";
 import { rebookShift } from "@/api/functions/shift.api";
 import { toast } from "sonner";
+import JobApplicant from "./jobapplicant";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -877,48 +878,97 @@ export default function AddShift({
                   </Button>
                 </Stack>
               ) : (
-                <Stack direction="row" alignItems="center" gap={1}>
-                  <LoadingButton
-                    variant="contained"
-                    color="error"
-                    startIcon={
-                      <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
-                    }
-                    loading={isShiftCancelling}
-                    onClick={() => cancelMutate(shift?.id as number)}
-                  >
-                    Cancel Shift
-                  </LoadingButton>
-                  <Button
-                    variant="contained"
-                    startIcon={<RepeatIcon />}
-                    onClick={() => {
-                      handleRepeatShift(shift?.id as number); // Pass the ID here
-                      setRepeatShiftModal(true);
-                    }}
-                  >
-                    Repeat Shift
-                  </Button>
-                  <RepeatShift
-                    open={repeatshiftModal}
-                    onClose={() => setRepeatShiftModal(false)}
-                    id={selectedId}
-                  />
-                  <Button
-                    variant="contained"
-                    startIcon={
-                      <Iconify icon="basil:edit-outline" fontSize={14} />
-                    }
-                    onClick={() => {
-                      if (setEditModal && setViewModal) {
-                        setEditModal(true);
-                        setViewModal(false);
-                      }
-                    }}
-                  >
-                    Edit
-                  </Button>
-                </Stack>
+                // <Stack direction="row" alignItems="center" gap={1}>
+                //   <LoadingButton
+                //     variant="contained"
+                //     color="error"
+                //     startIcon={
+                //       <Iconify icon="iconamoon:trash-duotone" fontSize={14} />
+                //     }
+                //     loading={isShiftCancelling}
+                //     onClick={() => cancelMutate(shift?.id as number)}
+                //   >
+                //     Cancel Shift
+                //   </LoadingButton>
+                //   <Button
+                //     variant="contained"
+                //     startIcon={<RepeatIcon />}
+                //     onClick={() => {
+                //       handleRepeatShift(shift?.id as number); // Pass the ID here
+                //       setRepeatShiftModal(true);
+                //     }}
+                //   >
+                //     Repeat Shift
+                //   </Button>
+                //   <RepeatShift
+                //     open={repeatshiftModal}
+                //     onClose={() => setRepeatShiftModal(false)}
+                //     id={selectedId}
+                //   />
+                //   <Button
+                //     variant="contained"
+                //     startIcon={
+                //       <Iconify icon="basil:edit-outline" fontSize={14} />
+                //     }
+                //     onClick={() => {
+                //       if (setEditModal && setViewModal) {
+                //         setEditModal(true);
+                //         setViewModal(false);
+                //       }
+                //     }}
+                //   >
+                //     Edit
+                //   </Button>
+                // </Stack>
+                <>
+                  {shift?.isPickupJob ? null : (
+                    <Stack direction="row" alignItems="center" gap={1}>
+                      <LoadingButton
+                        variant="contained"
+                        color="error"
+                        startIcon={
+                          <Iconify
+                            icon="iconamoon:trash-duotone"
+                            fontSize={14}
+                          />
+                        }
+                        loading={isShiftCancelling}
+                        onClick={() => cancelMutate(shift?.id as number)}
+                      >
+                        Cancel Shift
+                      </LoadingButton>
+                      <Button
+                        variant="contained"
+                        startIcon={<RepeatIcon />}
+                        onClick={() => {
+                          handleRepeatShift(shift?.id as number); // Pass the ID here
+                          setRepeatShiftModal(true);
+                        }}
+                      >
+                        Repeat Shift
+                      </Button>
+                      <RepeatShift
+                        open={repeatshiftModal}
+                        onClose={() => setRepeatShiftModal(false)}
+                        id={selectedId}
+                      />
+                      <Button
+                        variant="contained"
+                        startIcon={
+                          <Iconify icon="basil:edit-outline" fontSize={14} />
+                        }
+                        onClick={() => {
+                          if (setEditModal && setViewModal) {
+                            setEditModal(true);
+                            setViewModal(false);
+                          }
+                        }}
+                      >
+                        Edit
+                      </Button>
+                    </Stack>
+                  )}
+                </>
               )}
             </>
           )}
@@ -935,7 +985,49 @@ export default function AddShift({
             }
           }}
         >
-          <FormProvider {...methods}>
+          {role === "ROLE_CARER" ? (
+            <FormProvider {...methods}>
+              {shift?.isPickupJob ? (
+                // <JobApplicant view={view} edit={edit} shift={shift} />
+                <Typography></Typography>
+              ) : (
+                <>
+                  <ClientSection view={view} edit={edit} shift={shift} />
+                  <StaffSection
+                    view={view}
+                    edit={edit}
+                    shift={shift}
+                    advanceShift={advanceShift}
+                  />
+                  {!view && <TaskSection edit={edit} />}
+                  <InstructionSection view={view} edit={edit} shift={shift} />
+                  <TimeLocation view={view} edit={edit} shift={shift} />
+                  {view && <ShiftRelatedNotes shift={shift} />}
+                </>
+              )}
+            </FormProvider>
+          ) : (
+            <FormProvider {...methods}>
+              {shift?.isPickupJob ? (
+                <JobApplicant view={view} edit={edit} shift={shift} />
+              ) : (
+                <>
+                  <ClientSection view={view} edit={edit} shift={shift} />
+                  <StaffSection
+                    view={view}
+                    edit={edit}
+                    shift={shift}
+                    advanceShift={advanceShift}
+                  />
+                  {!view && <TaskSection edit={edit} />}
+                  <InstructionSection view={view} edit={edit} shift={shift} />
+                  <TimeLocation view={view} edit={edit} shift={shift} />
+                  {view && <ShiftRelatedNotes shift={shift} />}
+                </>
+              )}
+            </FormProvider>
+          )}
+          {/* <FormProvider {...methods}>
             <ClientSection view={view} edit={edit} shift={shift} />
             <StaffSection
               view={view}
@@ -947,7 +1039,7 @@ export default function AddShift({
             <InstructionSection view={view} edit={edit} shift={shift} />
             <TimeLocation view={view} edit={edit} shift={shift} />
             {view && <ShiftRelatedNotes shift={shift} />}
-          </FormProvider>
+          </FormProvider> */}
         </Stack>
         <AddNoteModal
           open={noteModal}

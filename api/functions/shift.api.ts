@@ -1,4 +1,4 @@
-import { ShiftRepeat, ShiftType } from "@/interface/shift.interface";
+import { ShiftRepeat, ShiftType, SwapShift } from "@/interface/shift.interface";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 
@@ -142,5 +142,42 @@ export const repeatShift = async (body: ShiftRepeat) => {
 
 export const rebookShift = async (shiftid: number) => {
   const res = await axiosInstance.put(endpoints.shift.rebook_shift(shiftid));
+  return res.data;
+};
+
+export const applyShift = async (id: number) => {
+  const res = await axiosInstance.post(endpoints.shift.apply_shift(id));
+  return res.data;
+};
+
+// To approve the applied shift
+export const appliedShiftApprove = async ({
+  applicationId,
+  data
+}: {
+  applicationId: number;
+  data: FormData;
+}) => {
+  try {
+    const res = await axiosInstance.patch(
+      endpoints.shift.applied_shift_approve(applicationId),
+      data
+    );
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
+
+export const getAllAppliedShift = async ({ shiftId }: { shiftId: number }) => {
+  const res = await axiosInstance.get(
+    endpoints.shift.get_applied_shift_list(shiftId)
+  );
+  return res.data;
+};
+
+export const swapShift = async (body: SwapShift) => {
+  const res = await axiosInstance.put(endpoints.shift.swap_shift, body);
   return res.data;
 };

@@ -1,10 +1,13 @@
-import { getAllActiveShifts } from "@/api/functions/staff.api";
+import {
+  getAllActiveShifts,
+  getAllActiveShiftsJobPickup
+} from "@/api/functions/staff.api";
 import CalendarComponent from "@/components/calendarComponent/calendarComponent";
 import CalendarToolbar from "@/components/calendarComponent/calendarToolbar";
 import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function StaffRoster() {
   const [date, setDate] = useState(moment());
@@ -16,16 +19,11 @@ export default function StaffRoster() {
       date.endOf("month").format("X")
     ],
     queryFn: () =>
-      getAllActiveShifts({
+      getAllActiveShiftsJobPickup({
         startDate: date.startOf("month").format("X"),
         endDate: date.endOf("month").format("X")
       })
   });
-
-  useEffect(() => {
-    console.log("--------------: is Pickup Test :--------------", data);
-  }, [data]);
-
   return (
     <DashboardLayout isLoading={isLoading}>
       <CalendarToolbar date={date} setDate={setDate} />

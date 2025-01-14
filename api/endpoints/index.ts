@@ -72,7 +72,9 @@ export const endpoints = {
     get_client_shift_list: (employeeID: string) =>
       `/shift/employee/${employeeID}/locations/new`,
     create_document_subcategory: (categoryId: string) =>
-      `/document-subcategories/${categoryId}`
+      `/document-subcategories/${categoryId}`,
+    get_all_shifts_job_pickup:
+      "/shift/getAllActiveShiftAvailableForPickup/ForACarer"
   },
   client: {
     // get_all: "/client/by-company/active",
@@ -167,6 +169,11 @@ export const endpoints = {
     edit_shift: (id?: number) => `/shift/update/${id}`,
     cancel_shift: (id?: number) => `/shift/cancelShift/${id}`,
     rebook_shift: (shiftid?: number) => `/shift/rebookShift/${shiftid}`,
+    apply_shift: (shiftId?: number) => `/shift/${shiftId}/apply-pickup`,
+    applied_shift_approve: (applicationId: number) =>
+      `/shift/applications/${applicationId}`,
+    get_applied_shift_list: (shiftId: number) => `/shift/${shiftId}/applicants`,
+    swap_shift: "/shift/bulk-swap",
     notes: {
       get_all_shift_notes: `/shiftNote/getAllShiftNotes`,
       get_all_notes: (id?: string) => `/shiftNote/getAllForClient/${id}`,

@@ -1,8 +1,17 @@
 "use client"; // To make this component from server to client
 
 import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FormHelperText,
+  Grid,
+  MenuItem,
   Paper,
   Popover,
+  Select,
   Table,
   TableBody,
   TableCell,
@@ -18,7 +27,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Shift from "./shift";
 import styled from "@emotion/styled";
 import moment, { Moment } from "moment";
-import { Shift as IShift } from "@/interface/shift.interface";
+import { Shift as IShift, SwapShift } from "@/interface/shift.interface";
 import { Box, Stack } from "@mui/system";
 import AddIcon from "@mui/icons-material/Add";
 import AddShift from "../add-shift/add-shift";
@@ -34,12 +43,13 @@ import SelectAllIcon from "@mui/icons-material/SelectAll";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CancelShiftIcon from "@mui/icons-material/CancelOutlined";
 import { ButtonGroup } from "@mui/material";
-import { cancelShiftInBulk } from "@/api/functions/shift.api";
+import { cancelShiftInBulk, swapShift } from "@/api/functions/shift.api";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "pages/_app";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { getAllShiftsIdList } from "@/api/functions/shift.api";
 import { parseCookies } from "nookies";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 const StyledTable = styled(Table)`
   border: 1px solid #ddd;
@@ -194,6 +204,9 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   }
 }));
 
+
+
+
 export const ShiftBox = ({
   shifts = [],
   isClient,
@@ -262,10 +275,56 @@ export default function TimeSheetTable({
   type: string;
   view: string;
   shifts: IShift[];
-}) {
+  }) {
+    const [error, setError] = useState("");
+    const [employeeId, setEmployeeId] = useState("");
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
   const [allSelectedData, setAllselecteddata] = useState<number[]>([]);
   const router = useRouter();
+    const [openStaffListModal, setOpenStaffListModal] = useState(false);
+    const handleCloseStaffListModal = () => {
+      setOpenStaffListModal(false);
+    };
+    const handleOpenStaffListModal = () => {
+      setOpenStaffListModal(true);
+  };
+  
+    const handleChange = (event: any) => {
+      setEmployeeId(event.target.value);
+      setError(""); // Clear any previous error
+  };
+
+    const { mutate: saveSwapShift } = useMutation({
+      mutationFn: swapShift,
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["all_shifts"] });
+      }
+    });
+  
+   const handleSubmit = (event: any) => {
+     event.preventDefault();
+     if (!employeeId) {
+       setError("Please select a carer");
+       return;
+     }
+
+     setOpenStaffListModal(false);
+
+     const savedIds = sessionStorage.getItem("shiftIds");
+     const validShiftIds: string[] = savedIds ? JSON.parse(savedIds) : [];
+
+     const formattedData: SwapShift = {
+       shiftIds: validShiftIds,
+       employeeId: employeeId
+     };
+     saveSwapShift(formattedData); // Mutate
+
+     // console.log("Selected Employee ID:", employeeId);
+     // console.log("Selected Shift Ids:", savedIds);
+     // console.log("SUBMITTED DATA:", formattedData);
+
+     // Add your form submission logic here
+   };
 
   const { data: staffs, isLoading } = useQuery({
     queryKey: ["user_list"],
@@ -821,6 +880,15 @@ export default function TimeSheetTable({
           >
             Cancel Shift
           </Button>
+          <Button
+            // variant="contained"
+            color="success" // You can choose a different color if desired
+            startIcon={<SwapHorizIcon />}
+            onClick={() => handleOpenStaffListModal()}
+            sx={{ marginBottom: "10px" }}
+          >
+            Swap Shift
+          </Button>
         </ButtonGroup>
       ) : (
         <ButtonGroup>
@@ -946,6 +1014,60 @@ export default function TimeSheetTable({
         }}
         selectedDate={selectedDate}
       />
+      <Dialog
+        open={openStaffListModal}
+        onClose={handleCloseStaffListModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Swap Swift</DialogTitle>
+        <Divider />
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <Grid item lg={8} md={6} sm={12} xs={12}>
+              <Box>
+                <Select
+                  fullWidth
+                  size="small"
+                  value={employeeId}
+                  onChange={handleChange}
+                  displayEmpty
+                >
+                  <MenuItem value="">
+                    <em>Select Carer</em>
+                  </MenuItem>
+                  {isLoading ? (
+                    <MenuItem disabled>Loading...</MenuItem>
+                  ) : (
+                    staffs?.map((staff: IStaff) => (
+                      <MenuItem value={staff.id} key={staff.id}>
+                        {staff.name}
+                      </MenuItem>
+                    ))
+                  )}
+                </Select>
+                {error && <FormHelperText error>{error}</FormHelperText>}
+              </Box>
+            </Grid>
+            {/* <button type="submit">Submit</button> */}
+          </DialogContent>
+          <DialogActions>
+            {/* <Button variant="contained" onClick={handleCloseDocumentDeleteModal}>
+            Cancel
+          </Button> */}
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseStaffListModal}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Submit
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </>
   );
 }

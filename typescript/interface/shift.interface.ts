@@ -160,6 +160,7 @@ export interface Shift {
   clientEndTime: number[];
   occurrenceCounter?: boolean;
   isOpenShift: boolean;
+  isPickupJob: boolean;
   funds: ClientFundsDto;
   payGroups: payGroupsDTO;
   priceBooks: priceBooksDTO;
@@ -267,7 +268,6 @@ export interface ShiftRepeat {
   occursOnDayOfMonth: number | string;
 }
 
-
 export interface GeoLocationCoordinatesTracking {
   shiftId: number;
   shiftStartTime: string;
@@ -280,4 +280,17 @@ export interface GeoLocationCoordinatesTracking {
   clockOutLatitude: string;
   clockOutLongitude: string;
   participantName: string;
+}
+
+export interface AppliedShift {
+  id: number;
+  employeeName: string;
+  applicationDate: Date;
+  isApplied: boolean;
+  isApproved: boolean;
+}
+
+export interface SwapShift {
+  shiftIds: string[];
+  employeeId: string;
 }

@@ -1,44 +1,55 @@
 import styled from "@emotion/styled";
 import { Box, Stack } from "@mui/system";
 import React, { useEffect, useState } from "react";
-import { Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Button,
+  Checkbox,
+  Chip,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  FilledTextFieldProps,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  Grid,
+  InputLabel,
+  MenuItem,
+  OutlinedTextFieldProps,
+  Select,
+  StandardTextFieldProps,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  TextFieldVariants,
+  Typography
+} from "@mui/material";
 import { Shift as IShift } from "@/interface/shift.interface";
 import moment from "moment";
 import AddShift from "../add-shift/add-shift";
-import CheckIcon from "@mui/icons-material/Check";
-import DoneIcon from "@mui/icons-material/Done";
-
+import { getRole } from "@/lib/functions/_helpers.lib";
+import { LoadingButton } from "@mui/lab";
+import Iconify from "../Iconify/Iconify";
+import { useMutation } from "@tanstack/react-query";
+import { applyShift } from "@/api/functions/shift.api";
+import { queryClient } from "pages/_app";
+import { toast } from "sonner";
+import AddNoteModal from "../add-shift/addNoteModal";
 // import { Grid } from "antd";
 
-// const ShiftBox = styled(Box)<{ selected: boolean; deleted: boolean }>`
-//   background-color: ${(props) =>
-//     props.deleted ? "#ffe1b9" : props.selected ? "#12ff004d" : "#f0f0f0"};
-//   cursor: ${(props) =>
-//     props.deleted ? "pointer" : "pointer"}; /* Make clickable */
-//   padding: 16px;
-//   padding-left: 10px;
-//   width: auto;
-//   border: 0.5px solid #cecece;
-//   border-radius: 3px;
-//   margin: 3px 5px;
-//   padding: 1px 10px;
-//   border-bottom: 2px solid #aeaeae;
-// `;
-
-const ShiftBox = styled(Box)<{
-  selected: boolean;
-  deleted: boolean;
-  isTimesheetApproved: boolean;
-}>`
-  background-color: ${(props) =>
-    props.isTimesheetApproved
-      ? "#e7e7fa"
-      : props.deleted
-      ? "#ffe1b9"
-      : props.selected
-      ? "#12ff004d"
-      : "#f0f0f0"};
-  cursor: pointer; /* Make clickable */
+const ShiftBox = styled(Box)<{ selected: boolean }>`
+  background-color: ${(props) => (props.selected ? "#12ff004d" : "#f0f0f0")};
+  cursor: pointer;
   padding: 16px;
   padding-left: 10px;
   width: auto;
@@ -65,6 +76,7 @@ export default function Shift({
   const [viewModal, setViewModal] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [selectedShiftId, setSelectedShiftId] = useState<number | null>(null);
+  const [openJobForPickUpModal, setJobForPickUpModal] = useState(false);
 
   // Initialize state with the value from session storage if available
   const [shiftIds, setShiftIds] = useState<number[]>(() => {
@@ -103,20 +115,20 @@ export default function Shift({
       if (shiftIdsList !== "" || shiftIdsList !== null) {
         setShiftIds(shiftIdsList); // setting data into array shiftIds fetched from array shiftIdsList
         sessionStorage.setItem("shiftIds", JSON.stringify(shiftIdsList)); // saving data of array shiftIds into session
-        // console.log(
-        //   "All Selected Shift Ids shiftIdsList----------------------------",
-        //   shiftIdsList
-        // );
-        // console.log(
-        //   "All Selected Shift Ids shiftIds----------------------------",
-        //   shiftIds
-        // );
+        console.log(
+          "All Selected Shift Ids shiftIdsList----------------------------",
+          shiftIdsList
+        );
+        console.log(
+          "All Selected Shift Ids shiftIds----------------------------",
+          shiftIds
+        );
       }
     } else {
       sessionStorage.removeItem("shiftIds");
       sessionStorage.setItem("shiftIds", JSON.stringify([])); // save the empty array into session
       setShiftIds([]);
-      console.log("Removed shiftIds----------------------------", shiftIds);
+      // console.log("Removed shiftIds----------------------------", shiftIds);
     }
   }, [selectall]);
 
@@ -188,13 +200,45 @@ export default function Shift({
     toUnselectBulkselected(shift.id);
   };
 
+  const handleCloseJobForPickupModal = () => {
+    setJobForPickUpModal(false);
+  };
+
+  const [noteModal, setNoteModal] = useState(false);
+
+  const role = getRole();
+  const [loading, setLoading] = useState(false);
+
+  const { mutate: shiftapply, isPending: isShiftApplying } = useMutation({
+    mutationFn: applyShift,
+    onSuccess: (response) => {
+      setNoteModal(false);
+      queryClient.invalidateQueries({ queryKey: ["all_shift"] });
+      return toast.success(response.message);
+      // setJobForPickUpModal(false);
+    }
+  });
+
+  const handleApply = async () => {
+    setLoading(true);
+    try {
+      if (shift?.id) {
+        await shiftapply(shift.id); // Pass the shift.id directly if it's a number
+      } else {
+        // console.error("Shift ID is undefined or invalid");
+      }
+    } finally {
+      setLoading(false); // Stop loading after action completes
+      setJobForPickUpModal(false);
+    }
+  };
+
+  // console.log("----------------- Shift Details ----------------", shift);
   return (
     <>
       {selectall ? (
         <ShiftBox
           selected={isSelected}
-          deleted={shift.deleted} // Pass the deleted prop here
-          isTimesheetApproved={shift.isTimesheetApproved} // Pass the deleted prop here
           sx={
             type === "comfortable"
               ? {
@@ -287,8 +331,6 @@ export default function Shift({
       ) : (
         <ShiftBox
           selected={isSelected}
-          deleted={shift.deleted} // Pass the deleted prop here
-          isTimesheetApproved={shift.isTimesheetApproved}
           sx={
             type === "comfortable"
               ? {
@@ -301,13 +343,26 @@ export default function Shift({
                   paddingLeft: "10px"
                 }
           }
-          onClick={() =>
-            bulkaction ? handleClick(shift.id) : setViewModal(true)
-          }
+          // onClick={() =>
+          //   bulkaction ? handleClick(shift.id) : setViewModal(true)
+          // }
+
+          onClick={() => {
+            if (bulkaction) {
+              handleClick(shift.id);
+            } else {
+              if (shift.isPickupJob && role === "ROLE_CARER") {
+                setSelectedShiftId(shift.id);
+                setJobForPickUpModal(true);
+              } else {
+                setViewModal(true);
+              }
+            }
+          }}
         >
           {type === "comfortable" ? (
             <>
-              {/* <Box className="time">
+              <Box className="time">
                 <Box className="border" />
                 <Typography variant="caption" lineHeight="1.4">
                   {moment()
@@ -326,47 +381,7 @@ export default function Shift({
                     })
                     .format("hh:mm a")}
                 </Typography>
-              </Box> */}
-              <Box className="time" position="relative">
-                {/* Debugging: Check if the condition is met */}
-                {shift.isTimesheetApproved && (
-                  <Box
-                    position="absolute"
-                    top={2}
-                    right={-7}
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    bgcolor="green"
-                    color="white"
-                    borderRadius="50%"
-                    width={20}
-                    height={20}
-                  >
-                    {/* Check icon */}
-                    <DoneIcon fontSize="small" sx={{ color: "white" }} />
-                  </Box>
-                )}
-                <Box className="border" />
-                <Typography variant="caption" lineHeight="1.4">
-                  {moment()
-                    .set({
-                      hours: shift.startTime[0],
-                      minutes: shift.startTime[1]
-                    })
-                    .format("hh:mm a")}{" "}
-                  <br />
-                  {"To"}
-                  <br />{" "}
-                  {moment()
-                    .set({
-                      hours: shift.endTime[0],
-                      minutes: shift.endTime[1]
-                    })
-                    .format("hh:mm a")}
-                </Typography>
               </Box>
-
               <Stack
                 direction="row"
                 alignItems="center"
@@ -399,6 +414,7 @@ export default function Shift({
                   : shift.client.displayName}
               </Typography>
               <Typography variant="caption">
+                From
                 {moment()
                   .set({
                     hours: shift.startTime[0],
@@ -430,6 +446,67 @@ export default function Shift({
         setViewModal={setViewModal}
         setEditModal={setEditModal}
         shift={shift}
+      />
+
+      <Dialog
+        open={openJobForPickUpModal}
+        onClose={handleCloseJobForPickupModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Job For Pickup</DialogTitle>
+        <Divider />
+        <DialogContent>
+          <Typography>
+            You can pickup this shift by clicking on the below given Apply
+            button.
+          </Typography>
+
+          {/* <Box display="flex" justifyContent="flex-end" gap={2}> */}
+        </DialogContent>
+        <DialogActions>
+          {/* <Button variant="contained" onClick={handleCloseJobForPickupModal}>
+            Cancel
+          </Button> */}
+          {shift?.isPickupJob && (
+            <LoadingButton
+              variant="contained"
+              loading={loading}
+              startIcon={
+                loading ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : (
+                  <Iconify icon="tabler:check" fontSize={14} />
+                )
+              }
+              onClick={handleApply}
+              disabled={loading} // Disable button while loading
+            >
+              {loading ? "" : "Apply"} {/* Show text only when not loading */}
+            </LoadingButton>
+          )}
+          {/* <Button
+            variant="contained"
+            startIcon={<Iconify icon="tabler:plus" fontSize={14} />}
+            onClick={() => setNoteModal(true)}
+          >
+            Add Note
+          </Button> */}
+          <Button
+            variant="contained"
+            color="error"
+            onClick={handleCloseJobForPickupModal}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <AddNoteModal
+        open={noteModal}
+        onClose={() => setNoteModal(false)}
+        clientId={shift?.client.id}
+        title="Add Note"
       />
     </>
   );

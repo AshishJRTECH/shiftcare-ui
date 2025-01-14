@@ -376,3 +376,22 @@ export const addDocumentSubCategory = async ({
   );
   return res.data;
 };
+
+export const getAllActiveShiftsJobPickup = async ({
+  startDate = "",
+  endDate = ""
+}: {
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const res = await axiosInstance.get(
+    endpoints.staff.get_all_shifts_job_pickup,
+    {
+      params: {
+        startDate,
+        endDate
+      }
+    }
+  );
+  return res.data;
+};
