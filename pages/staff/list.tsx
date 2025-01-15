@@ -82,7 +82,8 @@ export default function Index() {
         <DataTable
           columns={columns}
           RowComponent={UserTableRow}
-          data={data?.slice(1).map((_data: IStaff, index: number) => ({
+          // data={data?.slice(1).map((_data: IStaff, index: number) => ({
+          data={data?.slice(2).map((_data: IStaff, index: number) => ({
             ..._data,
             role: _data.rolesName?.[0]
               .replace("ROLE_", "")
