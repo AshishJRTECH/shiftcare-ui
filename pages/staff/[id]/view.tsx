@@ -41,6 +41,8 @@ import moment from "moment";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
+import AddShift from "@/components/add-shift/add-shift";
+import PayrollSetting from "pages/staff/[id]/payroll-setting";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -62,6 +64,7 @@ interface QueryResult {
 }
 
 export default function Index() {
+  const [shiftModal, setShiftModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id } = useParams();
 
@@ -218,13 +221,17 @@ export default function Index() {
           >
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => setShiftModal(true)}
             >
               Add Shift
             </MenuItem>
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              // onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/shift-notes`);
+                handlePopoverClose();
+              }}
             >
               Communications
             </MenuItem>
@@ -246,19 +253,27 @@ export default function Index() {
             </MenuItem>
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              // onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/`);
+                handlePopoverClose();
+              }}
             >
               Calendar
             </MenuItem>
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/staff/${id}/documents`);
+                handlePopoverClose();
+              }}
             >
               Documents
             </MenuItem>
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`auth/reset-password`);
+                handlePopoverClose();
+              }}
             >
               Reset Password
             </MenuItem>
@@ -329,8 +344,12 @@ export default function Index() {
             <Grid item lg={12} md={12} sm={12} xs={12}>
               <Notes note={data.notes.notes} />
             </Grid>
+            <Grid item lg={12} md={12} sm={12} xs={12}>
+              <PayrollSetting />
+            </Grid>
           </Grid>
         </Grid>
+        <AddShift open={shiftModal} onClose={() => setShiftModal(false)} />
       </StyledViewPage>
     </DashboardLayout>
   );

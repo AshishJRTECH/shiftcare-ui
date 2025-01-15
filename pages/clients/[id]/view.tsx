@@ -50,6 +50,7 @@ import ClientContacts from "@/components/client-contacts/client-contacts";
 import ClientAdditionalContacts from "@/components/client-additional-contacts/client-additional-contacts";
 import DocumentTemplate from "../document-templates";
 import DocumentTemplateInside from "../template-document-inside";
+import AddShift from "@/components/add-shift/add-shift";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -70,6 +71,7 @@ interface QueryResult {
 }
 
 export default function Index() {
+  const [shiftModal, setShiftModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id } = useParams();
 
@@ -234,19 +236,20 @@ export default function Index() {
           >
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => setShiftModal(true)}
             >
               Add Shift
             </MenuItem>
-            <MenuItem
-              // key={option.label}
+            {/* <MenuItem
               onClick={handlePopoverClose}
             >
-              Add Expense
-            </MenuItem>
+              Add Expenses
+            </MenuItem> */}
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/shift-notes`);
+                handlePopoverClose();
+              }}
             >
               Communications
             </MenuItem>
@@ -259,23 +262,26 @@ export default function Index() {
               Billing Report
             </MenuItem>
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/`);
+                handlePopoverClose();
+              }}
             >
               Calendar
             </MenuItem>
             <MenuItem
-              // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={() => {
+                router.push(`/clients/${id}/documents`);
+                handlePopoverClose();
+              }}
             >
               Documents
             </MenuItem>
-            <MenuItem
-              // key={option.label}
+            {/* <MenuItem
               onClick={handlePopoverClose}
             >
               Print Roaster
-            </MenuItem>
+            </MenuItem> */}
           </Popover>
         </Stack>
       </Box>
@@ -314,6 +320,7 @@ export default function Index() {
             </Grid>
           </Grid>
         </Grid>
+        <AddShift open={shiftModal} onClose={() => setShiftModal(false)} />
       </StyledViewPage>
     </DashboardLayout>
   );

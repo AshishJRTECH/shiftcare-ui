@@ -395,3 +395,10 @@ export const getAllActiveShiftsJobPickup = async ({
   );
   return res.data;
 };
+
+export const get_payroll_setting = async (clientId: string) => {
+  const res = await axiosInstance.get(
+    endpoints.staff.get_payroll_setting(clientId)
+  );
+  return res.data;
+};

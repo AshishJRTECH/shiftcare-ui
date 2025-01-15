@@ -204,9 +204,6 @@ const StyledTooltip = styled(({ className, ...props }: TooltipProps) => (
   }
 }));
 
-
-
-
 export const ShiftBox = ({
   shifts = [],
   isClient,
@@ -275,56 +272,56 @@ export default function TimeSheetTable({
   type: string;
   view: string;
   shifts: IShift[];
-  }) {
-    const [error, setError] = useState("");
-    const [employeeId, setEmployeeId] = useState("");
+}) {
+  const [error, setError] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [selectedDate, setSelectedDate] = useState<Moment | null>(null);
   const [allSelectedData, setAllselecteddata] = useState<number[]>([]);
   const router = useRouter();
-    const [openStaffListModal, setOpenStaffListModal] = useState(false);
-    const handleCloseStaffListModal = () => {
-      setOpenStaffListModal(false);
+  const [openStaffListModal, setOpenStaffListModal] = useState(false);
+  const handleCloseStaffListModal = () => {
+    setOpenStaffListModal(false);
+  };
+  const handleOpenStaffListModal = () => {
+    setOpenStaffListModal(true);
+  };
+
+  const handleChange = (event: any) => {
+    setEmployeeId(event.target.value);
+    setError(""); // Clear any previous error
+  };
+
+  const { mutate: saveSwapShift } = useMutation({
+    mutationFn: swapShift,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["all_shifts"] });
+    }
+  });
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    if (!employeeId) {
+      setError("Please select a carer");
+      return;
+    }
+
+    setOpenStaffListModal(false);
+
+    const savedIds = sessionStorage.getItem("shiftIds");
+    const validShiftIds: string[] = savedIds ? JSON.parse(savedIds) : [];
+
+    const formattedData: SwapShift = {
+      shiftIds: validShiftIds,
+      employeeId: employeeId
     };
-    const handleOpenStaffListModal = () => {
-      setOpenStaffListModal(true);
+    saveSwapShift(formattedData); // Mutate
+
+    // console.log("Selected Employee ID:", employeeId);
+    // console.log("Selected Shift Ids:", savedIds);
+    // console.log("SUBMITTED DATA:", formattedData);
+
+    // Add your form submission logic here
   };
-  
-    const handleChange = (event: any) => {
-      setEmployeeId(event.target.value);
-      setError(""); // Clear any previous error
-  };
-
-    const { mutate: saveSwapShift } = useMutation({
-      mutationFn: swapShift,
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["all_shifts"] });
-      }
-    });
-  
-   const handleSubmit = (event: any) => {
-     event.preventDefault();
-     if (!employeeId) {
-       setError("Please select a carer");
-       return;
-     }
-
-     setOpenStaffListModal(false);
-
-     const savedIds = sessionStorage.getItem("shiftIds");
-     const validShiftIds: string[] = savedIds ? JSON.parse(savedIds) : [];
-
-     const formattedData: SwapShift = {
-       shiftIds: validShiftIds,
-       employeeId: employeeId
-     };
-     saveSwapShift(formattedData); // Mutate
-
-     // console.log("Selected Employee ID:", employeeId);
-     // console.log("Selected Shift Ids:", savedIds);
-     // console.log("SUBMITTED DATA:", formattedData);
-
-     // Add your form submission logic here
-   };
 
   const { data: staffs, isLoading } = useQuery({
     queryKey: ["user_list"],
@@ -479,9 +476,9 @@ export default function TimeSheetTable({
                 fontWeight: "500",
                 fontSize: "15px",
                 marginBottom: "5px",
-                color: _carer.name === "Open Shift" ? "red" : "#000000", // Change color conditionally
+                color: _carer.name === "Open Shift" ? "red" : "#000000",
                 textTransform:
-                  _carer.name === "Open Shift" ? "uppercase" : "none" // Transform text to uppercase conditionally
+                  _carer.name === "Open Shift" ? "uppercase" : "none"
               }}
             >
               {_carer.name}
