@@ -39,6 +39,7 @@ import React, { SyntheticEvent, useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import * as yup from "yup";
 import Iconify from "../Iconify/Iconify";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledDetailsBox = styled(Paper)`
   box-shadow: rgba(145, 158, 171, 0.2) 0px 5px 5px -3px,
@@ -126,6 +127,7 @@ const schema = yup.object().shape({
 });
 
 export default function Details({ client }: { client: IClient }) {
+  const role = getRole();
   const [edit, setEdit] = useState(false);
   const [salutation, setSalutation] = useState(Boolean(client?.salutation));
 
@@ -194,7 +196,12 @@ export default function Details({ client }: { client: IClient }) {
         sx={{ paddingBottom: "15px" }}
       >
         <Typography variant="h5">Demographic Detail</Typography>
-        {!edit && (
+        {/* {!edit && (
+          <Button size="small" onClick={() => setEdit(true)}>
+            Edit
+          </Button>
+        )} */}
+        {role === "ROLE_ADMIN" && !edit && (
           <Button size="small" onClick={() => setEdit(true)}>
             Edit
           </Button>

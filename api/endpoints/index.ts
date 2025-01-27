@@ -75,7 +75,9 @@ export const endpoints = {
       `/document-subcategories/${categoryId}`,
     get_all_shifts_job_pickup:
       "/shift/getAllActiveShiftAvailableForPickup/ForACarer",
-    get_payroll_setting: (id: string) => `/payroll/forEmployee/${id}`
+    get_payroll_setting: (id: string) => `/payroll/forEmployee/${id}`,
+    update_payroll_setting: (id: string) =>
+      `/payroll/payrollSettings/${id}/update`
   },
   client: {
     // get_all: "/client/by-company/active",

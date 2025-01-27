@@ -80,6 +80,7 @@ import {
   getClientSub_Category,
   updateClientDocument
 } from "@/api/functions/client.api";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledBox = styled(Box)`
   th:not(:nth-of-type(1)),
@@ -179,6 +180,8 @@ export default function TemplateSubsection({
     "--------------------- staffalldocuments --------------------------",
     templates
   );
+
+  const role = getRole();
 
   const schema = yup.object().shape({
     // id: yup.string().required("Please select category"),
@@ -698,23 +701,26 @@ export default function TemplateSubsection({
         sx={{ paddingBottom: "15px" }}
       >
         <Typography variant="h5">Documents</Typography>
-        <div style={{ display: "flex", gap: "8px" }}>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleOpenAddDocumentSubcategory}
-          >
-            Add Document Sub-Category
-          </Button>
-          <Button
-            variant="contained"
-            size="small"
-            onClick={handleOpenListModal}
-          >
-            Manage All
-          </Button>
-        </div>
+        {role === "ROLE_ADMIN" && (
+          <div style={{ display: "flex", gap: "8px" }}>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleOpenAddDocumentSubcategory}
+            >
+              Add Document Sub-Category
+            </Button>
+            <Button
+              variant="contained"
+              size="small"
+              onClick={handleOpenListModal}
+            >
+              Manage All
+            </Button>
+          </div>
+        )}
       </Stack>
+
       <Divider />
 
       <StyledBox>

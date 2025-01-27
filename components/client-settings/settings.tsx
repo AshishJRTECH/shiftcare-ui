@@ -32,6 +32,7 @@ import { ClientSettings } from "@/interface/client.interface";
 import CustomInput from "@/ui/Inputs/CustomInput";
 import { updateClientSettings } from "@/api/functions/client.api";
 import { getAllPriceBooks } from "@/api/functions/pricebook.api";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledBox = styled(Box)`
   padding-top: 15px;
@@ -92,6 +93,7 @@ const schema = yup.object().shape({
 });
 
 export default function Settings({ settings }: { settings: ClientSettings }) {
+  const role = getRole();
   const [edit, setEdit] = useState(false);
   const { id } = useParams();
 
@@ -157,7 +159,7 @@ export default function Settings({ settings }: { settings: ClientSettings }) {
         sx={{ paddingBottom: "15px" }}
       >
         <Typography variant="h5">Settings</Typography>
-        {!edit && (
+        {role === "ROLE_ADMIN" && !edit && (
           <Button size="small" onClick={() => setEdit(true)}>
             Edit
           </Button>
@@ -188,6 +190,7 @@ export default function Settings({ settings }: { settings: ClientSettings }) {
             <Grid item lg={5} md={6} sm={12} xs={12}>
               <Typography variant="body1">Aged Care Recipient ID:</Typography>
             </Grid>
+
             <Grid item lg={7} md={6} sm={12} xs={12}>
               {edit ? (
                 <CustomInput
@@ -201,6 +204,7 @@ export default function Settings({ settings }: { settings: ClientSettings }) {
                 </Typography>
               )}
             </Grid>
+
             <Grid item lg={5} md={6} sm={12} xs={12}>
               <Typography variant="body1">Reference Number:</Typography>
             </Grid>

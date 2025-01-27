@@ -31,6 +31,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { idID } from "@mui/material/locale";
 import { useParams } from "next/navigation";
 import CustomInput from "@/ui/Inputs/CustomInput";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledGrid = styled(Grid)`
   p {
@@ -552,6 +553,7 @@ export default function ClientAdditionalContacts({
 }: {
   contacts: ClientContact[];
 }) {
+  const role = getRole();
   const [open, setOpen] = useState(false);
   const [salutation, setSalutation] = useState(false);
 
@@ -608,15 +610,17 @@ export default function ClientAdditionalContacts({
         gap={1}
       >
         <Typography variant="h5">Additional Contacts</Typography>
-        <Typography variant="body2">
-          <Button
-            size="small"
-            variant="contained"
-            onClick={() => setOpen(true)}
-          >
-            Add
-          </Button>
-        </Typography>
+        {role === "ROLE_ADMIN" && (
+          <Typography variant="body2">
+            <Button
+              size="small"
+              variant="contained"
+              onClick={() => setOpen(true)}
+            >
+              Add
+            </Button>
+          </Typography>
+        )}
       </Stack>
       <Divider sx={{ marginBlock: "15px" }} />
       {contacts.map((contact, index: number) => (

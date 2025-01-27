@@ -51,6 +51,7 @@ import ClientAdditionalContacts from "@/components/client-additional-contacts/cl
 import DocumentTemplate from "../document-templates";
 import DocumentTemplateInside from "../template-document-inside";
 import AddShift from "@/components/add-shift/add-shift";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledViewPage = styled(Grid)`
   padding: 20px 10px;
@@ -71,6 +72,7 @@ interface QueryResult {
 }
 
 export default function Index() {
+  const role = getRole();
   const [shiftModal, setShiftModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const { id } = useParams();
@@ -188,18 +190,20 @@ export default function Index() {
               </Typography>
             </Typography>
           </Stack>
-          <Button
-            variant="contained"
-            onClick={handlePopoverOpen}
-            size="large"
-            // onMouseLeave={handlePopoverClose}
-          >
-            Manage{" "}
-            <Iconify
-              icon="eva:arrow-ios-downward-outline"
-              sx={{ ml: "5px" }}
-            ></Iconify>
-          </Button>
+          {role === "ROLE_ADMIN" && (
+            <Button
+              variant="contained"
+              onClick={handlePopoverOpen}
+              size="large"
+              // onMouseLeave={handlePopoverClose}
+            >
+              Manage{" "}
+              <Iconify
+                icon="eva:arrow-ios-downward-outline"
+                sx={{ ml: "5px" }}
+              ></Iconify>
+            </Button>
+          )}
           <Popover
             open={open}
             anchorEl={anchorEl}
@@ -295,9 +299,15 @@ export default function Index() {
               {/* <ClientDocuments document_data={data.documents} /> */}
               <DocumentTemplateInside></DocumentTemplateInside>
             </Grid>
-            <Grid item lg={12} md={12} sm={12} xs={12}>
+
+            {/* <Grid item lg={12} md={12} sm={12} xs={12}>
               <ClientFunds funds_data={data.funds[0]?.funds} />
-            </Grid>
+            </Grid> */}
+            {role === "ROLE_ADMIN" && (
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <ClientFunds funds_data={data.funds[0]?.funds} />
+              </Grid>
+            )}
           </Grid>
         </Grid>
         <Grid item md={4} sm={12} xs={12}>

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import TemplateSubsection from "./template-subsection";
 
+
 // import { useParams } from "next/navigation";
 
 export default function DocumentTemplateInside() {

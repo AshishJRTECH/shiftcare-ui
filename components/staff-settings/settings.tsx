@@ -73,10 +73,7 @@ export default function Settings({ settings }: { settings: ISettings }) {
     }
   });
 
-  console.log(
-    "===================== SETTING DATA =========================",
-    data
-  );
+  console.log("===================== SETTING DATA =========================",data);
 
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(schema),

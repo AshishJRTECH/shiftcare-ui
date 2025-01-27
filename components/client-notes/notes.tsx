@@ -17,6 +17,7 @@ import { queryClient } from "pages/_app";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
+import { getRole } from "@/lib/functions/_helpers.lib";
 
 const StyledBox = styled(Box)`
   padding-top: 10px;
@@ -34,6 +35,7 @@ export default function Notes({
   privateInfo?: string;
   reviewDate?: string;
 }) {
+  const role = getRole();
   const [edit, setEdit] = useState(false);
 
   const { id } = useParams();
@@ -78,7 +80,13 @@ export default function Notes({
         sx={{ paddingBottom: "15px" }}
       >
         <Typography variant="h5">Additional Information</Typography>
-        {!edit && (
+        {/* {!edit && (
+          <Button size="small" onClick={() => setEdit(true)}>
+            Edit
+          </Button>
+        )} */}
+
+        {role === "ROLE_ADMIN" && !edit && (
           <Button size="small" onClick={() => setEdit(true)}>
             Edit
           </Button>

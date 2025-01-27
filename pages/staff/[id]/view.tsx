@@ -25,9 +25,15 @@ import styled from "@emotion/styled";
 import {
   Avatar,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
   Grid,
   MenuItem,
   Popover,
+  TextField,
   Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
@@ -64,8 +70,12 @@ interface QueryResult {
 }
 
 export default function Index() {
+  const [openModal, setModal] = useState(false);
   const [shiftModal, setShiftModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
   const { id } = useParams();
 
   const router = useRouter();
@@ -131,6 +141,25 @@ export default function Index() {
   const open = Boolean(anchorEl);
 
   if (data.isLoading) return <Loader />;
+
+  const handleModal = () => {
+    setModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setModal(false);
+  };
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+    } else {
+      setError("");
+      // Proceed with the password reset logic (e.g., API call)
+      console.log("Password reset successful!");
+    }
+  };
 
   return (
     <DashboardLayout>
@@ -271,7 +300,7 @@ export default function Index() {
             </MenuItem>
             <MenuItem
               onClick={() => {
-                router.push(`auth/reset-password`);
+                handleModal();
                 handlePopoverClose();
               }}
             >
@@ -351,6 +380,78 @@ export default function Index() {
         </Grid>
         <AddShift open={shiftModal} onClose={() => setShiftModal(false)} />
       </StyledViewPage>
+      <Dialog
+        open={openModal}
+        onClose={handleCloseModal}
+        fullWidth
+        maxWidth="sm"
+      >
+        {/* <DialogTitle>Reset Password</DialogTitle> */}
+        <Divider />
+        <DialogContent>
+          <Typography variant="h6">Reset Your Password</Typography>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="New Password"
+              type="password"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              margin="normal"
+            />
+            <TextField
+              label="Confirm Password"
+              type="password"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              margin="normal"
+            />
+            {error && (
+              <Typography color="error" variant="body2">
+                {error}
+              </Typography>
+            )}
+
+            {/* Buttons Container */}
+            <Box display="flex" justifyContent="flex-end" mt={2}>
+              <Button
+                type="submit"
+                size="small"
+                variant="contained"
+                color="primary"
+                style={{ marginRight: 8 }}
+              >
+                Submit
+              </Button>
+              <Button
+                size="small"
+                variant="outlined"
+                color="secondary"
+                onClick={handleCloseModal}
+              >
+                Cancel
+              </Button>
+            </Box>
+          </form>
+        </DialogContent>
+        {/* <DialogActions>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseModal}
+            >
+              Close
+            </Button>
+            <Button variant="contained" color="success">
+              Update
+            </Button>
+          </Box>
+        </DialogActions> */}
+      </Dialog>
     </DashboardLayout>
   );
 }

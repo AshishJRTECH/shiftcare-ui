@@ -166,4 +166,17 @@ export interface TenplateAllDocuments {
   CommunityNursing: ClientDocuments[];
 }
 
+export interface PayrollSettingInterface {
+  dailyHours: number;
+  weeklyHours: number;
+  employeeId: string;
+  payGroupId: string;
+  payGroupName: string;
+  allowances: any[]; // Adjust type as needed
+  industryAward: string | null;
+  awardLevel: string | null;
+  awardLevelPayPoint: string | null;
+  employeeProfile: any | null; // Adjust type as needed
+}
+
 export {};

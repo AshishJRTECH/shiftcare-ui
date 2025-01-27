@@ -8,6 +8,7 @@ import { IStaffPost } from "@/interface/staff.interfaces";
 import axiosInstance from "../axiosInstance";
 import { endpoints } from "../endpoints";
 import dayjs from "dayjs";
+import { PayrollSettingInterface } from "@/interface/common.interface";
 
 export const addStaff = async (body: IStaffPost) => {
   const res = await axiosInstance.post(endpoints.staff.new, body);
@@ -402,3 +403,18 @@ export const get_payroll_setting = async (clientId: string) => {
   );
   return res.data;
 };
+
+export const updatePayrollSetting = async ({
+  id,
+  data
+}: {
+  id: string;
+  data: PayrollSettingInterface;
+}) => {
+  const res = await axiosInstance.put(
+    endpoints.staff.update_payroll_setting(id),
+    data
+  );
+  return res.data;
+};
+
