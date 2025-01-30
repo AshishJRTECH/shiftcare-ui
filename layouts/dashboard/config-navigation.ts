@@ -396,288 +396,547 @@ const role = getRole();
 //   }
 // })();
 
-const navConfig = (() => {
-  switch (role) {
-    case "ROLE_CARER":
-      return [
-        {
-          title: "Roster",
-          path: "/staff-roster",
-          icon: DashboardIcon,
-          children: [],
-          hasChild: false,
-          default: true
-        },
-        {
-          title: "Job for Pickup",
-          path: "/job-for-pickup",
-          icon: DashboardIcon,
-          children: [],
-          hasChild: false
-        },
-        {
-          title: "Client",
-          path: "/clients/list",
-          icon: PeopleAltIcon,
-          children: [
+// ------------------------------
+
+// const navConfig = (() => {
+//   switch (role) {
+//     case "ROLE_CARER":
+//       return [
+//         {
+//           title: "Roster",
+//           path: "/staff-roster",
+//           icon: DashboardIcon,
+//           children: [],
+//           hasChild: false,
+//           default: true
+//         },
+//         {
+//           title: "Job for Pickup",
+//           path: "/job-for-pickup",
+//           icon: DashboardIcon,
+//           children: [],
+//           hasChild: false
+//         },
+//         {
+//           title: "Client",
+//           path: "/clients/list",
+//           icon: PeopleAltIcon,
+//           children: [
+//             {
+//               title: "List",
+//               path: "/clients/list",
+//               icon: TocIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         }
+//       ];
+
+//     case "ROLE_ADMIN":
+//       return [
+//         {
+//           title: "Scheduler",
+//           path: "/",
+//           icon: DashboardIcon,
+//           children: [],
+//           hasChild: false
+//         },
+//         {
+//           title: "Staff",
+//           path: "/staff/list",
+//           icon: PersonIcon,
+//           children: [
+//             {
+//               title: "List",
+//               path: "/staff/list",
+//               icon: TocIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Teams",
+//               path: "/staff/teams",
+//               icon: GroupsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Archived",
+//               path: "/staff/archived",
+//               icon: ArchiveIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Document Hub",
+//               path: "/staff/document-hub",
+//               icon: FolderIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "New",
+//               path: "/staff/new",
+//               icon: PersonAddIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         },
+//         {
+//           title: "Clients",
+//           path: "/clients/list",
+//           icon: PeopleAltIcon,
+//           children: [
+//             {
+//               title: "List",
+//               path: "/clients/list",
+//               icon: TocIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Temporary List",
+//               path: "/clients/temporarylist",
+//               icon: TocIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Archived",
+//               path: "/clients/archived",
+//               icon: ArchiveIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Documents Templates",
+//               path: "/clients/document-templates",
+//               icon: RuleFolderIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "New",
+//               path: "/clients/new",
+//               icon: PersonAddIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         },
+//         {
+//           title: "Invoices",
+//           path: "/invoices/list",
+//           icon: ReceiptIcon,
+//           children: [
+//             {
+//               title: "List",
+//               path: "/invoices/list",
+//               icon: TocIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "List void",
+//               path: "/invoices/list-void",
+//               icon: SegmentIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Generate",
+//               path: "/invoices/generate",
+//               icon: PlaylistAddIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         },
+//         {
+//           title: "Reports",
+//           path: "/reports/activity",
+//           icon: TocIcon,
+//           children: [
+//             {
+//               title: "Geolocation",
+//               path: "/reports/geolocation",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "KPI",
+//               path: "/reports/kpi",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Competencies",
+//               path: "/reports/competencies",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Compliance",
+//               path: "/reports/compliance",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Qualifications",
+//               path: "/reports/qualifications",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Other",
+//               path: "/reports/other",
+//               icon: SettingsIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         },
+//         {
+//           title: "Shift Notes",
+//           path: "/shift-notes",
+//           icon: TocIcon,
+//           children: [],
+//           hasChild: false
+//         },
+//         {
+//           title: "Account",
+//           path: "/account/settings",
+//           icon: ManageAccountsIcon,
+//           children: [
+//             {
+//               title: "Prices",
+//               path: "/account/prices",
+//               icon: AttachMoneyIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Pay Groups",
+//               path: "/account/pay-groups",
+//               icon: PersonAddIcon,
+//               children: [],
+//               hasChild: false
+//             },
+//             {
+//               title: "Allowances",
+//               path: "/account/allowances",
+//               icon: PersonAddIcon,
+//               children: [],
+//               hasChild: false
+//             }
+//           ],
+//           hasChild: true
+//         }
+//       ];
+
+//     default:
+//       return [
+//         // {
+//         //   title: "Roster",
+//         //   path: "/staff-roster",
+//         //   icon: DashboardIcon,
+//         //   children: [],
+//         //   hasChild: false,
+//         //   default: true
+//         // },
+//         // {
+//         //   title: "Job for Pickup",
+//         //   path: "/job-for-pickup",
+//         //   icon: DashboardIcon,
+//         //   children: [],
+//         //   hasChild: false
+//         // },
+//         // {
+//         //   title: "Client",
+//         //   path: "/clients/list",
+//         //   icon: PeopleAltIcon,
+//         //   children: [
+//         //     {
+//         //       title: "List",
+//         //       path: "/clients/list",
+//         //       icon: TocIcon,
+//         //       children: [],
+//         //       hasChild: false
+//         //     }
+//         //   ],
+//         //   hasChild: true
+//         // }
+//       ];
+//   }
+// })();
+
+// -------------------------------
+
+const navConfig = role
+  ? (() => {
+      switch (role) {
+        case "ROLE_CARER":
+          return [
             {
-              title: "List",
-              path: "/clients/list",
-              icon: TocIcon,
+              title: "Roster",
+              path: "/staff-roster",
+              icon: DashboardIcon,
+              children: [],
+              hasChild: false,
+              default: true
+            },
+            {
+              title: "Job for Pickup",
+              path: "/job-for-pickup",
+              icon: DashboardIcon,
               children: [],
               hasChild: false
-            }
-          ],
-          hasChild: true
-        }
-      ];
-
-    case "ROLE_ADMIN":
-      return [
-        {
-          title: "Scheduler",
-          path: "/",
-          icon: DashboardIcon,
-          children: [],
-          hasChild: false
-        },
-        {
-          title: "Staff",
-          path: "/staff/list",
-          icon: PersonIcon,
-          children: [
+            },
             {
-              title: "List",
+              title: "Client",
+              path: "/clients/list",
+              icon: PeopleAltIcon,
+              children: [
+                {
+                  title: "List",
+                  path: "/clients/list",
+                  icon: TocIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
+            }
+          ];
+
+        case "ROLE_ADMIN":
+          return [
+            {
+              title: "Scheduler",
+              path: "/",
+              icon: DashboardIcon,
+              children: [],
+              hasChild: false
+            },
+            {
+              title: "Staff",
               path: "/staff/list",
-              icon: TocIcon,
-              children: [],
-              hasChild: false
+              icon: PersonIcon,
+              children: [
+                {
+                  title: "List",
+                  path: "/staff/list",
+                  icon: TocIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Teams",
+                  path: "/staff/teams",
+                  icon: GroupsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Archived",
+                  path: "/staff/archived",
+                  icon: ArchiveIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Document Hub",
+                  path: "/staff/document-hub",
+                  icon: FolderIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "New",
+                  path: "/staff/new",
+                  icon: PersonAddIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
             },
             {
-              title: "Teams",
-              path: "/staff/teams",
-              icon: GroupsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Archived",
-              path: "/staff/archived",
-              icon: ArchiveIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Document Hub",
-              path: "/staff/document-hub",
-              icon: FolderIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "New",
-              path: "/staff/new",
-              icon: PersonAddIcon,
-              children: [],
-              hasChild: false
-            }
-          ],
-          hasChild: true
-        },
-        {
-          title: "Clients",
-          path: "/clients/list",
-          icon: PeopleAltIcon,
-          children: [
-            {
-              title: "List",
+              title: "Clients",
               path: "/clients/list",
-              icon: TocIcon,
-              children: [],
-              hasChild: false
+              icon: PeopleAltIcon,
+              children: [
+                {
+                  title: "List",
+                  path: "/clients/list",
+                  icon: TocIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Temporary List",
+                  path: "/clients/temporarylist",
+                  icon: TocIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Archived",
+                  path: "/clients/archived",
+                  icon: ArchiveIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Documents Templates",
+                  path: "/clients/document-templates",
+                  icon: RuleFolderIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "New",
+                  path: "/clients/new",
+                  icon: PersonAddIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
             },
             {
-              title: "Temporary List",
-              path: "/clients/temporarylist",
-              icon: TocIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Archived",
-              path: "/clients/archived",
-              icon: ArchiveIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Documents Templates",
-              path: "/clients/document-templates",
-              icon: RuleFolderIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "New",
-              path: "/clients/new",
-              icon: PersonAddIcon,
-              children: [],
-              hasChild: false
-            }
-          ],
-          hasChild: true
-        },
-        {
-          title: "Invoices",
-          path: "/invoices/list",
-          icon: ReceiptIcon,
-          children: [
-            {
-              title: "List",
+              title: "Invoices",
               path: "/invoices/list",
+              icon: ReceiptIcon,
+              children: [
+                {
+                  title: "List",
+                  path: "/invoices/list",
+                  icon: TocIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "List void",
+                  path: "/invoices/list-void",
+                  icon: SegmentIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Generate",
+                  path: "/invoices/generate",
+                  icon: PlaylistAddIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
+            },
+            {
+              title: "Reports",
+              path: "/reports/activity",
+              icon: TocIcon,
+              children: [
+                {
+                  title: "Geolocation",
+                  path: "/reports/geolocation",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "KPI",
+                  path: "/reports/kpi",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Competencies",
+                  path: "/reports/competencies",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Compliance",
+                  path: "/reports/compliance",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Qualifications",
+                  path: "/reports/qualifications",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Other",
+                  path: "/reports/other",
+                  icon: SettingsIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
+            },
+            {
+              title: "Shift Notes",
+              path: "/shift-notes",
               icon: TocIcon,
               children: [],
               hasChild: false
             },
             {
-              title: "List void",
-              path: "/invoices/list-void",
-              icon: SegmentIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Generate",
-              path: "/invoices/generate",
-              icon: PlaylistAddIcon,
-              children: [],
-              hasChild: false
+              title: "Account",
+              path: "/account/settings",
+              icon: ManageAccountsIcon,
+              children: [
+                {
+                  title: "Prices",
+                  path: "/account/prices",
+                  icon: AttachMoneyIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Pay Groups",
+                  path: "/account/pay-groups",
+                  icon: PersonAddIcon,
+                  children: [],
+                  hasChild: false
+                },
+                {
+                  title: "Allowances",
+                  path: "/account/allowances",
+                  icon: PersonAddIcon,
+                  children: [],
+                  hasChild: false
+                }
+              ],
+              hasChild: true
             }
-          ],
-          hasChild: true
-        },
-        {
-          title: "Reports",
-          path: "/reports/activity",
-          icon: TocIcon,
-          children: [
-            {
-              title: "Geolocation",
-              path: "/reports/geolocation",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "KPI",
-              path: "/reports/kpi",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Competencies",
-              path: "/reports/competencies",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Compliance",
-              path: "/reports/compliance",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Qualifications",
-              path: "/reports/qualifications",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Other",
-              path: "/reports/other",
-              icon: SettingsIcon,
-              children: [],
-              hasChild: false
-            }
-          ],
-          hasChild: true
-        },
-        {
-          title: "Shift Notes",
-          path: "/shift-notes",
-          icon: TocIcon,
-          children: [],
-          hasChild: false
-        },
-        {
-          title: "Account",
-          path: "/account/settings",
-          icon: ManageAccountsIcon,
-          children: [
-            {
-              title: "Prices",
-              path: "/account/prices",
-              icon: AttachMoneyIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Pay Groups",
-              path: "/account/pay-groups",
-              icon: PersonAddIcon,
-              children: [],
-              hasChild: false
-            },
-            {
-              title: "Allowances",
-              path: "/account/allowances",
-              icon: PersonAddIcon,
-              children: [],
-              hasChild: false
-            }
-          ],
-          hasChild: true
-        }
-      ];
+          ];
 
-    default:
-      return [
-        // {
-        //   title: "Roster",
-        //   path: "/staff-roster",
-        //   icon: DashboardIcon,
-        //   children: [],
-        //   hasChild: false,
-        //   default: true
-        // },
-        // {
-        //   title: "Job for Pickup",
-        //   path: "/job-for-pickup",
-        //   icon: DashboardIcon,
-        //   children: [],
-        //   hasChild: false
-        // },
-        // {
-        //   title: "Client",
-        //   path: "/clients/list",
-        //   icon: PeopleAltIcon,
-        //   children: [
-        //     {
-        //       title: "List",
-        //       path: "/clients/list",
-        //       icon: TocIcon,
-        //       children: [],
-        //       hasChild: false
-        //     }
-        //   ],
-        //   hasChild: true
-        // }
-      ];
-  }
-})();
+        default:
+          return [];
+      }
+    })()
+  : [];
 
 export default navConfig;
