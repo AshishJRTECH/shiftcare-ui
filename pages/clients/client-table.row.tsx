@@ -151,9 +151,7 @@ export default function ClientTableRow({
           }
         }}
       >
-        <MenuItem
-          onClick={(e) => handleCloseMenu(e, `/participants/${id}/view`)}
-        >
+        <MenuItem onClick={(e) => handleCloseMenu(e, `/clients/${id}/view`)}>
           <Iconify icon="eva:file-text-outline" sx={{ mr: 2 }} />
           View
         </MenuItem>

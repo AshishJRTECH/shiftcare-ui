@@ -78,7 +78,7 @@ export default function StaffTableRow({
         tabIndex={-1}
         role="checkbox"
         selected={selected}
-        onClick={(e) => handleCloseMenu(e, `/staff/${id}/view`)}
+        // onClick={(e) => handleCloseMenu(e, `/staff/${id}/view`)}
         style={{ cursor: "pointer" }}
       >
         <TableCell padding="checkbox">
