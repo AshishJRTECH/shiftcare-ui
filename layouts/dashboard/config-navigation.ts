@@ -1,3 +1,4 @@
+"use client";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import SettingsIcon from "@mui/icons-material/Settings";
 import TocIcon from "@mui/icons-material/Toc";
@@ -30,7 +31,10 @@ export interface NavItem {
 }
 
 const role = getRole();
-
+console.log(
+  ":::::::::::::::::::::::::================= USER ROLE ========================:::::::::::::::::",
+  role
+);
 const navConfig: NavItem[] = (() => {
   if (role === "ROLE_CARER") {
     return [
