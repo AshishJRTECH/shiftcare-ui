@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import Box from "@mui/material/Box";
 
@@ -17,10 +17,16 @@ export default function DashboardLayout({
   isLoading?: boolean;
 }) {
   const [openNav, setOpenNav] = useState(false);
+  const [reload, setReload] = useState(false);
+
+  // Trigger reload on initial load
+  useEffect(() => {
+    setReload(true);
+  }, []);
 
   // useUser()
 
-  if (isLoading) return <Loader />;
+  if (isLoading || !reload) return <Loader />;
 
   return (
     <>
