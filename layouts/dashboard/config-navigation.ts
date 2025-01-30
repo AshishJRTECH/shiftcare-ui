@@ -21,6 +21,7 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { getRole } from "@/lib/functions/_helpers.lib";
+import { getCookie } from "@/lib/functions/storage.lib";
 
 export interface NavItem {
   title: string;
@@ -31,12 +32,13 @@ export interface NavItem {
 }
 
 const role = getRole();
+const userrole = getCookie("user_role");
 console.log(
   ":::::::::::::::::::::::::================= USER ROLE ========================:::::::::::::::::",
   role
 );
 const navConfig: NavItem[] = (() => {
-  if (role === "ROLE_CARER") {
+  if (userrole === "ROLE_CARER") {
     return [
       {
         title: "Roster",

@@ -111,31 +111,8 @@ export default function LoginView() {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = (data: loginMutationPayload) => {
-    // setCookieClient(process.env.NEXT_APP_TOKEN_NAME!!, "test@1234");
-    // dispatch(setAccessToken("test@1234"));
     mutate(data);
-    // mutate(
-    //   { ...data },
-    //   {
-    //     onSuccess: (res) => {
-    //       if (res?.status === "success") {
-    //         if (res?.data) {
-    //           toast.success(messages.success.loginsuccess(res?.data?.name));
-    //           //   dispatch(setAccessToken(access));
-    //           //   dispatch(setUserData(userData));
-    //           router.push("/dashboard/branch");
-    //         }
-    //       }
-    //     }
-    //   }
-    // );
   };
-
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     router.push("/dashboard");
-  //   }
-  // }, [isLoggedIn]);
 
   return (
     <StyledLoginPage
