@@ -179,6 +179,11 @@ export default function PayrollSetting() {
             Edit
           </Button>
         )}
+        {edit && (
+          <Button size="small" onClick={() => setEdit(false)}>
+            Cancel
+          </Button>
+        )}
       </Stack>
       <Divider />
       <StyledBox sx={{ paddingBottom: edit ? "16px" : 0 }}>

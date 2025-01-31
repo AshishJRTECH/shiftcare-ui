@@ -50,7 +50,7 @@ export default function Allowances() {
   });
 
   useEffect(() => {
-    console.log("------------------ Allowance List ------------------", data);
+    // console.log("------------------ Allowance List ------------------", data);
   }, [data]);
 
   const methods = useForm({

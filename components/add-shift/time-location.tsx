@@ -55,7 +55,7 @@ export default function TimeLocation({
   });
 
   useEffect(() => {
-    console.log("------------------ Allowance List ------------------", data);
+    // console.log("------------------ Allowance List ------------------", data);
   }, [data]);
   return (
     <StyledPaper>

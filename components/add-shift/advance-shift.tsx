@@ -652,10 +652,7 @@ export default function AdvanceShift({
   const handleRepeatShift = (id: any) => {
     setSelectedId(id);
     // Logic to handle repeating the shift with the given ID
-    console.log(
-      "---------------Repeating shift with ID:---------------------",
-      id
-    );
+    console.log("---------------Repeating shift with ID:---------------------",id);
   };
 
   return (

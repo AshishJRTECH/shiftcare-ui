@@ -102,7 +102,7 @@ export default function LoginView() {
       setCookieClient("user_role", data.role[0]?.name);
       delete data.jwtToken;
       setCookieClient("user", JSON.stringify(data));
-      router.push(data.role[0]?.name === "ROLE_ADMIN" ? "/" : "/staff-roster");
+      router.push(data.role[0].name === "ROLE_ADMIN" ? "/" : "/staff-roster");
     }
   });
 

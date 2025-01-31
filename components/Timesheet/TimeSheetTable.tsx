@@ -355,7 +355,7 @@ export default function TimeSheetTable({
       );
       setAllselecteddata(formattedShiftIds);
       // console.log("Shift Id List is here::::::::::::", formattedShiftIds);
-      console.log("Shift Id List is here::::::::::::", allSelectedData);
+      // console.log("Shift Id List is here::::::::::::", allSelectedData);
       sessionStorage.setItem(
         "shiftIdsList",
         JSON.stringify(ShiftIdList.shiftIds)
