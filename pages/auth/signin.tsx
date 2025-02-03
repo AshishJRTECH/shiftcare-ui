@@ -101,8 +101,15 @@ export default function LoginView() {
       setCookieClient(process.env.NEXT_APP_TOKEN_NAME!, data.jwtToken);
       // setCookieClient("user_role", data.role[0]?.name);
       sessionStorage.setItem("user_role", data.role[0]?.name);
+      // console.log("User Role::::::::")
       delete data.jwtToken;
       setCookieClient("user", JSON.stringify(data));
+      if (data.role[0].name === "ROLE_ADMIN") {
+        window.location.href = "/";
+      } else {
+        window.location.href = "/staff-roster";
+      }
+
       // router.push(data.role[0].name === "ROLE_ADMIN" ? "/" : "/staff-roster");
     }
   });
