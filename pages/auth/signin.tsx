@@ -99,10 +99,11 @@ export default function LoginView() {
     mutationFn: loginMutation,
     onSuccess: (data: any) => {
       setCookieClient(process.env.NEXT_APP_TOKEN_NAME!, data.jwtToken);
-      setCookieClient("user_role", data.role[0]?.name);
+      // setCookieClient("user_role", data.role[0]?.name);
+      sessionStorage.setItem("user_role", data.role[0]?.name);
       delete data.jwtToken;
       setCookieClient("user", JSON.stringify(data));
-      router.push(data.role[0].name === "ROLE_ADMIN" ? "/" : "/staff-roster");
+      // router.push(data.role[0].name === "ROLE_ADMIN" ? "/" : "/staff-roster");
     }
   });
 

@@ -129,7 +129,7 @@ export default function Home({
     if (!isFirstLoad) {
       setCookieClient("firstLoad", "true");
       setIsFirstLoadComplete(true); // Update state to trigger a re-render
-      // console.log("-------------- Second Load --------------");
+      console.log("-------------- Second Load --------------");
       window.location.reload();
     } else {
       setIsFirstLoadComplete(true);

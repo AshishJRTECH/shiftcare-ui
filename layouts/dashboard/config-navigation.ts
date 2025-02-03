@@ -31,9 +31,14 @@ export interface NavItem {
   hasChild: boolean;
 }
 
-const role = getRole();
-const userrole = getCookie("user_role");
-console.log(":::::::::::::::::::::::::================= USER ROLE ========================:::::::::::::::::",role
+// const role = getRole();
+// const userrole = getCookie("user_role");
+const role =
+  typeof window !== "undefined" ? sessionStorage.getItem("user_role") : null;
+
+console.log(
+  ":::::::::::::::::::::::::================= USER ROLE from Session ========================:::::::::::::::::",
+  role
 );
 const navConfig: NavItem[] = (() => {
   if (role === "ROLE_CARER") {
