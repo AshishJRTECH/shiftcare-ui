@@ -79,7 +79,7 @@ export default function LoginView() {
     }
   });
 
-  const role = getRole();
+  // const role = getRole();
 
   // const { mutate, isPending } = useMutation({
   //   mutationFn: loginMutation,

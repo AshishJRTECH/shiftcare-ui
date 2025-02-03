@@ -33,8 +33,8 @@ export interface NavItem {
 
 const role = getRole();
 const userrole = getCookie("user_role");
-// console.log(":::::::::::::::::::::::::================= USER ROLE ========================:::::::::::::::::",role
-// );
+console.log(":::::::::::::::::::::::::================= USER ROLE ========================:::::::::::::::::",role
+);
 const navConfig: NavItem[] = (() => {
   if (role === "ROLE_CARER") {
     return [
