@@ -172,6 +172,13 @@ const navConfig: NavItem[] = (() => {
             icon: PersonAddIcon,
             children: [],
             hasChild: false
+          },
+          {
+            title: "Client Notes",
+            path: "/client-notes",
+            icon: TocIcon,
+            children: [],
+            hasChild: false
           }
         ],
         hasChild: true

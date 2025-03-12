@@ -138,7 +138,8 @@ export const endpoints = {
     get_client_document_category: `/client/document-categories/all`,
     get_client_sub_category: "/clientDocument-subcategories/all",
     update_client_document: (subCategoryId: string, documentId: string) =>
-      `/clientDocument-subcategories/update-documents/${subCategoryId}/${documentId}`
+      `/clientDocument-subcategories/update-documents/${subCategoryId}/${documentId}`,
+    create_price_import: () => `/priceBook/import`
   },
   teams: {
     get_all: "/teams/allTeams",
@@ -179,8 +180,14 @@ export const endpoints = {
     swap_shift: "/shift/bulk-swap",
     notes: {
       get_all_shift_notes: `/shiftNote/getAllShiftNotes`,
+      get_all_shift_notes_with_shift: `/shiftNote/getAllNotesWithShift`,
       get_all_notes: (id?: string) => `/shiftNote/getAllForClient/${id}`,
+      get_all_notes_with_shift: (clientId?: string) =>
+        `/shiftNote/getAllForClientWithShift/${clientId}`,
       add_note: `/shiftNote/add`,
+      add_shift_note: `/shiftNote/add/forShift`,
+      // add_shift_note: (shiftId?: string) =>
+      //   `/shiftNote/add/forShift/${shiftId}`,
       export: (id: number) => `/shiftNote/exportShiftNotesToPdf/email/${id}`,
       exportpdf: (id: number) => `/shiftNote/exportShiftNotes/ToPdf/${id}`
     }
@@ -188,6 +195,7 @@ export const endpoints = {
   settings: {
     pricebook: {
       get_pricebooks: "/priceBook/getAll/priceBook",
+      get_pricebooks_: "/priceBook/all/priceBookNames",
       get_all_pricebooks: "/priceBook/listAll/priceBook",
       add_pricebook: "/priceBook/add",
       edit_pricebook: (id: number) => `/priceBook/${id}`,

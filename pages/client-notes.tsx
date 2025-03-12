@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  Paper,
   Popover,
   Select,
   SelectChangeEvent,
@@ -52,8 +51,7 @@ import RichTextEditor from "@/components/RichTextEditor/RichTextEditor";
 import {
   addShiftNote,
   exportShiftNotes,
-  getAllDirectShiftsNotes,
-  getAllDirectShiftsNotesWithShift
+  getAllDirectShiftsNotes
 } from "@/api/functions/shift.api";
 import { LoadingButton } from "@mui/lab";
 import { useCurrentEditor } from "@tiptap/react";
@@ -230,200 +228,17 @@ const EachShiftNote = ({
           </Stack>
           <Divider sx={{ marginBlock: "10px 15px" }} />
           <Stack
-            direction="column"
-            // alignItems="flex-start"
-            // justifyContent="space-between"
+            direction="row"
+            alignItems="flex-start"
+            justifyContent="space-between"
             gap={2}
           >
-            {/* <Box>
-              <Typography variant="body1" marginBottom={1}></Typography>
-              <Box>
-                <strong>Subject: </strong>
-                <span dangerouslySetInnerHTML={{ __html: note.subject }} />
-              </Box>
-              <Box>
-                <strong>Notes: </strong>
-                <span dangerouslySetInnerHTML={{ __html: note.notes }} />
-              </Box>
-              <Box>
-                <strong>Shift assigned to: </strong>
-                <span
-                  dangerouslySetInnerHTML={{ __html: note.shiftAssignedTo }}
-                />
-              </Box>
-
-              <Box>
-                <strong>Shift Start Time: </strong>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: moment.unix(note.shiftStartTimeEpoch).format("LLL")
-                  }}
-                />
-              </Box>
-              <Box>
-                <strong>Shift End Time: </strong>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: moment.unix(note.shiftEndTimeEpoch).format("LLL")
-                  }}
-                />
-              </Box>
-              <Box>
-                <strong>Employee Clock In Time: </strong>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: moment.unix(note.employeeClockInTime).format("LLL")
-                  }}
-                />
-              </Box>
-              <Box>
-                <strong>Employee Clock Out Time: </strong>
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: moment.unix(note.employeeClockOutTime).format("LLL")
-                  }}
-                />
-              </Box>
-            </Box> */}
-
-            <Paper
-              sx={{
-                // maxWidth: 600,
-                // margin: "auto",
-                padding: 3,
-                borderRadius: 2,
-                boxShadow: 3,
-                backgroundColor: "#fff",
-                fontFamily: '"Roboto", sans-serif'
-              }}
-            >
-              <Box sx={{ marginBottom: 2 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: 500, color: "#333" }}
-                >
-                  Subject:
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#555" }}
-                  dangerouslySetInnerHTML={{ __html: note.subject }}
-                />
-              </Box>
-
-              <Box sx={{ marginBottom: 2 }}>
-                <Typography
-                  variant="body1"
-                  sx={{ fontWeight: 500, color: "#333" }}
-                >
-                  Notes:
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#555" }}
-                  dangerouslySetInnerHTML={{ __html: note.notes }}
-                />
-              </Box>
-              <Divider></Divider>
-              <br></br>
-              <Grid container spacing={2}>
-                {/* Column 1 */}
-                <Grid item xs={12} sm={4}>
-                  <Box sx={{ marginBottom: 2 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, color: "#333" }}
-                    >
-                      Shift Assigned To:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#555" }}
-                      dangerouslySetInnerHTML={{ __html: note.shiftAssignedTo }}
-                    />
-                  </Box>
-
-                  <Box sx={{ marginBottom: 2 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, color: "#333" }}
-                    >
-                      Shift Start Time:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#555" }}
-                      dangerouslySetInnerHTML={{
-                        __html: moment
-                          .unix(note.shiftStartTimeEpoch)
-                          .format("LLL")
-                      }}
-                    />
-                  </Box>
-                </Grid>
-
-                {/* Column 2 */}
-                <Grid item xs={12} sm={4}>
-                  <Box sx={{ marginBottom: 2 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, color: "#333" }}
-                    >
-                      Shift End Time:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#555" }}
-                      dangerouslySetInnerHTML={{
-                        __html: moment
-                          .unix(note.shiftEndTimeEpoch)
-                          .format("LLL")
-                      }}
-                    />
-                  </Box>
-
-                  <Box sx={{ marginBottom: 2 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, color: "#333" }}
-                    >
-                      Employee Clock In Time:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#555" }}
-                      dangerouslySetInnerHTML={{
-                        __html: moment
-                          .unix(note.employeeClockInTime)
-                          .format("LLL")
-                      }}
-                    />
-                  </Box>
-                </Grid>
-
-                {/* Column 3 */}
-                <Grid item xs={12} sm={4}>
-                  <Box sx={{ marginBottom: 2 }}>
-                    <Typography
-                      variant="body1"
-                      sx={{ fontWeight: 500, color: "#333" }}
-                    >
-                      Employee Clock Out Time:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ color: "#555" }}
-                      dangerouslySetInnerHTML={{
-                        __html: moment
-                          .unix(note.employeeClockOutTime)
-                          .format("LLL")
-                      }}
-                    />
-                  </Box>
-                </Grid>
-              </Grid>
-            </Paper>
-
+            <Box>
+              <Typography variant="body1" marginBottom={1}>
+                <strong>{note.subject}</strong>
+              </Typography>
+              <Box dangerouslySetInnerHTML={{ __html: note.notes }} />
+            </Box>
             {/* <Button>Edit</Button> */}
           </Stack>
           {note.documents.map((_document) => (
@@ -751,7 +566,7 @@ export default function ShiftNotes({ clients }: { clients: IClient[] }) {
   const { data, isLoading } = useQuery({
     queryKey: ["all_shift_notes", id, dates],
     queryFn: () =>
-      getAllDirectShiftsNotesWithShift({
+      getAllDirectShiftsNotes({
         startDate: dates?.[0]?.unix(),
         endDate: dates?.[1]?.endOf("day").unix()
       })

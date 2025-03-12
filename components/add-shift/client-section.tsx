@@ -47,8 +47,11 @@ export default function ClientSection({
   edit?: boolean;
   shift?: Shift;
 }) {
-  const { control, setValue } = useFormContext();
   const role = getRole();
+  const [selectedDisplayNames, setSelectedDisplayNames] = useState("");
+  const { control, setValue, getValues } = useFormContext();
+  const [open, setOpen] = React.useState(true);
+  const [selectedClientId, setSelectedClientId] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["client_list"],
@@ -61,11 +64,47 @@ export default function ClientSection({
   //   data
   // );
 
+  const clientIdsString = selectedClientId; // Example string
+  const clientIds = clientIdsString.split(",").map((id) => Number(id.trim())); // [3, 4]
+  console.log("Id----------------------", clientIds);
+
   const { data: price, isLoading: isloading } = useQuery({
     queryKey: ["price-books", router.query.page],
     queryFn: () => getPriceBooks((router.query.page as string) || "1")
   });
-  // console.log(price ? price.priceBooks : "Price data not loaded yet");
+  console.log(
+    "-------------- Price Book --------------",
+    price ? price.priceBooks : "Price data not loaded yet"
+  );
+
+  const handleRemoveName = (namesToRemove: string) => {
+    // Remove the names from selectedDisplayNames
+    const updatedNames = selectedDisplayNames
+      .split(",")
+      .filter((name) => !namesToRemove.includes(name.trim())) // Filter out names to remove
+      .join(", ");
+
+    setSelectedDisplayNames(updatedNames);
+
+    // Find the client IDs associated with the names to remove
+    const clientsToRemove = data.filter((client: any) =>
+      namesToRemove.includes(client.displayName)
+    );
+
+    if (clientsToRemove.length > 0) {
+      // Get the current clientIds from the form
+      const currentClientIds = getValues("clientIds");
+
+      // Filter out the IDs of the clients to remove
+      const updatedClientIds = currentClientIds.filter(
+        (id: string) =>
+          !clientsToRemove.some((client: { id: string }) => client.id === id)
+      );
+
+      // Update the clientIds field in the form
+      setValue("clientIds", updatedClientIds);
+    }
+  };
 
   return (
     <>
@@ -115,16 +154,73 @@ export default function ClientSection({
                   control={control}
                   name="clientIds"
                   render={({ field, fieldState: { error, invalid } }) => (
+                    // <Box>
+                    //   <Select
+                    //     fullWidth
+                    //     size="small"
+                    //     {...field}
+                    //     value={Array.isArray(field.value) ? field.value : []}
+                    //     onChange={(e) => {
+                    //       const _value = e.target.value;
+                    //       field.onChange(
+                    //         Array.isArray(_value) ? _value : [_value]
+                    //       );
+                    //     }}
+                    //     displayEmpty
+                    //     renderValue={
+                    //       field.value?.length !== 0
+                    //         ? undefined
+                    //         : () => "Select Participant"
+                    //     }
+                    //     multiple
+                    //   >
+                    //     {isLoading ? (
+                    //       <MenuItem disabled>
+                    //         <CircularProgress size={20} />
+                    //         Loading...
+                    //       </MenuItem>
+                    //     ) : (
+                    //       data?.map((_data: IClient) => (
+                    //         <MenuItem value={_data.id} key={_data.id}>
+                    //           {_data.displayName}
+                    //         </MenuItem>
+                    //       ))
+                    //     )}
+                    //   </Select>
+                    //   {invalid && (
+                    //     <FormHelperText>{error?.message}</FormHelperText>
+                    //   )}
+                    // </Box>
                     <Box>
                       <Select
                         fullWidth
                         size="small"
                         {...field}
-                        value={Array.isArray(field.value) ? field.value : []}
+                        value={Array.isArray(field.value) ? field.value : []} // Ensure value is an array
                         onChange={(e) => {
                           const _value = e.target.value;
                           field.onChange(
                             Array.isArray(_value) ? _value : [_value]
+                          ); // Ensure _value is an array
+
+                          // Set selectedClientId state
+                          setSelectedClientId(
+                            Array.isArray(_value) ? _value.join(", ") : _value
+                          );
+
+                          // Get the selected display names
+                          const selectedNames = data
+                            ?.filter((client: any) =>
+                              _value.includes(client.id)
+                            )
+                            .map((client: any) => client.displayName)
+                            .join(", ");
+
+                          setOpen(selectedNames.length);
+                          setSelectedDisplayNames(selectedNames);
+                          console.log(
+                            ":::::::::::::::::: Selected Name of Participant::::::::",
+                            selectedNames
                           );
                         }}
                         displayEmpty
@@ -159,6 +255,130 @@ export default function ClientSection({
           </Grid>
         )}
       </StyledPaper>
+
+      {open && selectedDisplayNames ? (
+        selectedDisplayNames.split(",").map((name: string, index: number) => {
+          // const clientData = Array.isArray(fundsData)
+          //   ? fundsData.find(
+          //       (client) => client.clientName.trim() === name.trim()
+          //     )
+          //   : null;
+
+          // const relevantFunds = clientData ? clientData.funds : [];
+
+          // Prefilling values for priceBookId and fundId
+          const prefilledPriceBookId = shift?.priceBooks?.id; // Use the id from the priceBooks JSON
+          // const prefilledPriceBookId = shift?.priceBooks?.[0]?.id || ""; // Use the id from the priceBooks JSON
+          // const prefilledFundId = shift?.funds?.fundId;
+          // relevantFunds.length > 0 ? relevantFunds[0].fundId : ""; // Use the first fundId if available
+
+          return (
+            <Card
+              key={index}
+              sx={{
+                minWidth: 275,
+                position: "relative",
+                bgcolor: "#f5f5f5",
+                border: "1px solid #ccc",
+                boxShadow: 2,
+                margin: "10px 0px 0px 6px",
+                display: "inline-table;"
+              }}
+            >
+              <IconButton
+                sx={{
+                  position: "absolute",
+                  top: -3,
+                  right: -3,
+                  border: "6px solid #ffffff",
+                  color: "white",
+                  width: "0.6em",
+                  height: "0.6em",
+                  bgcolor: "red",
+                  "&:hover": {
+                    bgcolor: "darkred"
+                  }
+                }}
+                onClick={() => handleRemoveName(name)}
+              >
+                <CloseIcon />
+              </IconButton>
+              <CardContent>
+                <Grid container alignItems="center">
+                  <Divider
+                    style={{ marginTop: "20px", marginBottom: "20px" }}
+                  />
+                  <Grid container spacing={2}>
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Participant Name</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      {name.trim()}
+                    </Grid>
+
+                    {/* Price Book Selection */}
+                    <Grid item lg={4} md={6} sm={12} xs={12}>
+                      <Typography>Choose Price</Typography>
+                    </Grid>
+                    <Grid item lg={8} md={6} sm={12} xs={12}>
+                      <Controller
+                        control={control}
+                        name={`clientPriceBooks[${index}].priceBookIds`}
+                        defaultValue={[prefilledPriceBookId]}
+                        render={({ field, fieldState: { error, invalid } }) => (
+                          <Box>
+                            <Select
+                              fullWidth
+                              size="small"
+                              {...field}
+                              value={field.value || prefilledPriceBookId}
+                              onChange={(e) => {
+                                const _value = e.target.value;
+                                field.onChange([_value]);
+                              }}
+                              displayEmpty
+                              renderValue={
+                                field.value && field.value.length > 0
+                                  ? undefined
+                                  : () => "Select Price Book"
+                              }
+                            >
+                              {isLoading ? (
+                                <MenuItem disabled>
+                                  <CircularProgress size={20} />
+                                  Loading...
+                                </MenuItem>
+                              ) : price?.priceBooks?.length > 0 ? (
+                                price.priceBooks.map((priceBook: any) => (
+                                  <MenuItem
+                                    value={priceBook.id}
+                                    key={priceBook.id}
+                                  >
+                                    {priceBook.priceBookName}
+                                  </MenuItem>
+                                ))
+                              ) : (
+                                <MenuItem disabled>
+                                  No Price Books Available
+                                </MenuItem>
+                              )}
+                            </Select>
+                            {invalid && (
+                              <FormHelperText>{error?.message}</FormHelperText>
+                            )}
+                          </Box>
+                        )}
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </CardContent>
+            </Card>
+          );
+        })
+      ) : (
+        <Typography></Typography>
+      )}
     </>
   );
 }

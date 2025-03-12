@@ -104,10 +104,44 @@ export const getAllDirectShiftsNotes = async ({
   return res.data;
 };
 
+export const getAllDirectShiftsNotesWithShift = async ({
+  startDate,
+  endDate
+}: {
+  startDate?: number | null;
+  endDate?: number | null;
+}) => {
+  const res = await axiosInstance.get(
+    endpoints.shift.notes.get_all_shift_notes_with_shift,
+    {
+      params: {
+        startDate,
+        endDate
+      }
+    }
+  );
+  return res.data;
+};
+
+// export const addShiftNote = async (body: FormData) => {
+//   const res = await axiosInstance.post(endpoints.shift.notes.add_note, body);
+//   return res.data;
+// };
 export const addShiftNote = async (body: FormData) => {
   const res = await axiosInstance.post(endpoints.shift.notes.add_note, body);
   return res.data;
 };
+
+export const addShiftNoteWithShift = async (body: FormData) => {
+  const res = await axiosInstance.post(
+    endpoints.shift.notes.add_shift_note,
+    body
+  );
+  return res.data;
+};
+
+
+
 
 export const exportShiftNotes = async (id: number) => {
   const res = await axiosInstance.get(endpoints.shift.notes.export(id));

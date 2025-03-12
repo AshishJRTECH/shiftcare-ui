@@ -7,6 +7,11 @@ import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import styled from "@emotion/styled";
 import {
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
   MenuItem,
   Pagination,
   Popover,
@@ -16,6 +21,7 @@ import { Box, Stack } from "@mui/system";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
+import PriceImport from "./price-import";
 
 const StyledPage = styled(Box)`
   padding: 20px 10px;
@@ -24,6 +30,7 @@ const StyledPage = styled(Box)`
 export default function Prices() {
   const [addPriceBookModal, setAddPriceBookModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [openModal, setModal] = useState(false);
 
   const router = useRouter();
 
@@ -61,6 +68,14 @@ export default function Prices() {
   };
 
   const open = Boolean(anchorEl);
+
+  const handleModal = () => {
+    setModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setModal(false);
+  };
 
   return (
     <DashboardLayout isLoading={isLoading}>
@@ -130,7 +145,7 @@ export default function Prices() {
             </MenuItem>
             <MenuItem
               // key={option.label}
-              onClick={handlePopoverClose}
+              onClick={handleModal}
             >
               Import Prices
             </MenuItem>
@@ -177,6 +192,18 @@ export default function Prices() {
           onClose={() => setAddPriceBookModal(false)}
           onSubmit={addPriceBook}
         />
+        <Dialog
+          open={openModal}
+          onClose={handleCloseModal}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Modal Title</DialogTitle>
+          <Divider />
+          <DialogContent>
+            <PriceImport closemodal={handleCloseModal}></PriceImport>
+          </DialogContent>
+        </Dialog>
       </StyledPage>
     </DashboardLayout>
   );

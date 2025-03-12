@@ -207,6 +207,27 @@ export const getAllShiftNotes = async ({
   return res.data;
 };
 
+export const getAllShiftNotesWithShift = async ({
+  id,
+  startDate,
+  endDate
+}: {
+  id?: string;
+  startDate?: number | null;
+  endDate?: number | null;
+}) => {
+  const res = await axiosInstance.get(
+    endpoints.shift.notes.get_all_notes_with_shift(id),
+    {
+      params: {
+        startDate,
+        endDate
+      }
+    }
+  );
+  return res.data;
+};
+
 // export const getClientFunds = async (id: string) => {
 //   const res = await axiosInstance.get(endpoints.client.get_client_funds(id));
 //   return res.data;
@@ -576,6 +597,14 @@ export const updateClientDocument = async ({
     console.error("API error:", error);
     throw error;
   }
+};
+
+export const priceImport = async (body: { file: FormData }) => {
+  const res = await axiosInstance.post(
+    endpoints.client.create_price_import(),
+    body.file
+  );
+  return res.data;
 };
 
 // export const getAllTemporaryClients = async (token?: string) => {

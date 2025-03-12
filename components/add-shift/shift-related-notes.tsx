@@ -1,4 +1,7 @@
-import { getAllShiftNotes } from "@/api/functions/client.api";
+import {
+  getAllShiftNotes,
+  getAllShiftNotesWithShift
+} from "@/api/functions/client.api";
 import { Shift, ShiftNotes } from "@/interface/shift.interface";
 import StyledPaper from "@/ui/Paper/Paper";
 import styled from "@emotion/styled";
@@ -71,7 +74,8 @@ const StyledBox = styled(Box)`
 export default function ShiftRelatedNotes({ shift }: { shift?: Shift }) {
   const { data, isLoading } = useQuery({
     queryKey: ["all_shift_notes", shift?.client.id],
-    queryFn: () => getAllShiftNotes({ id: shift?.client.id.toString() })
+    queryFn: () =>
+      getAllShiftNotesWithShift({ id: shift?.client.id.toString() })
   });
 
   const getIcon = (noteType: string) => {
@@ -144,10 +148,152 @@ export default function ShiftRelatedNotes({ shift }: { shift?: Shift }) {
                     {moment.unix(_data.epochDate).format("DD/MM/YYYY")}
                   </Typography>
                   <Divider sx={{ marginBlock: "10px" }} />
-                  <Typography sx={{ marginBottom: "8px" }}>
-                    <strong>{_data.subject}</strong>
-                  </Typography>
-                  <Box dangerouslySetInnerHTML={{ __html: _data.notes }} />
+                  {/* <Typography sx={{ marginBottom: "8px" }}>
+                    <strong>Subject: {_data.subject}</strong>
+                  </Typography> */}
+                  {/* <Box sx={{ marginBottom: 2 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 500, color: "#333" }}
+                    >
+                      Subject: {_data.subject}
+                    </Typography>
+                  </Box> */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>Subject :</Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: _data.subject
+                      }}
+                    />
+                  </Box>
+                  {/* <Box sx={{ marginBottom: 2 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ fontWeight: 500, color: "#333" }}
+                    >
+                      Note: {_data.notes}
+                    </Typography>
+                  </Box> */}
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>Note :</Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: _data.notes
+                      }}
+                    />
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>
+                      Assigned To :
+                    </Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: _data.shiftAssignedTo
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>
+                      Shift Start Time :
+                    </Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: moment
+                          .unix(_data.shiftStartTimeEpoch)
+                          .format("LLL")
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>
+                      Shift End Time :
+                    </Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: moment
+                          .unix(_data.shiftEndTimeEpoch)
+                          .format("LLL")
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>
+                      Clock In Time :
+                    </Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: moment
+                          .unix(_data.employeeClockInTime)
+                          .format("LLL")
+                      }}
+                    />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      marginBottom: 2
+                    }}
+                  >
+                    <Typography sx={{ marginRight: 1 }}>
+                      Clock Out Time :
+                    </Typography>
+                    <Typography
+                      sx={{ color: "#555" }}
+                      dangerouslySetInnerHTML={{
+                        __html: moment
+                          .unix(_data.employeeClockOutTime)
+                          .format("LLL")
+                      }}
+                    />
+                  </Box>
+
+                  {/* <Box dangerouslySetInnerHTML={{ __html: _data.notes }} /> */}
                   {_data.documents.map((_document) => (
                     <Stack
                       direction="row"

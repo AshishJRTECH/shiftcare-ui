@@ -51,6 +51,7 @@ import CustomInput from "@/ui/Inputs/CustomInput";
 import RichTextEditor from "@/components/RichTextEditor/RichTextEditor";
 import {
   addShiftNote,
+  addShiftNoteWithShift,
   exportShiftNotes,
   getAllDirectShiftsNotes,
   getAllDirectShiftsNotesWithShift
@@ -571,7 +572,13 @@ const schema = yup.object().shape({
   clientId: yup.number().required("Please Select a Client")
 });
 
-export default function ShiftNotes({ clients }: { clients: IClient[] }) {
+export default function ShiftNotesIndividualShift({
+  id: shiftId,
+  clients
+}: {
+  id: string;
+  clients: IClient[];
+}) {
   const { data: tempraryclients } = useQuery({
     queryKey: ["client_list"],
     queryFn: () => getAllTemporaryClients()
@@ -781,8 +788,29 @@ export default function ShiftNotes({ clients }: { clients: IClient[] }) {
     return list;
   }, [data]);
 
+  // const { mutate, isPending } = useMutation({
+  //   mutationFn: addShiftNote,
+  //   onSuccess: router.reload
+  // });
+
+  // const onSubmit = (
+  //   data: Omit<ShiftNoteBody, "documents" | "date"> & {
+  //     date: Dayjs;
+  //     clientId: number;
+  //   }
+  // ) => {
+  //   const formData = new FormData();
+  //   formData.append("shiftNotesCategories", data.shiftNoteCategories);
+  //   formData.append("date", dayjs(data.date).format("YYYY-MM-DD"));
+  //   formData.append("notes", data.notes);
+  //   formData.append("subject", data.subject);
+  //   formData.append("clientId", data.clientId.toString());
+  //   if (documents) formData.append("files", documents);
+  //   mutate(formData);
+  // };
+
   const { mutate, isPending } = useMutation({
-    mutationFn: addShiftNote,
+    mutationFn: addShiftNoteWithShift,
     onSuccess: router.reload
   });
 
@@ -798,6 +826,7 @@ export default function ShiftNotes({ clients }: { clients: IClient[] }) {
     formData.append("notes", data.notes);
     formData.append("subject", data.subject);
     formData.append("clientId", data.clientId.toString());
+    formData.append("shiftId", shiftId.toString());
     if (documents) formData.append("files", documents);
     mutate(formData);
   };
@@ -827,445 +856,117 @@ export default function ShiftNotes({ clients }: { clients: IClient[] }) {
   };
 
   return (
-    <DashboardLayout isLoading={isLoading}>
-      <StyledBox>
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          gap={2}
-          flexWrap="wrap"
-          marginBottom={5}
-        >
-          <Stack direction="row" gap={2} flexWrap="wrap">
-            <Box display="flex" justifyContent="flex-start" gap={2}>
-              <Tooltip title="To add new note">
-                <Button role="a" href="#add-notes" variant="contained">
-                  Add Note
-                </Button>
-              </Tooltip>
-              {/* <LoadingButton
-                variant="contained"
-                onClick={() =>
-                  exportShiftNotesMutation(Array.isArray(id) ? id[0] : id)
-                }
-                loading={isExporting}
-              >
-                Export
-              </LoadingButton> */}
-              <Tooltip title="Export Data To Email">
-                <Button
-                  // onClick={() => handleExport(clientFilter ?? 0)}
-                  onClick={() =>
-                    handleExport(
-                      clientFilter ?? 0,
-                      dates?.[0]?.unix()?.toString() ?? "",
-                      dates?.[1]?.unix()?.toString() ?? ""
-                    )
-                  }
-                  variant="contained"
-                  startIcon={<EmailIcon />}
-                ></Button>
-              </Tooltip>
-              <Tooltip title="Export & Download Data to PDF">
-                <Button
-                  onClick={() =>
-                    handleExportPdf(
-                      clientFilter ?? 0,
-                      dates?.[0]?.unix()?.toString() ?? "",
-                      dates?.[1]?.unix()?.toString() ?? ""
-                    )
-                  }
-                  role="a"
-                  variant="contained"
-                  startIcon={<PictureAsPdfIcon />}
-                ></Button>
-              </Tooltip>
-            </Box>
-            <RangePicker
-              allowClear
-              format="DD/MM/YYYY"
-              value={dates}
-              onChange={(dates: RangePickerProps["value"]) => setDates(dates)}
-            />
-            <Box>
-              <Button
-                variant="outlined"
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-              >
-                Filter Categories
-              </Button>
-              <Popover
-                open={open}
-                anchorEl={anchorEl}
-                onClose={() => setAnchorEl(null)}
-                anchorOrigin={{
-                  horizontal: "center",
-                  vertical: "bottom"
-                }}
-                transformOrigin={{
-                  horizontal: "center",
-                  vertical: "top"
-                }}
-                sx={{
-                  ".MuiPaper-root": {
-                    paddingBlock: "10px",
-                    paddingInline: "15px"
-                  }
-                }}
-              >
-                <Stack>
-                  <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    checked={filterValues.includes("Notes")}
-                    onChange={() =>
-                      setFilterValues((prev) =>
-                        prev.includes("Notes")
-                          ? prev.filter((_prev) => _prev !== "Notes")
-                          : [...prev, "Notes"]
-                      )
-                    }
-                    label="Notes"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    checked={filterValues.includes("Feedback")}
-                    onChange={() =>
-                      setFilterValues((prev) =>
-                        prev.includes("Feedback")
-                          ? prev.filter((_prev) => _prev !== "Feedback")
-                          : [...prev, "Feedback"]
-                      )
-                    }
-                    label="Feedback"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    checked={filterValues.includes("Enquiry")}
-                    onChange={() =>
-                      setFilterValues((prev) =>
-                        prev.includes("Enquiry")
-                          ? prev.filter((_prev) => _prev !== "Enquiry")
-                          : [...prev, "Enquiry"]
-                      )
-                    }
-                    label="Enquiry"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    checked={filterValues.includes("Incident")}
-                    onChange={() =>
-                      setFilterValues((prev) =>
-                        prev.includes("Incident")
-                          ? prev.filter((_prev) => _prev !== "Incident")
-                          : [...prev, "Incident"]
-                      )
-                    }
-                    label="Incident"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox size="small" />}
-                    checked={filterValues.includes("Injury")}
-                    onChange={() =>
-                      setFilterValues((prev) =>
-                        prev.includes("Injury")
-                          ? prev.filter((_prev) => _prev !== "Injury")
-                          : [...prev, "Injury"]
-                      )
-                    }
-                    label="Injury"
-                  />
-                </Stack>
-              </Popover>
-            </Box>
-            <Select
-              value={clientFilter}
-              onChange={(e) =>
-                setClientFilter(
-                  e.target.value
-                    ? parseInt(e.target.value.toString())
-                    : undefined
-                )
-              }
-              size="small"
-              displayEmpty
-              // renderValue={
-              //   !clientFilter ? () => "Filter Participant" : undefined
-              // }
-              sx={{ backgroundColor: "#fff" }}
-            >
-              <MenuItem>Filter Participant</MenuItem>
-              {clientList.map((_item) => (
-                <MenuItem key={_item.id} value={_item.id}>
-                  {_item.name}
-                </MenuItem>
-              ))}
-            </Select>
-            <Select
-              value={staffFilter}
-              onChange={(e) =>
-                setStaffFilter(
-                  e.target.value
-                    ? parseInt(e.target.value.toString())
-                    : undefined
-                )
-              }
-              size="small"
-              displayEmpty
-              // renderValue={!staffFilter ? () => "Filter Staff" : undefined}
-              sx={{ backgroundColor: "#fff" }}
-            >
-              <MenuItem>Filter Staff</MenuItem>
-              {staffList.map((_item) => (
-                <MenuItem key={_item.id} value={_item.id}>
-                  {_item.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </Stack>
-        </Stack>
-        <StyledPaper>
-          {Object.keys(data || {})
-            .sort((a, b) => parseInt(b) - parseInt(a))
-            .map((_key) => {
-              const eachShiftNotesArray = data[_key] as IShiftNotes[];
-              return (
-                eachShiftNotesArray.some(
-                  (_data) =>
-                    filterValues.includes(_data.shiftNotesCategories) &&
-                    (clientFilter ? _data.clientId === clientFilter : true) &&
-                    (staffFilter ? _data.employeeId === staffFilter : true)
-                ) && (
-                  <Box key={_key}>
-                    <Chip
-                      label={moment.unix(parseInt(_key)).format("D MMM, YYYY")}
-                      variant="filled"
-                      color="error"
-                    />
-                    {eachShiftNotesArray
-                      .filter(
-                        (_note) =>
-                          filterValues.includes(_note.shiftNotesCategories) &&
-                          (clientFilter
-                            ? _note.clientId === clientFilter
-                            : true) &&
-                          (staffFilter
-                            ? _note.employeeId === staffFilter
-                            : true)
-                      )
-                      .sort((a, b) => b.createdAtEpoch - a.createdAtEpoch)
-                      .map((_note, index: number) => (
-                        <EachShiftNote
-                          key={_note.id}
-                          note={_note}
-                          lastElement={index === eachShiftNotesArray.length - 1}
-                        />
-                      ))}
-                  </Box>
-                )
-              );
-            })}
-          <Box paddingLeft={8} paddingRight={5} id="add-notes">
-            <FormProvider {...methods}>
-              <Grid container spacing={2}>
-                <Grid item lg={6} md={6} sm={12} xs={12}>
-                  <Controller
-                    control={methods.control}
-                    name="shiftNoteCategories"
-                    render={({ field }) => (
-                      <Select {...field} fullWidth size="small">
-                        <MenuItem value="Notes">Notes</MenuItem>
-                        <MenuItem value="Feedback">Feedback</MenuItem>
-                        <MenuItem value="Enquiry">Enquiry</MenuItem>
-                        <MenuItem value="Incident">Incident</MenuItem>
-                        <MenuItem value="Injury">Injury</MenuItem>
-                      </Select>
-                    )}
-                  />
-                </Grid>
-                <Grid item lg={6} md={6} sm={12} xs={12}>
-                  <Controller
-                    control={methods.control}
-                    name="date"
-                    render={({ field }) => (
-                      <Datepicker
-                        {...field}
-                        slotProps={{
-                          textField: {
-                            fullWidth: true,
-                            size: "small"
-                          }
-                        }}
-                        maxDate={dayjs()}
-                      />
-                    )}
-                  />
-                </Grid>
-                <Grid item lg={6} md={6} sm={12} xs={12}>
-                  <CustomInput name="subject" placeholder="Enter Subject" />
-                </Grid>
-
-                <>
-                  <Grid item lg={6} md={6} sm={12} xs={12}>
-                    <Controller
-                      control={methods.control}
-                      name="clientId"
-                      render={({ field }) => {
-                        return (
-                          <Select
-                            {...field}
-                            fullWidth
-                            displayEmpty
-                            size="small"
-                            value={selectedValue}
-                            onChange={(e) => {
-                              field.onChange(e);
-                              handleSelectChange(e);
-                            }}
-                            renderValue={
-                              selectedValue === "001"
-                                ? () => "Other"
-                                : selectedValue === ""
-                                ? () => "Select Participant"
-                                : undefined
-                            }
-                          >
-                            {/* Dynamic options */}
-                            {clients?.map((_client) => (
-                              <MenuItem value={_client.id} key={_client.id}>
-                                {_client.displayName}
-                              </MenuItem>
-                            ))}
-
-                            {/* Static option */}
-                            <MenuItem value="001">Other</MenuItem>
-                          </Select>
-                        );
-                      }}
-                    />
-                  </Grid>
-
-                  {/* Conditionally display input field if "Other" is selected */}
-                  {isOtherSelected && (
-                    <>
-                      <Grid item lg={6} md={6} sm={12} xs={12}>
-                        <Typography></Typography>
-                      </Grid>
-                      <Grid item lg={6} md={6} sm={12} xs={12}>
-                        <Controller
-                          control={methods.control}
-                          name="clientId"
-                          render={({ field }) => {
-                            return (
-                              <Select
-                                {...field}
-                                fullWidth
-                                displayEmpty
-                                size="small"
-                                onChange={(e) => {
-                                  field.onChange(e);
-                                  handleSecondDropdownChange(e);
-                                }}
-                                renderValue={
-                                  selectedValue === "001"
-                                    ? () => "Select Temprary Participant"
-                                    : selectedValue === ""
-                                    ? () => ""
-                                    : undefined
-                                }
-                              >
-                                {tempraryclients?.map((_client: IClient) => (
-                                  <MenuItem value={_client.id} key={_client.id}>
-                                    {_client.salutation} {_client.firstName}{" "}
-                                    {_client.middleName} {_client.lastName}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            );
-                          }}
-                        />
-                      </Grid>
-                      <Grid item lg={6} md={6} sm={12} xs={12}>
-                        <Typography></Typography>
-                      </Grid>
-                      <Grid item lg={6} md={6} sm={12} xs={12}>
-                        {/* <Link
-                          href="/participants/new"
-                          passHref
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Typography style={{ color: "#00a9a9" }}>
-                            Add Temporary Employee
-                          </Typography>
-                        </Link> */}
-                        <Link
-                          href="/participants/new"
-                          passHref
-                          style={{ textDecoration: "none" }}
-                        >
-                          <Typography
-                            style={{
-                              color: "#00a9a9",
-                              display: "flex",
-                              alignItems: "center"
-                            }}
-                          >
-                            <TouchAppIcon style={{ marginLeft: "4px" }} /> Add
-                            Temporary Employee
-                            {/* Add the icon */}
-                          </Typography>
-                        </Link>
-                      </Grid>
-                    </>
+    <StyledBox>
+      <StyledPaper>
+        <Box paddingLeft={8} paddingRight={5} id="add-notes">
+          <FormProvider {...methods}>
+            <Grid container spacing={2}>
+              <Grid item lg={4} md={4} sm={12} xs={12}>
+                <Controller
+                  control={methods.control}
+                  name="shiftNoteCategories"
+                  render={({ field }) => (
+                    <Select {...field} fullWidth size="small">
+                      <MenuItem value="Notes">Notes</MenuItem>
+                      <MenuItem value="Feedback">Feedback</MenuItem>
+                      <MenuItem value="Enquiry">Enquiry</MenuItem>
+                      <MenuItem value="Incident">Incident</MenuItem>
+                      <MenuItem value="Injury">Injury</MenuItem>
+                    </Select>
                   )}
-                </>
-
-                <Grid item lg={12} md={12} sm={12} xs={12}>
-                  <Box
-                    padding={1}
-                    paddingInline={1.5}
-                    border="1px solid #ededed"
-                    borderRadius={1}
-                  >
-                    <Controller
-                      control={methods.control}
-                      name="notes"
-                      render={({ field, fieldState: { invalid, error } }) => (
-                        <Box>
-                          <RichTextEditor {...field} />
-                          {invalid && (
-                            <FormHelperText>{error?.message}</FormHelperText>
-                          )}
-                        </Box>
-                      )}
-                    />
-                  </Box>
-                </Grid>
+                />
               </Grid>
-            </FormProvider>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              marginTop={3}
-              marginBottom={5}
-            >
-              <input
-                type="file"
-                onChange={(e) => setDocuments(e.target.files?.[0])}
-              />
-              <Tooltip title="To save the note">
-                <LoadingButton
-                  variant="contained"
-                  onClick={methods.handleSubmit(onSubmit)}
-                  loading={isPending}
+              <Grid item lg={4} md={4} sm={12} xs={12}>
+                <Controller
+                  control={methods.control}
+                  name="date"
+                  render={({ field }) => (
+                    <Datepicker
+                      {...field}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          size: "small"
+                        }
+                      }}
+                      maxDate={dayjs()}
+                    />
+                  )}
+                />
+              </Grid>
+              <Grid item lg={4} md={4} sm={12} xs={12}>
+                <CustomInput name="subject" placeholder="Enter Subject" />
+              </Grid>
+
+              {/* <Grid item lg={12} md={12} sm={12} xs={12}>
+                <Box
+                  padding={1}
+                  paddingInline={1.5}
+                  border="1px solid #ededed"
+                  borderRadius={1}
                 >
-                  Save Note
-                </LoadingButton>
-              </Tooltip>
-            </Stack>
-          </Box>
-        </StyledPaper>
-      </StyledBox>
-    </DashboardLayout>
+                  <Controller
+                    control={methods.control}
+                    name="notes"
+                    render={({ field, fieldState: { invalid, error } }) => (
+                      <Box>
+                        <RichTextEditor {...field} />
+                        {invalid && (
+                          <FormHelperText>{error?.message}</FormHelperText>
+                        )}
+                      </Box>
+                    )}
+                  />
+                </Box>
+              </Grid> */}
+
+              <Grid item lg={12} md={12} sm={12} xs={12}>
+                <Box
+                  padding={1}
+                  paddingInline={1.5}
+                  border="1px solid #ededed"
+                  borderRadius={1}
+                  height="200px" // Set your desired height here
+                >
+                  <Controller
+                    control={methods.control}
+                    name="notes"
+                    render={({ field, fieldState: { invalid, error } }) => (
+                      <Box>
+                        <RichTextEditor {...field} />
+                        {invalid && (
+                          <FormHelperText>{error?.message}</FormHelperText>
+                        )}
+                      </Box>
+                    )}
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+          </FormProvider>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            marginTop={3}
+            marginBottom={5}
+          >
+            <input
+              type="file"
+              onChange={(e) => setDocuments(e.target.files?.[0])}
+            />
+            <Tooltip title="To save the note">
+              <LoadingButton
+                variant="contained"
+                onClick={methods.handleSubmit(onSubmit)}
+                loading={isPending}
+              >
+                Save Note
+              </LoadingButton>
+            </Tooltip>
+          </Stack>
+        </Box>
+      </StyledPaper>
+    </StyledBox>
   );
 }

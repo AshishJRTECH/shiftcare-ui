@@ -27,6 +27,10 @@ export interface ClientPriceBookDto {
   priceBookIds: string;
   fundIds: string[];
 }
+export interface ClientPriceBookDtoS {
+  clientId?: number;
+  priceBookIds: string;
+}
 
 export interface ShiftBody {
   startDate: Dayjs;
@@ -88,7 +92,7 @@ export interface ShiftBodyS {
   // priceBookIds: any;
   // fundIds: any;
   // employeePayGroups: EmployeePayGroupDto[];
-  // clientPriceBooks: ClientPriceBookDto[];
+  clientPriceBooks: ClientPriceBookDtoS[];
 }
 
 export interface ShiftType {
@@ -222,6 +226,11 @@ export interface Document {
 }
 
 export interface ShiftNotes {
+  shiftAssignedTo: string | TrustedHTML;
+  shiftStartTimeEpoch: number;
+  shiftEndTimeEpoch: number;
+  employeeClockInTime: number;
+  employeeClockOutTime: number;
   id: number;
   shiftNotesCategories: string;
   date: number[];

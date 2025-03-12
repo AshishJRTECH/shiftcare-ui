@@ -20,6 +20,17 @@ export const getPriceBooks = async (page: string) => {
   );
   return res.data;
 };
+export const getPriceBooks_ = async (page: string) => {
+  const res = await axiosInstance.get(
+    endpoints.settings.pricebook.get_pricebooks_,
+    {
+      params: {
+        page: page
+      }
+    }
+  );
+  return res.data;
+};
 
 export const addPriceBook = async ({
   data

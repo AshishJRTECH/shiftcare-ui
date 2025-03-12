@@ -4,6 +4,10 @@ import {
   AutocompleteProps,
   Button,
   Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Drawer,
   DrawerProps,
@@ -75,6 +79,8 @@ import AdvanceShift from "./advance-shift";
 import { rebookShift } from "@/api/functions/shift.api";
 import { toast } from "sonner";
 import JobApplicant from "./jobapplicant";
+import NoteIcon from "@mui/icons-material/Note"; // Import NoteIcon
+import ShiftNotesIndividualShift from "pages/shift-notes-individualshift";
 
 interface DrawerInterface extends DrawerProps {
   open?: boolean;
@@ -278,36 +284,36 @@ export const repeatPeriods = {
   }
 };
 
-export const shiftTypeArrays = [
-  {
-    id: "PersonalCare",
-    name: "Personal Care"
-  },
-  {
-    id: "DomesticAssistance",
-    name: "Domestic Assistance"
-  },
-  {
-    id: "NightShift",
-    name: "Night Shift"
-  },
-  {
-    id: "RespiteCare",
-    name: "Respite Care"
-  },
-  {
-    id: "Sleepover",
-    name: "Sleepover"
-  },
-  {
-    id: "SupportCoordination",
-    name: "Support Coordination"
-  },
-  {
-    id: "Transport",
-    name: "Transport"
-  }
-];
+// export const shiftTypeArrays = [
+//   {
+//     id: "PersonalCare",
+//     name: "Personal Care"
+//   },
+//   {
+//     id: "DomesticAssistance",
+//     name: "Domestic Assistance"
+//   },
+//   {
+//     id: "NightShift",
+//     name: "Night Shift"
+//   },
+//   {
+//     id: "RespiteCare",
+//     name: "Respite Care"
+//   },
+//   {
+//     id: "Sleepover",
+//     name: "Sleepover"
+//   },
+//   {
+//     id: "SupportCoordination",
+//     name: "Support Coordination"
+//   },
+//   {
+//     id: "Transport",
+//     name: "Transport"
+//   }
+// ];
 
 // export const shiftTypeArrays = [
 //   {
@@ -363,6 +369,69 @@ export const shiftTypeArrays = [
 //     name: "Respite Care"
 //   }
 // ];
+
+export const shiftTypeArrays = [
+  {
+    id: "AssistanceWithDailyLife",
+    name: "Assistance with Daily Life"
+  },
+  {
+    id: "Transport",
+    name: "Transport"
+  },
+  {
+    id: "Consumables",
+    name: "Consumables"
+  },
+  {
+    id: "AssistanceWithSocialEconomicAndCommunityParticipation",
+    name: "Assistance with Social, Economic, and Community Participation"
+  },
+  {
+    id: "AssistiveTechnology",
+    name: "Assistive Technology"
+  },
+  {
+    id: "HomeModificationsAndSpecialisedDisabilityAccommodation",
+    name: "Home Modifications and Specialised Disability Accommodation(SDA)"
+  },
+  {
+    id: "SupportCoordination",
+    name: "Support Coordination"
+  },
+  {
+    id: "ImprovedLivingArrangements",
+    name: "Improved Living Arrangements"
+  },
+  {
+    id: "IncreasedSocialAndCommunityParticipation",
+    name: "Increased Social and Community Participation"
+  },
+  {
+    id: "FindingAndKeepingAJob",
+    name: "Finding and Keeping a Job"
+  },
+  {
+    id: "ImprovedRelationships",
+    name: "Improved Relationships"
+  },
+  {
+    id: "ImprovedHealthAndWellbeing",
+    name: "Improved Health and Wellbeing"
+  },
+  {
+    id: "ImprovedLearning",
+    name: "Improved Learning"
+  },
+  {
+    id: "ImprovedLifeChoices",
+    name: "Improved Life Choices"
+  },
+  {
+    id: "ImprovedDailyLivingSkills",
+    name: "Improved Daily Living Skills"
+  }
+];
 
 export const daysOfWeek = [
   {
@@ -443,6 +512,13 @@ const schema = yup.object().shape({
   isOpenShift: yup.boolean()
 });
 
+clientPriceBooks: yup.array().of(
+  yup.object().shape({
+    clientId: yup.number(),
+    priceBookIds: yup.array().of(yup.string())
+  })
+);
+
 export default function AddShift({
   // onSelectId,
   view,
@@ -469,6 +545,7 @@ export default function AddShift({
   const [editAdvanceModal, setEditAdvanceModal] = useState(false);
   const [advanceShift, setAdvanceShift] = useState(false);
   const [shiftModalAdvance, setShiftModalAdvance] = useState(false);
+  const [shiftNotes, setShiftNotes] = useState(false);
 
   const [noteModal, setNoteModal] = useState(false);
   const [selectedId, setSelectedId] = useState("");
@@ -511,7 +588,10 @@ export default function AddShift({
         : staff
         ? [parseInt(staff as string)]
         : [],
-      isOpenShift: false
+      isOpenShift: false,
+      clientPriceBooks: [
+        { clientId: 0, priceBookIds: "" } // Initialize with an empty object for the first entry
+      ]
     }
   });
 
@@ -596,6 +676,7 @@ export default function AddShift({
   });
 
   const onSubmit = (data: ShiftBodyS) => {
+    const selectedClientIdsArray = data.clientIds;
     const newData = {
       ...data,
       startDate: dayjs(data.startDate).format("YYYY-MM-DD"),
@@ -607,7 +688,11 @@ export default function AddShift({
       startTime: dayjs(data.startTime).format("HH:mm"),
       endTime: dayjs(data.endTime).format("HH:mm"),
       clientIds: data.clientIds,
-      id: shift?.id
+      id: shift?.id,
+      clientPriceBooks: data.clientPriceBooks.map((group, index) => ({
+        ...group,
+        clientId: selectedClientIdsArray[index]?.toString() || "0" // Assign clientId from clientIds array
+      }))
       // instruction: JSON.stringify(editor?.getJSON(), null, 2)
     };
     console.log(
@@ -625,6 +710,17 @@ export default function AddShift({
       "---------------Repeating shift with ID:---------------------",
       id
     );
+  };
+
+  const handleCreateShiftNotes = (id: any) => {
+    setShiftNotes(true);
+    props.onClose();
+    setSelectedId(id);
+    console.log("--------------- Shift ID: ---------------------", id);
+  };
+
+  const handleCloseModalShiftNotes = () => {
+    setShiftNotes(false);
   };
 
   const { mutate: rebook, isPending: pending } = useMutation({
@@ -999,9 +1095,10 @@ export default function AddShift({
                     shift={shift}
                     advanceShift={advanceShift}
                   />
+                  <TimeLocation view={view} edit={edit} shift={shift} />
                   {!view && <TaskSection edit={edit} />}
                   <InstructionSection view={view} edit={edit} shift={shift} />
-                  <TimeLocation view={view} edit={edit} shift={shift} />
+                  {/* <TimeLocation view={view} edit={edit} shift={shift} /> */}
                   {view && <ShiftRelatedNotes shift={shift} />}
                 </>
               )}
@@ -1019,9 +1116,23 @@ export default function AddShift({
                     shift={shift}
                     advanceShift={advanceShift}
                   />
+                  <TimeLocation view={view} edit={edit} shift={shift} />
                   {!view && <TaskSection edit={edit} />}
                   <InstructionSection view={view} edit={edit} shift={shift} />
-                  <TimeLocation view={view} edit={edit} shift={shift} />
+                  {/* <TimeLocation view={view} edit={edit} shift={shift} /> */}
+                  <Button
+                    variant="contained"
+                    startIcon={<NoteIcon />} // Change to NoteIcon
+                    onClick={() => {
+                      handleCreateShiftNotes(shift?.id as number); // Pass the ID here
+                    }}
+                    sx={{
+                      backgroundColor: "#00a65a",
+                      "&:hover": { backgroundColor: "#008d45" }
+                    }} // Set the background color
+                  >
+                    Create Shift Notes
+                  </Button>
                   {view && <ShiftRelatedNotes shift={shift} />}
                 </>
               )}
@@ -1048,6 +1159,37 @@ export default function AddShift({
           title="Add Note"
         />
       </StyledDrawer>
+
+      {/* -------------------- Create new shift -------------------- */}
+      <Dialog
+        open={shiftNotes}
+        onClose={handleCloseModalShiftNotes}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>Create Shift Notes</DialogTitle>
+        <Divider />
+        <DialogContent>
+          <ShiftNotesIndividualShift
+            clients={[]}
+            id={selectedId}
+          ></ShiftNotesIndividualShift>
+        </DialogContent>
+        <DialogActions>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={handleCloseModalShiftNotes}
+            >
+              Close
+            </Button>
+            {/* <Button variant="contained" color="success">
+              Update
+            </Button> */}
+          </Box>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }
