@@ -474,6 +474,33 @@ export const exportNotesToEmail = async ({
     throw error;
   }
 };
+export const exportShiftNotesToEmail = async ({
+  id,
+  startDate,
+  endDate
+}: {
+  id: number;
+  startDate: string;
+  endDate: string;
+}) => {
+  try {
+    const data = new FormData();
+    data.append("startDate", startDate);
+    data.append("endDate", endDate);
+
+    const res = await axiosInstance.get(
+      endpoints.shift.notes.shiftNotesExport(id),
+      {
+        params: data
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("API error:", error);
+    throw error;
+  }
+};
 
 export const exportNotesToPdf = async ({
   id,

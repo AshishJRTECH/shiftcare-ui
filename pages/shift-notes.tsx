@@ -31,6 +31,7 @@ import { useParams } from "next/navigation";
 import {
   exportNotesToEmail,
   exportNotesToPdf,
+  exportShiftNotesToEmail,
   getAllClients,
   getAllClientsShiftNote,
   getAllShiftNotes,
@@ -640,7 +641,7 @@ export default function ShiftNotes({ clients }: { clients: IClient[] }) {
   });
 
   const { mutate: ExportEmail } = useMutation({
-    mutationFn: exportNotesToEmail,
+    mutationFn: exportShiftNotesToEmail,
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["applied_shift"] });
       toast.success(response.message);

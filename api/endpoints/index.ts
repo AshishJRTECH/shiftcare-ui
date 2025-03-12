@@ -189,6 +189,8 @@ export const endpoints = {
       // add_shift_note: (shiftId?: string) =>
       //   `/shiftNote/add/forShift/${shiftId}`,
       export: (id: number) => `/shiftNote/exportShiftNotesToPdf/email/${id}`,
+      shiftNotesExport: (clientId: number) =>
+        `/shiftNote/exportNotesWithShiftToPdf/email/${clientId}`,
       exportpdf: (id: number) => `/shiftNote/exportShiftNotes/ToPdf/${id}`
     }
   },

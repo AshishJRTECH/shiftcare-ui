@@ -689,7 +689,7 @@ export default function AddShift({
       endTime: dayjs(data.endTime).format("HH:mm"),
       clientIds: data.clientIds,
       id: shift?.id,
-      clientPriceBooks: data.clientPriceBooks.map((group, index) => ({
+      clientPriceBooks: data.clientPriceBooks?.map((group, index) => ({
         ...group,
         clientId: selectedClientIdsArray[index]?.toString() || "0" // Assign clientId from clientIds array
       }))

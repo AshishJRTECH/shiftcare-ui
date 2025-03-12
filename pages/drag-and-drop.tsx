@@ -108,6 +108,7 @@ const localizer = dateFnsLocalizer({
 });
 
 interface ShiftEvent extends Event {
+  id: any;
   start: Date;
   end: Date;
   location?: string;
@@ -165,7 +166,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 9, 1, 0),
       location: "Data Center",
       employee: "Afaque Ahmed",
-      allDay: false
+      allDay: false,
+      id: 1
     },
     {
       title: "System Backup",
@@ -173,7 +175,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 10, 2, 0),
       location: "Server Room",
       employee: "John Doe",
-      allDay: false
+      allDay: false,
+      id: 2
     },
     {
       title: "Security Check",
@@ -181,7 +184,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 11, 3, 0),
       location: "Office Building",
       employee: "Ashish Singh",
-      allDay: false
+      allDay: false,
+      id: 3
     },
     {
       title: "Data Synchronization",
@@ -189,7 +193,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 12, 4, 0),
       location: "Cloud Server",
       employee: "Shahid Akhtar",
-      allDay: false
+      allDay: false,
+      id: 4
     },
     {
       title: "Team Meeting",
@@ -197,7 +202,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 13, 11, 0),
       location: "Conference Room A",
       employee: "Johnson Willium",
-      allDay: false
+      allDay: false,
+      id: 5
     },
     {
       title: "Project Discussion",
@@ -205,7 +211,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 14, 15, 30),
       location: "Room 204",
       employee: "Jane Smith",
-      allDay: false
+      allDay: false,
+      id: 6
     },
     {
       title: "Lunch Break",
@@ -213,7 +220,8 @@ export default function Scheduler() {
       end: new Date(2025, 2, 15, 13, 0),
       location: "Cafeteria",
       employee: "Abhishek Santra",
-      allDay: false
+      allDay: false,
+      id: 7
     }
   ]);
 
@@ -224,18 +232,51 @@ export default function Scheduler() {
   const convertToDate = (date: unknown): Date =>
     date instanceof Date ? date : new Date(date as string);
 
+  // const onEventDrop = ({
+  //   event,
+  //   start,
+  //   end
+  // }: EventInteractionArgs<ShiftEvent>) => {
+  //   setOriginalEvent(event);
+  //   setTempEvent({
+  //     ...event,
+  //     start: convertToDate(start),
+  //     end: convertToDate(end)
+  //   });
+  //   setOpenDialog(true);
+  // };
+
   const onEventDrop = ({
     event,
     start,
     end
   }: EventInteractionArgs<ShiftEvent>) => {
-    setOriginalEvent(event);
-    setTempEvent({
-      ...event,
-      start: convertToDate(start),
-      end: convertToDate(end)
-    });
-    setOpenDialog(true);
+    const startDate = new Date(start); // Ensure it's a Date object
+    const endDate = new Date(end); // Ensure it's a Date object
+
+    setEvents((prevEvents) =>
+      prevEvents.map((evt) =>
+        evt.id === event.id
+          ? {
+              ...event,
+              start: new Date(
+                startDate.getFullYear(),
+                startDate.getMonth(),
+                startDate.getDate(),
+                event.start.getHours(),
+                event.start.getMinutes()
+              ),
+              end: new Date(
+                endDate.getFullYear(),
+                endDate.getMonth(),
+                endDate.getDate(),
+                event.end.getHours(),
+                event.end.getMinutes()
+              )
+            }
+          : evt
+      )
+    );
   };
 
   const handleConfirmReschedule = () => {
