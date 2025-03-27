@@ -203,7 +203,8 @@ export const endpoints = {
       edit_pricebook: (id: number) => `/priceBook/${id}`,
       delte_pricebook: (id: number) => `/priceBook/softDelete/${id}`,
       copy_pricebook: (id: number) => `/priceBook/copy/${id}`,
-      get_pricebooks_list_all: "/priceBook/listAll/priceBook"
+      get_pricebooks_list_all: "/priceBook/listAll/priceBook",
+      get_expired_price_filtered_data: "/priceBook/getAll/notExpiredPriceBook"
     },
     prices: {
       update_prices: (id: number) => `/prices/update/${id}`,

@@ -1,6 +1,7 @@
 import {
   addPriceBook,
   createPriceImport,
+  getExpiredPriceFilteredData,
   getPriceBooks
 } from "@/api/functions/pricebook.api";
 
@@ -43,34 +44,21 @@ export default function Prices() {
 
   const router = useRouter();
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["price-books", router.query.page],
-    queryFn: () => getPriceBooks((router.query.page as string) || "1")
+  // const { data, isLoading } = useQuery({
+  //   queryKey: ["price-books", router.query.page],
+  //   queryFn: () => getPriceBooks((router.query.page as string) || "1")
+  // });
+
+  const [priceBookData, setPriceBookData] = useState({
+    totalItems: 0,
+    totalPages: 0,
+    currentPage: 1,
+    priceBooks: []
   });
 
-  useEffect(() => {
-    console.log("------------- Price Book Tittles --------------", data);
-  }, []);
-
-  useEffect(() => {
-    if (data && !router.query.page) {
-      router.push({ query: { page: data?.currentPage } }, undefined, {
-        shallow: true
-      });
-    } else if (router.query.page && data?.priceBooks.length == 0) {
-      router.push(
-        {
-          query: {
-            page: data?.currentPage - 1 === 0 ? 1 : data?.currentPage - 1
-          }
-        },
-        undefined,
-        {
-          shallow: true
-        }
-      );
-    }
-  }, [data, router.query.page]);
+  // useEffect(() => {
+  //   console.log("------------- Price Book Tittles --------------", data);
+  // }, []);
 
   const handlePopoverOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl((prev) => (prev ? null : event.currentTarget));
@@ -109,8 +97,48 @@ export default function Prices() {
     queryClient.invalidateQueries({ queryKey: ["price-books"] });
   };
 
+  useEffect(() => {
+    const fetchingdata = async () => {
+      // if (startDate && endDate) {
+      const data = await getExpiredPriceFilteredData({
+        // page: (2).toString(),
+        page: (router.query.page as string) || "1",
+        isExpired: !priceFilter
+      });
+      console.log("------------*** NEW PRICE DATA------------", data);
+      // }
+
+      setPriceBookData(data);
+    };
+    fetchingdata();
+  }, [priceFilter, router.query.page]);
+
+  useEffect(() => {
+    if (priceBookData && !router.query.page) {
+      router.push({ query: { page: priceBookData?.currentPage } }, undefined, {
+        shallow: true
+      });
+    } else if (router.query.page && priceBookData?.priceBooks.length == 0) {
+      router.push(
+        {
+          query: {
+            page:
+              priceBookData?.currentPage - 1 === 0
+                ? 1
+                : priceBookData?.currentPage - 1
+          }
+        },
+        undefined,
+        {
+          shallow: true
+        }
+      );
+    }
+  }, [priceBookData, router.query.page]);
+
   return (
-    <DashboardLayout isLoading={isLoading}>
+    // <DashboardLayout isLoading={isLoading}>
+    <DashboardLayout>
       <StyledPage>
         <Stack
           direction="row"
@@ -231,7 +259,7 @@ export default function Prices() {
           {/* {data?.priceBooks?.map((_data: IPriceBook) => (
             <PriceBook {..._data} key={_data.id} />
           ))} */}
-          {data?.priceBooks
+          {priceBookData?.priceBooks
             ?.filter((_data: IPriceBook) =>
               priceFilter ? !_data.isExpired : true
             ) // Apply filtering only if priceFilter is true
@@ -245,7 +273,7 @@ export default function Prices() {
           sx={{ marginTop: "10px" }}
         >
           <Pagination
-            count={data?.totalPages}
+            count={priceBookData?.totalPages}
             // variant="outlined"
             page={
               router.query.page ? parseInt(router.query.page!.toString()) : 1

@@ -95,3 +95,23 @@ export const createPriceImport = async (body: any) => {
   );
   return res.data;
 };
+
+export const getExpiredPriceFilteredData = async ({
+  page,
+  isExpired
+}: {
+  page: string;
+  isExpired?: boolean;
+}) => {
+  const url = `${endpoints.settings.pricebook.get_expired_price_filtered_data}?page=${page}&isExpired=${isExpired}`;
+
+  // console.log("Request URL:", url); // Log the URL for debugging
+
+  try {
+    const res = await axiosInstance.get(url);
+    return res.data;
+  } catch (error) {
+    // console.error("Error approving timesheet:", error);
+    throw error; // Rethrow to allow mutation to handle it
+  }
+};
