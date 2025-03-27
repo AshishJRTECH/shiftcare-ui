@@ -35,7 +35,8 @@ const schema = yup.object().shape({
     .required(validationText.error.pricebook_name),
   externalId: yup.string().nullable(),
   isProviderTravel: yup.boolean().nullable(),
-  isFixedPriceOnly: yup.boolean().nullable()
+  isFixedPriceOnly: yup.boolean().nullable(),
+  isExpired: yup.boolean().nullable()
 });
 
 export default function PriceBookModal({
@@ -44,6 +45,7 @@ export default function PriceBookModal({
   externalId = "",
   isFixedPriceOnly = false,
   isProviderTravel = false,
+  isExpired = false,
   onSubmit,
   ...props
 }: ModalInterface) {
@@ -55,7 +57,8 @@ export default function PriceBookModal({
       priceBookName,
       externalId,
       isFixedPriceOnly,
-      isProviderTravel
+      isProviderTravel,
+      isExpired
     }
   });
 
