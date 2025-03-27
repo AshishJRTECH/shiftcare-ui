@@ -449,7 +449,7 @@ export default function Index() {
                     <Typography>Date of Birth:</Typography>
                   </Grid>
                   <Grid item lg={9} md={12} sm={12} xs={12}>
-                    <Controller
+                    {/* <Controller
                       control={methods.control}
                       name="dateOfBirth"
                       render={({
@@ -476,7 +476,8 @@ export default function Index() {
                           )}
                         </Box>
                       )}
-                    />
+                    /> */}
+                    <CustomInput fullWidth name="dateOfBirth" type="date" />
                   </Grid>
                 </Grid>
               </Grid>

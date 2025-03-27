@@ -1,5 +1,9 @@
-import { addPriceBook, getPriceBooks } from "@/api/functions/pricebook.api";
-import Iconify from "@/components/Iconify/Iconify";
+import {
+  addPriceBook,
+  createPriceImport,
+  getPriceBooks
+} from "@/api/functions/pricebook.api";
+
 import PriceBookModal from "@/components/PriceBookModal/PriceBookModal";
 import PriceBook from "@/components/Pricebook/PriceBook";
 import { IPriceBook } from "@/interface/settings.interfaces";
@@ -7,21 +11,25 @@ import DashboardLayout from "@/layout/dashboard/DashboardLayout";
 import styled from "@emotion/styled";
 import {
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
+  FormControlLabel,
   MenuItem,
   Pagination,
   Popover,
   Typography
 } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import PriceImport from "./price-import";
+import Iconify from "@/components/Iconify/Iconify";
+import { queryClient } from "pages/_app";
 
 const StyledPage = styled(Box)`
   padding: 20px 10px;
@@ -31,6 +39,7 @@ export default function Prices() {
   const [addPriceBookModal, setAddPriceBookModal] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [openModal, setModal] = useState(false);
+  const [priceFilter, setPriceFilter] = useState(false);
 
   const router = useRouter();
 
@@ -38,6 +47,10 @@ export default function Prices() {
     queryKey: ["price-books", router.query.page],
     queryFn: () => getPriceBooks((router.query.page as string) || "1")
   });
+
+  useEffect(() => {
+    console.log("------------- Price Book Tittles --------------", data);
+  }, []);
 
   useEffect(() => {
     if (data && !router.query.page) {
@@ -77,6 +90,25 @@ export default function Prices() {
     setModal(false);
   };
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: createPriceImport,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["price-books"] });
+      // methods.reset();
+      // props.onClose();
+    }
+  });
+
+  const handleImport = () => {
+    mutate(0);
+    console.log("Import Buttom get clicked.");
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPriceFilter(event.target.checked);
+    queryClient.invalidateQueries({ queryKey: ["price-books"] });
+  };
+
   return (
     <DashboardLayout isLoading={isLoading}>
       <StyledPage>
@@ -88,6 +120,17 @@ export default function Prices() {
           sx={{ marginBottom: "40px" }}
         >
           <Typography variant="h4">Prices</Typography>
+          {/* <Button
+            variant="contained"
+            size="large"
+            // onMouseLeave={handlePopoverClose}
+          >
+            Import{" "}
+            <Iconify
+              icon="eva:arrow-ios-downward-outline"
+              sx={{ ml: "5px" }}
+            ></Iconify>
+          </Button>
           <Button
             variant="contained"
             onClick={handlePopoverOpen}
@@ -99,7 +142,32 @@ export default function Prices() {
               icon="eva:arrow-ios-downward-outline"
               sx={{ ml: "5px" }}
             ></Iconify>
-          </Button>
+          </Button> */}
+
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <FormControlLabel
+              control={
+                <Checkbox checked={priceFilter} onChange={handleChange} />
+              }
+              label="Hide Expired Date"
+            />
+            <Button variant="contained" size="large" onClick={handleImport}>
+              Update October 2024 NDIS Price{" "}
+              <Iconify icon="eva:download-outline" sx={{ ml: "5px" }} />
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handlePopoverOpen}
+              size="large"
+            >
+              Actions{" "}
+              <Iconify
+                icon="eva:arrow-ios-downward-outline"
+                sx={{ ml: "5px" }}
+              />
+            </Button>
+          </Box>
+
           <Popover
             open={open}
             anchorEl={anchorEl}
@@ -158,9 +226,18 @@ export default function Prices() {
           </Popover>
         </Stack>
         <Box className="priceBooks">
-          {data?.priceBooks?.map((_data: IPriceBook) => (
+          {" "}
+          {/* ---- */}
+          {/* {data?.priceBooks?.map((_data: IPriceBook) => (
             <PriceBook {..._data} key={_data.id} />
-          ))}
+          ))} */}
+          {data?.priceBooks
+            ?.filter((_data: IPriceBook) =>
+              priceFilter ? !_data.isExpired : true
+            ) // Apply filtering only if priceFilter is true
+            .map((_data: IPriceBook) => (
+              <PriceBook {..._data} key={_data.id} />
+            ))}
         </Box>
         <Stack
           alignItems="center"

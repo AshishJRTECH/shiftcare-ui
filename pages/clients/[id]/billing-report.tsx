@@ -285,56 +285,6 @@ const BillingReport = () => {
     console.log("Selected Row Single Id Status:", selectedRowsSingle);
   }, [selectedRowsSingle]);
 
-  // const handleSelectAll = () => {
-  //   // Check if all IDs are already selected
-  //   const allIds = tableData.map((row: any) => row.id);
-  //   const isAllSelected = allIds.every((id: number) =>
-  //     selectedRows.includes(id)
-  //   );
-
-  //   if (isAllSelected) {
-  //     // Clear all selections
-  //     setSelectedRows([]);
-  //   } else {
-  //     // Select all rows
-  //     setSelectedRows(allIds);
-  //   }
-
-  //   console.log("Updated Selected Rows:", selectedRows);
-  // };
-
-  // const handleSelectAll = () => {
-  //   // Get all row IDs and their total costs from tableData
-  //   const allIds = tableData.map((row: any) => row.id);
-  //   const allCosts = tableData.reduce(
-  //     (total: number, row: any) => total + row.totalCost,
-  //     0
-  //   );
-
-  //   // Check if all rows are already selected
-  //   const isAllSelected = allIds.every((id: number) =>
-  //     selectedRows.includes(id)
-  //   );
-
-  //   if (isAllSelected) {
-  //     // Clear all selections and reset total cost
-  //     setSelectedRows([]);
-  //     setSelectedRowsTotalCost(0);
-
-  //     console.log("Deselected All Rows");
-  //     console.log("Updated Total Cost After Deselect All:", 0);
-  //   } else {
-  //     // Select all rows and calculate total cost
-  //     setSelectedRows(allIds);
-  //     setSelectedRowsTotalCost(allCosts);
-
-  //     // console.log("Selected All Rows");
-  //     // console.log("Updated Total Cost After Select All:", allCosts);
-  //   }
-
-  //   console.log("Updated Selected Rows:", selectedRows);
-  // };
-
   const handleSelectAll = () => {
     // Filter out rows with isInvoiceGenerated === true
     const selectableRows = tableData.filter(
@@ -403,6 +353,7 @@ const BillingReport = () => {
           ? row.finishTime.join(":")
           : row.finishTime,
         "Hourly Rate": row.hourlyRate,
+        "Fixed Rate": row.hourlyRate,
         Hours: row.hours,
         "Hourly Cost": row.hourlyCost,
         "Additional Cost": row.additionalCost,
@@ -753,6 +704,16 @@ const BillingReport = () => {
                         whiteSpace: "nowrap"
                       }}
                     >
+                      Fixed Rate
+                    </TableCell>
+                    <TableCell
+                      align="center"
+                      sx={{
+                        fontSize: "0.875rem",
+                        color: "black",
+                        whiteSpace: "nowrap"
+                      }}
+                    >
                       Hours
                     </TableCell>
                     <TableCell
@@ -878,9 +839,31 @@ const BillingReport = () => {
                               />
                             </Tooltip>
                           )}
-                          <span>{dataRow.hourlyRate}</span>
+                          {/* <span>{dataRow.hourlyRate}</span> */}
+                          {/* {dataRow.hourlyRate !== 0 && (
+                            <span>{dataRow.hourlyRate}</span>
+                          )} */}
+                          {dataRow.hourlyRate !== 0 ? (
+                            <span>{dataRow.hourlyRate}</span>
+                          ) : (
+                            <span>N/A</span>
+                          )}
                         </TableCell>
 
+                        <TableCell
+                          align="center"
+                          sx={{
+                            padding: "4px 8px", // Reduce padding
+                            fontSize: "14px"
+                          }}
+                        >
+                          {/* {dataRow.fixedRate} -- */}
+                          {dataRow.fixedRate !== 0 ? (
+                            <span>{dataRow.fixedRate}</span>
+                          ) : (
+                            <span>N/A</span>
+                          )}
+                        </TableCell>
                         <TableCell
                           align="center"
                           sx={{

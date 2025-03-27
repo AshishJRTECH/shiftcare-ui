@@ -7,7 +7,10 @@ import {
   getClientFunds,
   getClientSettings
 } from "@/api/functions/client.api";
-import { getPriceBooks } from "@/api/functions/pricebook.api";
+import {
+  getPriceBooks,
+  getPriceBooksListAll
+} from "@/api/functions/pricebook.api";
 import { IClient } from "@/interface/client.interface";
 import { ClientList, Shift } from "@/interface/shift.interface";
 import assets from "@/json/assets";
@@ -68,14 +71,19 @@ export default function ClientSection({
   const clientIds = clientIdsString.split(",").map((id) => Number(id.trim())); // [3, 4]
   console.log("Id----------------------", clientIds);
 
+  // const { data: price, isLoading: isloading } = useQuery({
+  //   queryKey: ["price-books", router.query.page],
+  //   queryFn: () => getPriceBooks((router.query.page as string) || "1")
+  // });
+
   const { data: price, isLoading: isloading } = useQuery({
     queryKey: ["price-books", router.query.page],
-    queryFn: () => getPriceBooks((router.query.page as string) || "1")
+    queryFn: () => getPriceBooksListAll((router.query.page as string) || "1")
   });
-  console.log(
-    "-------------- Price Book --------------",
-    price ? price.priceBooks : "Price data not loaded yet"
-  );
+
+  useEffect(() => {
+    console.log("-------------- Price Book ^^^^^^^^^^^ --------------", price);
+  }, [price]);
 
   const handleRemoveName = (namesToRemove: string) => {
     // Remove the names from selectedDisplayNames
@@ -348,8 +356,8 @@ export default function ClientSection({
                                   <CircularProgress size={20} />
                                   Loading...
                                 </MenuItem>
-                              ) : price?.priceBooks?.length > 0 ? (
-                                price.priceBooks.map((priceBook: any) => (
+                              ) : price?.length > 0 ? (
+                                price.map((priceBook: any) => (
                                   <MenuItem
                                     value={priceBook.id}
                                     key={priceBook.id}

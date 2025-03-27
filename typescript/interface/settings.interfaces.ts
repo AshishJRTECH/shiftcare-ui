@@ -17,6 +17,7 @@ export interface Price {
 }
 
 export interface IPriceBook {
+  isExpired: any;
   id: number;
   priceBookName: string;
   externalId: string;

@@ -202,10 +202,12 @@ export const endpoints = {
       add_pricebook: "/priceBook/add",
       edit_pricebook: (id: number) => `/priceBook/${id}`,
       delte_pricebook: (id: number) => `/priceBook/softDelete/${id}`,
-      copy_pricebook: (id: number) => `/priceBook/copy/${id}`
+      copy_pricebook: (id: number) => `/priceBook/copy/${id}`,
+      get_pricebooks_list_all: "/priceBook/listAll/priceBook"
     },
     prices: {
-      update_prices: (id: number) => `/prices/update/${id}`
+      update_prices: (id: number) => `/prices/update/${id}`,
+      price_import: "/priceBook/uploadFromDatabase"
     },
     pay_groups: {
       add_paygroup: "/payGroup/add",

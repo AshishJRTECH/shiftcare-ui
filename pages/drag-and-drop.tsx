@@ -232,51 +232,18 @@ export default function Scheduler() {
   const convertToDate = (date: unknown): Date =>
     date instanceof Date ? date : new Date(date as string);
 
-  // const onEventDrop = ({
-  //   event,
-  //   start,
-  //   end
-  // }: EventInteractionArgs<ShiftEvent>) => {
-  //   setOriginalEvent(event);
-  //   setTempEvent({
-  //     ...event,
-  //     start: convertToDate(start),
-  //     end: convertToDate(end)
-  //   });
-  //   setOpenDialog(true);
-  // };
-
   const onEventDrop = ({
     event,
     start,
     end
   }: EventInteractionArgs<ShiftEvent>) => {
-    const startDate = new Date(start); // Ensure it's a Date object
-    const endDate = new Date(end); // Ensure it's a Date object
-
-    setEvents((prevEvents) =>
-      prevEvents.map((evt) =>
-        evt.id === event.id
-          ? {
-              ...event,
-              start: new Date(
-                startDate.getFullYear(),
-                startDate.getMonth(),
-                startDate.getDate(),
-                event.start.getHours(),
-                event.start.getMinutes()
-              ),
-              end: new Date(
-                endDate.getFullYear(),
-                endDate.getMonth(),
-                endDate.getDate(),
-                event.end.getHours(),
-                event.end.getMinutes()
-              )
-            }
-          : evt
-      )
-    );
+    setOriginalEvent(event);
+    setTempEvent({
+      ...event,
+      start: convertToDate(start),
+      end: convertToDate(end)
+    });
+    setOpenDialog(true);
   };
 
   const handleConfirmReschedule = () => {

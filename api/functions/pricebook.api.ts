@@ -20,6 +20,17 @@ export const getPriceBooks = async (page: string) => {
   );
   return res.data;
 };
+export const getPriceBooksListAll = async (page: string) => {
+  const res = await axiosInstance.get(
+    endpoints.settings.pricebook.get_pricebooks_list_all,
+    {
+      params: {
+        page: page
+      }
+    }
+  );
+  return res.data;
+};
 export const getPriceBooks_ = async (page: string) => {
   const res = await axiosInstance.get(
     endpoints.settings.pricebook.get_pricebooks_,
@@ -73,6 +84,14 @@ export const updatePrices = async (body: { id: number; prices: Price[] }) => {
   const res = await axiosInstance.put(
     endpoints.settings.prices.update_prices(body.id),
     body.prices
+  );
+  return res.data;
+};
+
+export const createPriceImport = async (body: any) => {
+  const res = await axiosInstance.post(
+    endpoints.settings.prices.price_import,
+    body
   );
   return res.data;
 };

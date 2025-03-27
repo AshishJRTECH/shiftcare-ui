@@ -181,57 +181,76 @@ const NewInvoice = ({
                   (report: any, index: number) => (
                     <React.Fragment key={report.id}>
                       {/* First Row - Hourly */}
-                      <TableRow>
-                        {/* <TableCell>{index + 1}</TableCell> */}
-                        <TableCell>{report.description}</TableCell>
-                        <TableCell>Hourly</TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {report.hours}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {(report.hourlyRate ?? 0).toFixed(2)}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {(report.hourlyTax ?? 0).toFixed(2)}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {report.cost.toFixed(2)}
-                        </TableCell>
-                      </TableRow>
+                      {report.hourlyRate && (
+                        <TableRow>
+                          <TableCell>{report.description}</TableCell>
+                          <TableCell>Hourly</TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {report.hours}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.hourlyRate ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.hourlyTax ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {report.cost.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      )}
 
                       {/* Second Row - Additional Cost */}
                       <TableRow>
-                        {/* <TableCell>{`${index + 1}a`}</TableCell> */}
                         <TableCell>{report.description}</TableCell>
                         <TableCell>Additional Cost</TableCell>
                         <TableCell sx={{ textAlign: "right" }}>-</TableCell>
                         <TableCell sx={{ textAlign: "right" }}>-</TableCell>
                         <TableCell sx={{ textAlign: "right" }}>
-                          {(report.additionalTax ?? 0).toFixed(2)}
+                          {(report.additionalTax ?? "").toFixed(2)}
                         </TableCell>
                         <TableCell sx={{ textAlign: "right" }}>
-                          {(report.additionalCost ?? 0).toFixed(2)}
+                          {(report.additionalCost ?? "").toFixed(2)}
                         </TableCell>
                       </TableRow>
 
+                      {report.distanceRate && (
+                        <TableRow>
+                          <TableCell>{report.description}</TableCell>
+                          <TableCell>Distance</TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {report.distance}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.distanceRate ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.distanceTax ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.distanceCost ?? "").toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      )}
                       {/* Third Row - Distance */}
-                      <TableRow>
-                        {/* <TableCell>{`${index + 1}b`}</TableCell> */}
-                        <TableCell>{report.description}</TableCell>
-                        <TableCell>Distance</TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {report.distance}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {(report.distanceRate ?? 0).toFixed(2)}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {(report.distanceTax ?? 0).toFixed(2)}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "right" }}>
-                          {(report.distanceCost ?? 0).toFixed(2)}
-                        </TableCell>
-                      </TableRow>
+                      {report.fixedRate && (
+                        <TableRow>
+                          <TableCell>{report.description}</TableCell>
+                          <TableCell>Fixed Rate</TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            <Typography>1</Typography>
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.fixedRate ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.fixedTax ?? "").toFixed(2)}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "right" }}>
+                            {(report.fixedRate ?? "").toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      )}
 
                       {/* Separator Row */}
                       <TableRow>
