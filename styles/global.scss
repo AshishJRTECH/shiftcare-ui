@@ -86,3 +86,117 @@ body {
 .css-1mtsuo7 {
   z-index: 99999 !important;
 }
+
+.simplebar-content-wrapper {
+  direction: inherit;
+  box-sizing: border-box !important;
+  position: relative;
+  display: block;
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  // background: #004151;
+  background: #eeeff7;
+  // background: linear-gradient(
+  //   90deg,
+  //   rgba(2, 0, 36, 1) 0%,
+  //   rgba(0, 212, 255, 1) 0%,
+  //   rgba(0, 0, 0, 1) 100%
+  // );
+}
+
+.css-1mk9mw3-MuiList-root {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  // background: #2a616f;
+  // background: #2a616f6e;
+  // background: #eeeff7;
+}
+
+@media (min-width: 1200px) {
+  .css-1lndy45-MuiToolbar-root {
+    padding-left: 40px;
+    padding-right: 40px;
+    // background: #57808c2b;
+    // background: #eeeff7;
+  }
+}
+
+.css-w625fn-MuiPaper-root-MuiAppBar-root {
+  background-color: #ffffff;
+  color: #212b36;
+  -webkit-transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  position: fixed;
+  z-index: 1100;
+  top: 0;
+  left: auto;
+  right: 0;
+  // background-color: #124c5cb3;
+  background-color: #eeeff7;
+  color: #000000;
+  box-shadow: none;
+  height: 55px;
+  z-index: 1101;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  background-color: rgba(249, 250, 251, 0.8);
+  -webkit-transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition: height 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  width: calc(100% - 281px);
+}
+
+.css-y7rl26 {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  margin-left: 16px;
+  margin-right: 16px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  padding-left: 20px;
+  padding-right: 20px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  border-radius: 6px;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  // background-color: rgba(145, 158, 171, 0.12);
+}
+
+// .css-apqrd9-MuiTableBody-root {
+//   display: table-row-group;
+//   background: #f9fafb;
+// }
+
+@media (min-width: 1200px) {
+  .css-1lndy45-MuiToolbar-root {
+    padding-left: 40px;
+    padding-right: 40px;
+    background: #f9fafb;
+  }
+}

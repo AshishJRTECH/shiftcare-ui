@@ -179,7 +179,7 @@ const StyledTable = styled(Table)`
     text-align: center;
     border-radius: 3px;
     cursor: pointer;
-    background-color: #1877f2;
+    background-color: #124c5cb3;
     font-weight: bold;
     color: #ffffff;
 
@@ -927,7 +927,10 @@ export default function TimeSheetTable({
                         sx={
                           moment().format("DD/MM/YYYY") ===
                           _date.format("DD/MM/YYYY")
-                            ? { backgroundColor: "#1877F2", color: "#fff" }
+                            ? {
+                                backgroundColor: "#124c5cb3",
+                                color: "#fff"
+                              }
                             : {}
                         }
                       >

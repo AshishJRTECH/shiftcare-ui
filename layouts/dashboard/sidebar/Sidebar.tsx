@@ -54,9 +54,14 @@ export default function Sidebar({ openNav, onCloseNav }: SidebarProps) {
       </Avatar>
 
       <Box sx={{ ml: 2 }}>
-        <Typography variant="subtitle2">{user?.data?.data?.name}</Typography>
+        <Typography variant="subtitle2" sx={{ color: "#000000" }}>
+          {user?.data?.data?.name}
+        </Typography>
 
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
+        {/* <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          {roleParser(user?.data?.data?.role?.[0].name || "")}
+        </Typography> */}
+        <Typography variant="body2" sx={{ color: "#747474" }}>
           {roleParser(user?.data?.data?.role?.[0].name || "")}
         </Typography>
       </Box>
@@ -64,7 +69,7 @@ export default function Sidebar({ openNav, onCloseNav }: SidebarProps) {
   );
 
   const renderMenu = (
-    <Stack component="nav" spacing={0.5} sx={{ px: 2 }}>
+    <Stack component="nav" spacing={0.5} sx={{ px: 2, color: "#ffffff" }}>
       {navConfig.map((item) => (
         <SidebarItem key={item.title} item={item} />
       ))}
@@ -103,6 +108,7 @@ export default function Sidebar({ openNav, onCloseNav }: SidebarProps) {
       {upLg ? (
         <Box
           sx={{
+            color: "#ffffff",
             height: 1,
             position: "fixed",
             width: NAV.WIDTH,
@@ -117,7 +123,8 @@ export default function Sidebar({ openNav, onCloseNav }: SidebarProps) {
           onClose={onCloseNav}
           PaperProps={{
             sx: {
-              width: NAV.WIDTH
+              width: NAV.WIDTH,
+              color: "#ffffff"
             }
           }}
         >

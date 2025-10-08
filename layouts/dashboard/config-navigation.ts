@@ -22,6 +22,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import EventNoteIcon from "@mui/icons-material/EventNote";
 import { getRole } from "@/lib/functions/_helpers.lib";
 import { getCookie } from "@/lib/functions/storage.lib";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 
 export interface NavItem {
   title: string;
@@ -72,6 +74,13 @@ const navConfig: NavItem[] = (() => {
           }
         ],
         hasChild: true
+      },
+      {
+        title: "Web Guidance",
+        path: "/web-guidance",
+        icon: MenuBookIcon,
+        children: [],
+        hasChild: false
       }
     ];
   } else if (role === "ROLE_ADMIN") {
@@ -314,7 +323,7 @@ const navConfig: NavItem[] = (() => {
       {
         title: "Shift Notes",
         path: "/shift-notes",
-        icon: TocIcon,
+        icon: NoteAltIcon,
         children: [],
         hasChild: false
       },
@@ -374,6 +383,13 @@ const navConfig: NavItem[] = (() => {
           // }
         ],
         hasChild: true
+      },
+      {
+        title: "Web Guidance",
+        path: "/web-guidance",
+        icon: MenuBookIcon,
+        children: [],
+        hasChild: false
       }
     ];
   } else {
@@ -400,6 +416,13 @@ const navConfig: NavItem[] = (() => {
           }
         ],
         hasChild: true
+      },
+      {
+        title: "Web Guidance",
+        path: "/web-guidance",
+        icon: MenuBookIcon,
+        children: [],
+        hasChild: false
       }
     ];
   }

@@ -947,7 +947,10 @@ const BillingReport = () => {
                                 onClick={() => handleModal(dataRow)}
                               >
                                 <EditIcon
-                                  style={{ fontSize: 20, color: "#1877f2" }}
+                                  style={{
+                                    fontSize: 20,
+                                    color: "#124c5cb3"
+                                  }}
                                 />
                               </IconButton>
                             </Tooltip>

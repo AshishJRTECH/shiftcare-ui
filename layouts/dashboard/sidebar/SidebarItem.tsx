@@ -57,7 +57,12 @@ function SidebarItem({ item }: SidebarItemProps) {
   return (
     <>
       <ListItemButton
-        sx={{ ...sx, ...(active && active_sx) }}
+        sx={{
+          ...sx,
+          ...(active && active_sx),
+          color: "#5a5a5a",
+          background: "#eeeff7"
+        }}
         onClick={() => handleClick(item)}
       >
         <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
@@ -92,10 +97,18 @@ function SidebarItem({ item }: SidebarItemProps) {
                   onClick={() => {
                     router.push(_item?.path as string);
                   }}
-                  sx={{ ...sx, pl: 4, ...(link_active && active_sx) }}
+                  sx={{
+                    ...sx,
+                    pl: 4,
+                    ...(link_active && active_sx),
+                    color: "#5a5a5a"
+                  }}
                   key={_item.path}
                 >
-                  <Box component="span" sx={{ width: 24, height: 24, mr: 2 }}>
+                  <Box
+                    component="span"
+                    sx={{ width: 24, height: 24, mr: 2, color: "#5a5a5a" }}
+                  >
                     {_item.icon && createElement(_item.icon)}
                   </Box>
                   <Box component="span">{_item?.title}</Box>

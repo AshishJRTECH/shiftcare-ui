@@ -230,7 +230,7 @@ export default function Scheduler() {
   const [originalEvent, setOriginalEvent] = useState<ShiftEvent | null>(null);
 
   const convertToDate = (date: unknown): Date =>
-  date instanceof Date ? date : new Date(date as string);
+    date instanceof Date ? date : new Date(date as string);
 
   const onEventDrop = ({
     event,
