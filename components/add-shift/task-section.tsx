@@ -27,6 +27,7 @@ import {
 import * as yup from "yup";
 import AddIcon from "@mui/icons-material/Add";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
+import { toast } from "sonner";
 
 export default function TaskSection({
   view,
@@ -59,6 +60,17 @@ export default function TaskSection({
   });
 
   const onSubmit = (data: Task) => {
+    const existingTasks = watch("tasks") || [];
+    const isDuplicate = existingTasks.some(
+      (t: Task) =>
+        t.task.trim().toLowerCase() === data.task.trim().toLowerCase()
+    );
+
+    if (isDuplicate) {
+      toast.error("This task has already been added!");
+      return;
+    }
+
     append(data);
     reset();
   };
@@ -100,9 +112,37 @@ export default function TaskSection({
                     <MenuItem value="" disabled>
                       Select Task
                     </MenuItem>
-                    <MenuItem value="dummy1">Dummy 1</MenuItem>
-                    <MenuItem value="dummy2">Dummy 2</MenuItem>
-                    <MenuItem value="dummy3">Dummy 3</MenuItem>
+                    <MenuItem value="In-home supports/assistance with daily living">
+                      In-home supports/assistance with daily living
+                    </MenuItem>
+                    <MenuItem value="In-home supports/assistance with daily living (High Intensity)">
+                      In-home supports/assistance with daily living (High
+                      Intensity)
+                    </MenuItem>
+                    <MenuItem value="Community access">
+                      Community access
+                    </MenuItem>
+                    <MenuItem value="Community access using wheelchair accessible transport">
+                      Community access using wheelchair accessible transport
+                    </MenuItem>
+                    <MenuItem value="Community Nursing">
+                      Community Nursing
+                    </MenuItem>
+                    <MenuItem value="Skill Development">
+                      Skill Development
+                    </MenuItem>
+                    <MenuItem value="Assistance with daily living in Supported living home">
+                      Assistance with daily living in Supported living home
+                    </MenuItem>
+                    <MenuItem value="Assistance with daily living in Supported living home (High Intensity)">
+                      Assistance with daily living in Supported living home
+                      (High Intensity)
+                    </MenuItem>
+                    <MenuItem value="Cleaning">Cleaning</MenuItem>
+                    <MenuItem value="Cooking">Cooking</MenuItem>
+                    <MenuItem value="Yard Maintenance">
+                      Yard Maintenance
+                    </MenuItem>
                     {/* Add more dummy values as needed */}
                   </Select>
                 ) : (

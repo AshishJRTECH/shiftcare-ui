@@ -59,7 +59,7 @@ export default function ClientSection({
   const { data, isLoading } = useQuery({
     queryKey: ["client_list"],
     queryFn: () => getAllClients(),
-    enabled: role === "ROLE_ADMINS"
+    enabled: role === "ROLE_ADMIN"
   });
 
   // console.log(
