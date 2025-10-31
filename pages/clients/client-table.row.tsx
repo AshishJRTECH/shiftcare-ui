@@ -24,14 +24,14 @@ export default function ClientTableRow({
   gender,
   age,
   ndis,
-  recipient_id,
+  // recipient_id,
   mobileNo,
   phoneNo,
   email,
   address,
   type,
-  pricebook,
-  review,
+  // pricebook,
+  // review,
   selected,
   handleClick
 }: {
@@ -115,14 +115,14 @@ export default function ClientTableRow({
         <TableCell>{gender}</TableCell>
         <TableCell>{age}</TableCell>
         <TableCell>{ndis}</TableCell>
-        <TableCell>{recipient_id}</TableCell>
+        {/* <TableCell>{recipient_id}</TableCell> */}
         <TableCell>{mobileNo}</TableCell>
         <TableCell>{phoneNo}</TableCell>
         <TableCell>{email}</TableCell>
         <TableCell>{address}</TableCell>
         <TableCell>{type}</TableCell>
-        <TableCell>{pricebook}</TableCell>
-        <TableCell>{review}</TableCell>
+        {/* <TableCell>{pricebook}</TableCell> */}
+        {/* <TableCell>{review}</TableCell> */}
 
         {/* <TableCell align="center">{isVerified ? "Yes" : "No"}</TableCell>
 

@@ -44,10 +44,10 @@ export default function List() {
       id: "ndis",
       label: "NDIS"
     },
-    {
-      id: "recipient_id",
-      label: "Recipient ID"
-    },
+    // {
+    //   id: "recipient_id",
+    //   label: "Recipient ID"
+    // },
     {
       id: "mobileNo",
       label: "Mobile"
@@ -68,14 +68,14 @@ export default function List() {
       id: "type",
       label: "Type"
     },
-    {
-      id: "pricebook",
-      label: "Pricebook"
-    },
-    {
-      id: "review",
-      label: "Review"
-    }
+    // {
+    //   id: "pricebook",
+    //   label: "Pricebook"
+    // },
+    // {
+    //   id: "review",
+    //   label: "Review"
+    // }
   ];
 
   const rows =
